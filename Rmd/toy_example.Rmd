@@ -1,0 +1,41 @@
+---
+title: "Title of the report"
+author: "Jane Doe and John Smith"
+date: '`r format(Sys.time(), "%d %B, %Y")`'
+output: html_document
+---
+
+
+
+```{r, echo = FALSE}
+options(width = 100)
+
+knitr::opts_chunk$set(
+  fig.width = 7, 
+  fig.height = 7,
+  dev = 'png',
+  fig.path = "figs"
+)
+```
+
+
+
+
+## Section
+
+### Sub-section
+
+#### Sub-sub section 1 
+
+#### Sub-sub section 2
+
+
+This is an example of R code:
+
+```{r example_1}
+a <- rnorm(1000)
+hist(a, col = "grey", sep = "white")
+```
+
+
+
