@@ -1,0 +1,134 @@
+---
+title: "Administrative summary"
+output: 
+  flexdashboard::flex_dashboard:
+    orientation: rows
+    vertical_layout: scroll
+    smooth_scroll: true
+---
+
+```{r setup, include=FALSE}
+library(flexdashboard)
+library(plotly)
+library(tidyr)
+library(dplyr)
+library(purrr)
+library(DT)
+library(shiny.semantic)
+library(shiny)
+library(htmltools)
+```
+
+<style>                     
+.navbar {
+  background-color:#5A0A69;
+  border-color:black;
+}
+</style>  
+
+Row {data-height=100}
+-------------------------------------
+
+```{r}
+uicard <- function(header, meta, description) {
+  div(class = "ui cards",
+  div(class = "red card",
+    div(class = "content",
+        div(class = "header", header),
+        div(class = "meta", meta),
+        div(class = "description", description))))
+}
+
+uirender(uicard("KPI 1", "XYZ", "Description"))
+uirender(uicard("KPI 2", "XYZ", "Description"))
+uirender(uicard("KPI 3", "XYZ", "Description"))
+uirender(uicard("KPI 4", "XYZ", "Description"))
+```
+
+```{r}
+load("../assets/admin_report_input.RData")
+```
+
+Row
+-------------------------------------
+
+### Central level reporting completeness and timeliness 
+
+```{r}
+
+last_12_weeks_report_status <- admin_report_input$reportingValues_W12
+
+last_12_weeks_level_2 <- last_12_weeks_report_status %>%
+  dplyr::filter(level == 1) %>%
+  mutate(
+    year = ifelse(week < 8, 2018, 2017),
+    year_week = paste(year, week)) %>%
+  select(Id_Site, year_week, week, compReport, timeReport, reference)
+
+last_12_weeks_level_2_long <- last_12_weeks_level_2 %>%
+  gather(key = label, value = number, -Id_Site, -year_week, -week, -reference) %>%
+  mutate(number = round(number * 100, 2),
+         label = recode(label, "compReport" = "Report completeness",
+                        "timeReport" = "Report timeliness"))
+
+last_12_weeks_level_2_long %>%
+    split(last_12_weeks_level_2_long$Id_Site) %>% 
+    map(function(df){
+        plot_ly(data = df, x = ~year_week, y = ~number,  type = 'scatter', mode = 'lines+markers',
+        color = ~label,
+        line = list(width = 4),
+        marker = list(size = 8),
+        colors = c('#5A0A69', '#62B200'),
+        split = ~label,
+        text = ~paste0(label, ": ", number), hoverinfo = "text",
+        showlegend = FALSE) %>%
+  layout(
+    xaxis = list(title = ~paste("<b>", reference,  '</b> Year Week', min(year_week), "-", max(year_week))),
+    yaxis = list(title = 'Reporting <br> completeness/timeliness[%]', range =~c(0, 100)), barmode = 'group')
+    }) -> plots
+plots[[1]]$x$attrs[[1]]$showlegend <- TRUE
+
+plots %>%
+  subplot(nrows = max(length(plots)/2, 1), titleX = TRUE, titleY = TRUE, margin = 0.15)
+```
+
+
+Row
+-------------------------------------
+    
+### List of sites with values above thresholds for the previous week
+    
+```{r}
+thresholds <- data.frame(
+  path = paste("Path", 1:10),
+  variable = paste("Variables", 1:10),
+  value = round(runif(10, min = 10, max =20), 2),
+  threshold = 10,
+  stringsAsFactors = FALSE
+)
+
+datatable(thresholds, extensions = 'Buttons',
+          options = list(dom = 'Bt', buttons = c('copy', 'csv', 'excel', 'pdf', 'print')))
+```
+    
+### List of alerts receives since 10 days
+
+```{r}
+alerts <- data.frame(
+  header = paste("Alert", 1:10),
+  description = paste("Description", 1:10),
+  stringsAsFactors = FALSE
+)
+
+shiny.semantic::uilist(alerts, icon = "alarm", is_divided = TRUE,
+                       is_description = TRUE)
+```
+
+Row
+-------------------------------------
+
+###  +/- 1 table with cumulative numbers since the beginning of the year for the country
+
+```{r}
+datatable(iris, options = list(dom = 't'))
+```
