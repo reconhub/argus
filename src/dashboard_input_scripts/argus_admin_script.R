@@ -821,4 +821,9 @@ reportingValues_W12_overall$timeReview <- reportingValues_W12_overall$nbRevTime/
 
 
 
+### Elements to pass to the report
+admin_report_input <- list(reportingValues_YR = reportingValues_YR,
+     reportingValues_W12 = reportingValues_W12,
+     reportingValues_W12_overall = reportingValues_W12_overall)
 
+save(admin_report_input, file = "src/assets/admin_report_input.RData")
