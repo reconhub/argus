@@ -17,6 +17,7 @@ library(DT)
 library(shiny.semantic)
 library(shiny)
 library(htmltools)
+library(crosstalk)
 ```
 
 ```{r layout, include=FALSE}
@@ -143,39 +144,34 @@ reviewing_sites_long %>%
 Row
 -------------------------------------
 
-### List of sites with values above thresholds for the previous week
+### Reporting sites without any report received for 3 weeks and longer
 
 ```{r}
-thresholds <- data.frame(
-  path = paste("Path", 1:10),
-  variable = paste("Variables", 1:10),
-  value = round(runif(10, min = 10, max =20), 2),
-  threshold = 10,
-  stringsAsFactors = FALSE
+sites_no_report_3weeks <- admin_report_input$noReport_W3 %>%
+  mutate(is_above_3 = TRUE)
+
+sites_no_report_8weeks <- admin_report_input$noReport_W8 %>%
+  mutate(is_above_8 = TRUE)
+
+sites_no_report <- sites_no_report_3weeks %>%
+  full_join(sites_no_report_8weeks) %>%
+  rename(`Parent Site Id` = Id_parentSite,
+         `Parent Site Name` = name_parentSite,
+         `Site Name` = siteName,
+         Contact = contact,
+         Phone = phone)
+
+shared_sites_no_report <- SharedData$new(sites_no_report)
+bscols(widths = c(2,NA),
+  list(
+    filter_checkbox("no_report_weeks", "No report for 8 weeks and longer:", shared_sites_no_report, 
+                    ~ifelse(is_above_8, "Yes", "No"), inline = TRUE)
+  ),
+  datatable(data = shared_sites_no_report, extensions = 'Buttons',
+          options = list(
+            columnDefs = list(list(visible = FALSE, targets = c(6, 7))),
+            dom = 'tpB', buttons = c('copy', 'csv', 'excel', 'pdf', 'print')))
 )
 
-datatable(thresholds, extensions = 'Buttons',
-          options = list(dom = 'Bt', buttons = c('copy', 'csv', 'excel', 'pdf', 'print')))
-```
 
-### List of alerts receives since 10 days
-
-```{r}
-alerts <- data.frame(
-  header = paste("Alert", 1:10),
-  description = paste("Description", 1:10),
-  stringsAsFactors = FALSE
-)
-
-shiny.semantic::uilist(alerts, icon = "alarm", is_divided = TRUE,
-                       is_description = TRUE)
-```
-
-Row
--------------------------------------
-
-###  +/- 1 table with cumulative numbers since the beginning of the year for the country
-
-```{r}
-datatable(iris, options = list(dom = 't'))
 ```
