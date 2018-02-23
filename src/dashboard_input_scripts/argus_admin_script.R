@@ -777,8 +777,99 @@ reportingValues_W12_overall$timeReport <- reportingValues_W12_overall$nbRecTime/
 reportingValues_W12_overall$compReview <- reportingValues_W12_overall$nbReviewed/reportingValues_W12_overall$nbReceivedBelow
 reportingValues_W12_overall$timeReview <- reportingValues_W12_overall$nbRevTime/reportingValues_W12_overall$nbRecTimeBelow
 
+#############
+## 
 
+
+# Table with list of leaf sites without any report received for >= 3 weeks and >= 8 weeks grouped by first intermediate level (name, path, contact of the site)
+
+# For the 8 previous weeks
+
+tempFirstIntermediate <- parentSites[-which(parentSites$level<max(parentSites$level)),c("Id_Site","reference")]
+colnames(tempFirstIntermediate) <- c("Id_parentSite","name_parentSite")
+
+noReport_W8 <- data.frame(Id_parentSite=NA, name_parentSite=NA, siteName=NA, contact=NA, phone=NA)
+# noReport_W8$Id_parentSite # site id of the parent site (first intermediate level)
+# noReport_W8$name_parentSite # name of the parent site
+# noReport_W8$siteName  # name of the site with no reporting
+# noReport_W8$contact # name of the contact at the site with no reporting
+# noReport_W8$phone # phone of the contact at the site with no reporting
+
+IdParentSite <- NA
+counter <- 1
+
+for (IdParentSite in tempFirstIntermediate$Id_parentSite) {
   
+  expectedSites_whole_W8 <- NA # relationships IDs of reporting sites for the whole period
+  expectedSites_whole_W8 <- sites_wholePeriod_W8$id[which(sites_wholePeriod_W8$FK_ParentId==IdParentSite)]
+  
+  IdSite <- NA
+  
+  for (IdSite in expectedSites_whole_W8) {
+    
+    if(any(fullreport$FK_SiteRelationShipId %in% IdSite & fullreport$weekNumber %in% numSem_W8)) {
+    } else {
+      noReport_W8$Id_parentSite[counter] <- IdParentSite
+      noReport_W8$name_parentSite[counter] <- tempFirstIntermediate$name_parentSite[which(tempFirstIntermediate$Id_parentSite==IdParentSite)]
+      
+      site_ID <- NA
+      site_ID <- sites_wholePeriod_W8$FK_SiteId[which(sites_wholePeriod_W8$id==IdSite)]
+      
+      noReport_W8$siteName[counter] <- sites_id$reference[which(sites_id$id==site_ID)]
+      noReport_W8$contact[counter] <- paste(sites_contact$name[which(sites_contact$FK_SiteId==site_ID & (sites_contact$isDeleted==0 | is.na(sites_contact$isDeleted)))], collapse = ", ")
+      noReport_W8$phone[counter] <- paste(sites_contact$phoneNumber[which(sites_contact$FK_SiteId==site_ID)], collapse = ", ")
+      
+      noReport_W8 <- rbind(noReport_W8,NA)
+      counter <- counter +1  
+    }
+  }
+}
+
+noReport_W8 <- noReport_W8[-nrow(noReport_W8),]
+
+# For the 3 previous weeks
+
+tempFirstIntermediate <- parentSites[-which(parentSites$level<max(parentSites$level)),c("Id_Site","reference")]
+colnames(tempFirstIntermediate) <- c("Id_parentSite","name_parentSite")
+
+noReport_W3 <- data.frame(Id_parentSite=NA, name_parentSite=NA, siteName=NA, contact=NA, phone=NA)
+# noReport_W3$Id_parentSite # site id of the parent site (first intermediate level)
+# noReport_W3$name_parentSite # name of the parent site
+# noReport_W3$siteName  # name of the site with no reporting
+# noReport_W3$contact # name of the contact at the site with no reporting
+# noReport_W3$phone # phone of the contact at the site with no reporting
+
+IdParentSite <- NA
+counter <- 1
+
+for (IdParentSite in tempFirstIntermediate$Id_parentSite) {
+  
+  expectedSites_whole_W3 <- NA # relationships IDs of reporting sites for the whole period
+  expectedSites_whole_W3 <- sites_wholePeriod_W3$id[which(sites_wholePeriod_W3$FK_ParentId==IdParentSite)]
+  
+  IdSite <- NA
+  
+  for (IdSite in expectedSites_whole_W3) {
+    
+    if(any(fullreport$FK_SiteRelationShipId %in% IdSite & fullreport$weekNumber %in% numSem_W3)) {
+    } else {
+      noReport_W3$Id_parentSite[counter] <- IdParentSite
+      noReport_W3$name_parentSite[counter] <- tempFirstIntermediate$name_parentSite[which(tempFirstIntermediate$Id_parentSite==IdParentSite)]
+      
+      site_ID <- NA
+      site_ID <- sites_wholePeriod_W3$FK_SiteId[which(sites_wholePeriod_W3$id==IdSite)]
+      
+      noReport_W3$siteName[counter] <- sites_id$reference[which(sites_id$id==site_ID)]
+      noReport_W3$contact[counter] <- paste(sites_contact$name[which(sites_contact$FK_SiteId==site_ID & (sites_contact$isDeleted==0 | is.na(sites_contact$isDeleted)))], collapse = ", ")
+      noReport_W3$phone[counter] <- paste(sites_contact$phoneNumber[which(sites_contact$FK_SiteId==site_ID)], collapse = ", ")
+      
+      noReport_W3 <- rbind(noReport_W3,NA)
+      counter <- counter +1  
+    }
+  }
+}
+
+noReport_W3 <- noReport_W3[-nrow(noReport_W3),]
   
   
 
@@ -821,4 +912,13 @@ reportingValues_W12_overall$timeReview <- reportingValues_W12_overall$nbRevTime/
 
 
 
+<<<<<<< Updated upstream
+=======
+### Elements to pass to the report
+admin_report_input <- list(
+  noReport_W3 = noReport_W3,
+  noReport_W8 = noReport_W8,
+  reportingValues_W12 = reportingValues_W12,
+  reportingValues_W12_overall = reportingValues_W12_overall)
+>>>>>>> Stashed changes
 
