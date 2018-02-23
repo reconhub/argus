@@ -10,6 +10,7 @@ plot_reporting_central_level <- function(last_12_weeks_level_1_long, plot_colors
           text = ~paste0(label, ": ", number), hoverinfo = "text",
           showlegend = TRUE) %>%
     layout(
+      legend = list(orientation = 'h', y = 1.1, x = 0.5),
       xaxis = list(title = ~paste("<b>", reference,  '</b> Year Week', min(year_week), "-", max(year_week))),
       yaxis = list(title = 'Reporting <br> completeness/timeliness[%]', range =~c(0, 100)))
 }
@@ -27,6 +28,7 @@ plot_1st_itermediate_level <- function(data, plot_colors, margins, order_x,
           hoverinfo = "text",
           showlegend = TRUE) %>%
     layout(
+      legend = list(orientation = 'h', y = 1.1, x = 0.5),
       margin =  bar_plot_margins,
       barmode = 'group',
       xaxis = list(

@@ -24,39 +24,12 @@ library(crosstalk)
 plot_colors <- c('#5A0A69', '#62B200')
 
 bar_plot_margins <- list(
-  l = 50,
+  l = 70,
   r = 50,
-  b = 100,
+  b = 120,
   t = 10,
   pad = 4
 )
-```
-
-
-<style>                     
-.navbar {
-  background-color:#5A0A69;
-  border-color:black;
-}
-</style>  
-
-Row {data-height=100}
--------------------------------------
-
-```{r}
-uicard <- function(header, meta, description) {
-  div(class = "ui fluid cards",
-  div(class = "red card",
-    div(class = "content",
-        div(class = "header", header),
-        div(class = "meta", meta),
-        div(class = "description", description))))
-}
-
-uirender(uicard("KPI 1", "XYZ", "Description"))
-uirender(uicard("KPI 2", "XYZ", "Description"))
-uirender(uicard("KPI 3", "XYZ", "Description"))
-uirender(uicard("KPI 4", "XYZ", "Description"))
 ```
 
 ```{r}
@@ -64,11 +37,6 @@ load("../assets/admin_report_input.RData")
 source("../plots/ploting.R")
 source("../munging/munging.R")
 ```
-
-Row
--------------------------------------
-
-### Central level reporting completeness and timeliness 
 
 ```{r}
 last_12_weeks_report_status <- admin_report_input$reportingValues_W12 %>%
@@ -84,7 +52,40 @@ last_12_weeks_level_2 <- last_12_weeks_report_status %>%
 last_12_weeks_level_1_long <- last_12_weeks_level_2 %>%
   gather(key = label, value = number, -Id_Site, -year_week, -week, -reference) %>%
   mutate(label = recode_report(label))
+```
 
+<style>                     
+.navbar {
+  background-color:#5A0A69;
+  border-color:black;
+}
+</style>  
+
+<!-- Row {data-height=100} -->
+<!-- ------------------------------------- -->
+
+<!-- ```{r} -->
+<!-- uicard <- function(header, meta, description) { -->
+<!--   div(class = "ui cards", -->
+<!--   div(class = "red fluid card", -->
+<!--     div(class = "content", -->
+<!--         div(class = "header", header), -->
+<!--         div(class = "meta", meta), -->
+<!--         div(class = "description", description)))) -->
+<!-- } -->
+
+<!-- uirender(uicard("Reporting completeness (-)", "Week X vs. week y", "Values changed from 17% to 0%")) -->
+<!-- uirender(uicard("Avarege yearly completeness 40%", "From to", "Max: 45%, Min: 0%")) -->
+<!-- uirender(uicard("KPI 3", "XYZ", "Description")) -->
+<!-- uirender(uicard("KPI 4", "XYZ", "Description")) -->
+<!-- ``` -->
+
+Row
+-------------------------------------
+
+### Central level reporting completeness and timeliness 
+
+```{r}
 last_12_weeks_level_1_long %>%
     plot_reporting_central_level(plot_colors)
 ```
@@ -164,7 +165,7 @@ sites_no_report <- sites_no_report_3weeks %>%
 shared_sites_no_report <- SharedData$new(sites_no_report)
 bscols(widths = c(2,NA),
   list(
-    filter_checkbox("no_report_weeks", "No report for 8 weeks and longer:", shared_sites_no_report, 
+    filter_checkbox("no_report_weeks", "Filter table to 8 weeks and longer:", shared_sites_no_report, 
                     ~ifelse(is_above_8, "Yes", "No"), inline = TRUE)
   ),
   datatable(data = shared_sites_no_report, extensions = 'Buttons',
