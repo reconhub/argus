@@ -59,26 +59,7 @@ last_12_weeks_level_1_long <- last_12_weeks_level_2 %>%
   background-color:#5A0A69;
   border-color:black;
 }
-</style>  
-
-<!-- Row {data-height=100} -->
-<!-- ------------------------------------- -->
-
-<!-- ```{r} -->
-<!-- uicard <- function(header, meta, description) { -->
-<!--   div(class = "ui cards", -->
-<!--   div(class = "red fluid card", -->
-<!--     div(class = "content", -->
-<!--         div(class = "header", header), -->
-<!--         div(class = "meta", meta), -->
-<!--         div(class = "description", description)))) -->
-<!-- } -->
-
-<!-- uirender(uicard("Reporting completeness (-)", "Week X vs. week y", "Values changed from 17% to 0%")) -->
-<!-- uirender(uicard("Avarege yearly completeness 40%", "From to", "Max: 45%, Min: 0%")) -->
-<!-- uirender(uicard("KPI 3", "XYZ", "Description")) -->
-<!-- uirender(uicard("KPI 4", "XYZ", "Description")) -->
-<!-- ``` -->
+</style>
 
 Row
 -------------------------------------
