@@ -870,47 +870,18 @@ for (IdParentSite in tempFirstIntermediate$Id_parentSite) {
 }
 
 noReport_W3 <- noReport_W3[-nrow(noReport_W3),]
-  
-  
-
-
-
-
-
- 
-
 
 # Table with list of leaf sites with reports not received (including sum of previous consecutive reports missing, path, contact)
 
-
-
-
-
-
-
 #### Make the list of diseases that will appear in the graphs and in the maps
-
-
-
 
 #### Graphs for diseases with suspect trends for the level before national level
 
-
-
-
 #### Map with the number of cases for diseases with suspect trends
-
-
-
 
 #### List of alerts received in the 10 previous days
 
-
-
-
 #### Cumulative table since beginning of year
-
-
 
 ### Elements to pass to the report
 admin_report_input <- list(
@@ -918,3 +889,6 @@ admin_report_input <- list(
   noReport_W8 = noReport_W8,
   reportingValues_W12 = reportingValues_W12,
   reportingValues_W12_overall = reportingValues_W12_overall)
+
+save(admin_report_input, file = "src/assets/admin_report_input.RData")
+
