@@ -19,6 +19,19 @@ library(shiny)
 library(htmltools)
 ```
 
+```{r layout, include=FALSE}
+plot_colors <- c('#5A0A69', '#62B200')
+
+bar_plot_margins <- list(
+  l = 50,
+  r = 50,
+  b = 100,
+  t = 10,
+  pad = 4
+)
+```
+
+
 <style>                     
 .navbar {
   background-color:#5A0A69;
@@ -31,7 +44,7 @@ Row {data-height=100}
 
 ```{r}
 uicard <- function(header, meta, description) {
-  div(class = "ui cards",
+  div(class = "ui fluid cards",
   div(class = "red card",
     div(class = "content",
         div(class = "header", header),
@@ -47,6 +60,8 @@ uirender(uicard("KPI 4", "XYZ", "Description"))
 
 ```{r}
 load("../assets/admin_report_input.RData")
+source("../plots/ploting.R")
+source("../munging/munging.R")
 ```
 
 Row
@@ -55,40 +70,22 @@ Row
 ### Central level reporting completeness and timeliness 
 
 ```{r}
-last_12_weeks_report_status <- admin_report_input$reportingValues_W12
+last_12_weeks_report_status <- admin_report_input$reportingValues_W12 %>%
+  round_review_report()
 
 last_12_weeks_level_2 <- last_12_weeks_report_status %>%
   dplyr::filter(level == 1) %>%
   mutate(
-    year = ifelse(week < 8, 2018, 2017),
+    year = ifelse(week < 8, 2018, 2017), # This is temporary - year column needs to be in the raw data
     year_week = paste(year, week)) %>%
   select(Id_Site, year_week, week, compReport, timeReport, reference)
 
-last_12_weeks_level_2_long <- last_12_weeks_level_2 %>%
+last_12_weeks_level_1_long <- last_12_weeks_level_2 %>%
   gather(key = label, value = number, -Id_Site, -year_week, -week, -reference) %>%
-  mutate(number = round(number * 100, 2),
-         label = recode(label, "compReport" = "Report completeness",
-                        "timeReport" = "Report timeliness"))
+  mutate(label = recode_report(label))
 
-last_12_weeks_level_2_long %>%
-    split(last_12_weeks_level_2_long$Id_Site) %>% 
-    map(function(df){
-        plot_ly(data = df, x = ~year_week, y = ~number,  type = 'scatter', mode = 'lines+markers',
-        color = ~label,
-        line = list(width = 4),
-        marker = list(size = 8),
-        colors = c('#5A0A69', '#62B200'),
-        split = ~label,
-        text = ~paste0(label, ": ", number), hoverinfo = "text",
-        showlegend = FALSE) %>%
-  layout(
-    xaxis = list(title = ~paste("<b>", reference,  '</b> Year Week', min(year_week), "-", max(year_week))),
-    yaxis = list(title = 'Reporting <br> completeness/timeliness[%]', range =~c(0, 100)))
-    }) -> plots
-plots[[1]]$x$attrs[[1]]$showlegend <- TRUE
-
-plots %>%
-  subplot(nrows = max(length(plots)/2, 1), titleX = TRUE, titleY = TRUE, margin = 0.15)
+last_12_weeks_level_1_long %>%
+    plot_reporting_central_level(plot_colors)
 ```
 
 
@@ -97,45 +94,27 @@ Row
 ### Overall reporting completeness/timeliness from last 12 weeks
 
 ```{r}
-overall_12_weeks_report_status <- admin_report_input$reportingValues_W12_overall
+overall_12_weeks_report_status <- admin_report_input$reportingValues_W12_overall %>%
+  round_review_report()
+
 first_intermediate_level <- overall_12_weeks_report_status$level %>% max()
 
 parent_sites <- overall_12_weeks_report_status %>%
   dplyr::filter(level == first_intermediate_level) %>%
   select(compReport, timeReport, Id_Site, reference, FK_ParentId) %>% 
-  group_by(FK_ParentId) %>%
   gather(key = label, value = number, -Id_Site, -reference, -FK_ParentId) %>%
-  mutate(number = round(number * 100, 2),
-         label = recode(label, "compReport" = "Report completeness",
-                        "timeReport" = "Report timeliness"),
+  mutate(label = recode_report(label),
          parent_label = factor(paste(FK_ParentId, label, sep = "_"))) %>%
   arrange(parent_label)
 
 order_sites <- unique(parent_sites$parent_label)
 
-bar_plot_margins <- list(
-  l = 50,
-  r = 50,
-  b = 100,
-  t = 10,
-  pad = 4
-)
-
-parent_sites %>% plot_ly(
-  x = ~reference, y = ~number, type = "bar",
-  color = ~label,
-  colors = c('#5A0A69', '#62B200'),
-  split = ~label,
-  text = ~paste0(label, ": ", number), hoverinfo = "text",
-  showlegend = TRUE) %>%
-  layout(
-    margin =  bar_plot_margins,
-    barmode = 'group',
-    xaxis = list(
-      categoryorder = "array",
-      categoryarray = order_sites,
-      title = "Sites at the first intermediate level"),
-    yaxis = list(title = 'Reporting <br> completeness/timeliness[%]', range =~c(0, 100)))
+parent_sites %>%
+  plot_1st_itermediate_level(plot_colors = plot_colors,
+                             margins = bar_plot_margins,
+                             order_x = order_sites,
+                             x_title = 'Sites at the first intermediate level',
+                             y_title = 'Reporting <br> completeness/timeliness[%]')
 ```
 
 ### Overall review completeness/timeliness from last 12 weeks
@@ -147,35 +126,25 @@ reviewing_sites <- overall_12_weeks_report_status %>%
 reviewing_sites_long <- reviewing_sites %>%
   select(compReview, timeReview, level, reference) %>% 
   gather(key = label, value = number, -reference, -level) %>%
-  mutate(number = round(number * 100, 2),
-         label = recode(label, "compReview" = "Review completeness",
-                        "timeReview" = "Review timeliness")) %>%
+  mutate(label = recode_review(label)) %>%
   arrange(level)
 
 order_sites_review <- unique(reviewing_sites_long$reference)
 
-reviewing_sites_long %>% plot_ly(
-  x = ~reference, y = ~number, type = "bar",
-  color = ~label,
-  colors = c('#5A0A69', '#62B200'),
-  split = ~label,
-  text = ~paste0(label, ": ", number), hoverinfo = "text",
-  showlegend = TRUE) %>%
-  layout(barmode = 'group',
-         margin =  bar_plot_margins,
-    xaxis = list(
-      categoryorder = "array",
-      categoryarray = reviewing_sites_long,
-      title = "Sites from central level to the first intermediate level"),
-    yaxis = list(title = 'Reviewing <br> completeness/timeliness[%]', range =~c(0, 100)))
+reviewing_sites_long %>% 
+  plot_1st_itermediate_level(plot_colors = plot_colors,
+                             margins = bar_plot_margins,
+                             order_x = order_sites_review,
+                             x_title = 'Sites from central level to the first intermediate level',
+                             y_title = 'Reviewing <br> completeness/timeliness[%]')
 ```
 
 
 Row
 -------------------------------------
-    
+
 ### List of sites with values above thresholds for the previous week
-    
+
 ```{r}
 thresholds <- data.frame(
   path = paste("Path", 1:10),
@@ -188,7 +157,7 @@ thresholds <- data.frame(
 datatable(thresholds, extensions = 'Buttons',
           options = list(dom = 'Bt', buttons = c('copy', 'csv', 'excel', 'pdf', 'print')))
 ```
-    
+
 ### List of alerts receives since 10 days
 
 ```{r}
