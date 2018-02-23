@@ -86,7 +86,7 @@ weekFirstDay <- 1 # either 1 for Monday or 7 for Sunday
 nbCase_label <- 
   
 nbDeath_label <- 
-  
+
 ##########################################   
 #### Set the periods of interest
 ########################################## 
@@ -105,9 +105,11 @@ weekFunction <- function(x) {
   }
 }
 
-# Start date of interest: the first day of the period of interest: first day of week 1 or first day of the 12th previous week
+# Start date of interest: the first day of the period of interest: first day of week 1 or first day of the 12th previous week (calculation also of first day of the 8th and 3rd previous weeks)
 
 dateStart_W12 <- floor_date(today()-weeks(12),unit="week", week_start = weekFirstDay)
+dateStart_W8 <- floor_date(today()-weeks(8),unit="week", week_start = weekFirstDay)
+dateStart_W3 <- floor_date(today()-weeks(3),unit="week", week_start = weekFirstDay)
 
 if(weekFunction(floor_date(today(),unit = "year"))==1) {
   dateStart_YR <- floor_date(floor_date(today(),unit = "year"),unit="week",week_start = weekFirstDay)
@@ -124,6 +126,9 @@ dateEnd <- floor_date(today()-weeks(1),unit="week", week_start = weekFirstDay)
 # Creation of a vector including the Weeks of interest
 
 weekStart_W12 <- weekFunction(dateStart_W12)
+weekStart_W8 <- weekFunction(dateStart_W8)
+weekStart_W3 <- weekFunction(dateStart_W3)
+
 weekEnd <- weekFunction(today()-weeks(1))
 
 nbWeeksYear <- ifelse(weekFunction(floor_date(today(),unit = "year"))==1,weekFunction(floor_date(today(),unit = "year")-weeks(1)),weekFunction(floor_date(today(),unit = "year"))) # to know if 52 or 53 weeks in the previous year.
@@ -136,14 +141,32 @@ if(weekEnd>weekStart_W12){
   numSem_W12 <- c(seq(from=weekStart_W12, to=nbWeeksYear, by=1), seq(from=1, to=weekEnd, by=1))
 }
 
+numSem_W8 <- NA # vector with the 12 previous weeks
+
+if(weekEnd>weekStart_W8){
+  numSem_W8 <- seq(from=weekStart_W8, to=weekEnd, by=1)
+} else {
+  numSem_W8 <- c(seq(from=weekStart_W8, to=nbWeeksYear, by=1), seq(from=1, to=weekEnd, by=1))
+}
+
+numSem_W3 <- NA # vector with the 12 previous weeks
+
+if(weekEnd>weekStart_W3){
+  numSem_W3 <- seq(from=weekStart_W3, to=weekEnd, by=1)
+} else {
+  numSem_W3 <- c(seq(from=weekStart_W3, to=nbWeeksYear, by=1), seq(from=1, to=weekEnd, by=1))
+}
+
 numSem_YR <- seq(from=1, to=weekEnd, by=1) # vector with the weeks since first week 1
 
 ########################################## 
 #### Retrieve raw data of interest from the MySQL database
 ########################################## 
 
-baseSql <- dbConnect(MySQL(), user = config_list$DB_USER, password = config_list$DB_PASSWORD,
-                     host = config_list$DB_HOST, dbname = config_list$DB_NAME)
+baseSql <- dbConnect(MySQL(), user = config_list$DB_USER,
+                     password = config_list$DB_PASSWORD,
+                     host = config_list$DB_HOST,
+                     dbname = config_list$DB_NAME)
 
 sites_id <- dbGetQuery(baseSql, "SELECT * FROM sesdashboard_sites")
 
@@ -191,6 +214,10 @@ fullreport$createdDate <- ymd_hms(fullreport$createdDate)
 #### Creation of tables of interest for the dashboards
 ########################################## 
 
+###############
+## Preparatory tables
+###############
+
 # Stucture of the system
 
 levPeriph <- max(sites_relationships$level)
@@ -212,6 +239,11 @@ parentSites <- merge(parentSites,sites_id[,c("id","reference","weeklyTimelinessM
 colnames(parentSites)[which(colnames(parentSites)=="FK_SiteId")] <- "Id_Site"
 
 
+###############
+# Dataframes with sites active for specific periods
+###############
+
+
 # Dataframe with the sites active for the whole period of interest
 
 ## FK_DimDateFromID: the site is expected to start reporting the week after for the reports of the week including FK_DimDateFromID
@@ -227,9 +259,20 @@ temp <- which(sites_relationships$FK_DimDateFromId <= dateStart_W12 +6 & (is.na(
 
 sites_wholePeriod_W12 <- sites_relationships[temp, c("FK_SiteId","id","level","FK_ParentId","FK_DimDateFromId","FK_DimDateToId")]
 
+temp <- NA # to compute the list of sites active for the 8 previous weeks
+temp <- which(sites_relationships$FK_DimDateFromId <= dateStart_W8 + 6 & (is.na(sites_relationships$FK_DimDateToId) | sites_relationships$FK_DimDateToId -1 >= dateEnd +7))
+
+sites_wholePeriod_W8 <- sites_relationships[temp, c("FK_SiteId","id","level","FK_ParentId","FK_DimDateFromId","FK_DimDateToId")]
+
+temp <- NA # to compute the list of sites active for the 3 previous weeks
+temp <- which(sites_relationships$FK_DimDateFromId <= dateStart_W3 +6 & (is.na(sites_relationships$FK_DimDateToId) | sites_relationships$FK_DimDateToId -1 >= dateEnd +7))
+
+sites_wholePeriod_W3 <- sites_relationships[temp, c("FK_SiteId","id","level","FK_ParentId","FK_DimDateFromId","FK_DimDateToId")]
+
 
 # Dataframe with the sites active only for specific weeks in the period of interest
 
+## Since week 1
 temp <- NA # to compute the sites active only for specific weeks since week 1
 temp <- which((sites_relationships$FK_DimDateFromId > dateStart_YR +6 & sites_relationships$FK_DimDateFromId <= dateEnd +7) | (sites_relationships$FK_DimDateToId -1 < dateEnd +7 & sites_relationships$FK_DimDateToId -1 >= dateStart_YR +7))
 
@@ -242,6 +285,7 @@ sites_specificPeriod_YR$weekEnd <- ifelse((sites_specificPeriod_YR$FK_DimDateToI
 sites_specificPeriod_YR$duration <- NA # nb of weeks for which site active
 sites_specificPeriod_YR$duration <- sites_specificPeriod_YR$weekEnd - sites_specificPeriod_YR$weekStart +1
 
+## 12 previous weeks
 temp <- NA # to compute the list of sites active for the 12 previous weeks
 temp <- which((sites_relationships$FK_DimDateFromId > dateStart_W12 +6 & sites_relationships$FK_DimDateFromId <= dateEnd +7) | (sites_relationships$FK_DimDateToId -1 < dateEnd +7 & sites_relationships$FK_DimDateToId -1 >= dateStart_W12 +7))
 
@@ -254,16 +298,16 @@ sites_specificPeriod_W12$weekEnd <- ifelse((sites_specificPeriod_W12$FK_DimDateT
 sites_specificPeriod_W12$duration <- NA # nb of weeks for which site active
 sites_specificPeriod_W12$duration <- ifelse(sites_specificPeriod_W12$weekEnd >= sites_specificPeriod_W12$weekStart, sites_specificPeriod_W12$weekEnd - sites_specificPeriod_W12$weekStart +1, nbWeeksYear - sites_specificPeriod_W12$weekStart +1 + sites_specificPeriod_W12$weekEnd)
 
+#############
+## reportingValues_YR: table with variables of interest since the beginning of the year (week 1) for each site from the first intermediate level:
+#############
 
-# Tables with completeness and timeliness of data reporting, completeness and timeliness of data review for each parent site and number of reports sent by leafsites validated 
-
-## For the previous year
 reportingValues_YR <- parentSites # Since week 1
 
 reportingValues_YR$nbExpected <- NA # Nb of expected reports
 reportingValues_YR$nbReceived <- NA # Nb of reports received
 reportingValues_YR$ids_fullreport_recVal <- # ids of full reports received and validated
-reportingValues_YR$nbReceivedValidated <- NA # Nb of reports received and validated (taken into account in the analyses)
+  reportingValues_YR$nbReceivedValidated <- NA # Nb of reports received and validated (taken into account in the analyses)
 
 Id_Site <- NA
 
@@ -291,7 +335,7 @@ for (Id_Site in reportingValues_YR$Id_Site[which(reportingValues_YR$level==levFi
   
   if(length(list_Id_SpecificSite)==0) {
     receivedReports_specific_YR <- 0
-  
+    
   }else{
     
     Id_SpecificSite <- NA
@@ -375,7 +419,9 @@ for (levInterest in seq(levFirstInter-1, 1, by=-1)) { # completion of the upper 
 }
 
 
-## for the 12 previous weeks
+#############
+## reportingValues_W12: table with variables of interest for each of the 12 previous weeks for each site from the first intermediate level:
+#############
 
 reportingValues_W12<- parentSites # For each week of the 12th previous week
 reportingValues_W12$week <- NA
@@ -423,7 +469,7 @@ for (Id_Site in parentSites$Id_Site[which(parentSites$level==levFirstInter)]) {
     list_Id_SpecificSite_week <- NULL # id list of specific sites for the week of interest
     
     if(length(list_Id_SpecificSite)==0) {
-
+      
     }else{
       
       Id_SpecificSite <- NA
@@ -454,7 +500,7 @@ for (Id_Site in parentSites$Id_Site[which(parentSites$level==levFirstInter)]) {
     expectedReports_specific_W12 <- NULL # expected number of reports from sites reporting only during a specific period
     
     expectedReports_specific_W12 <- length(list_Id_SpecificSite_week)
-
+    
     reportingValues_W12$nbExpected[which(reportingValues_W12$Id_Site==Id_Site & reportingValues_W12$week==numSem)] <- sum(length(expectedSites_whole_W12),expectedReports_specific_W12)
     
     
@@ -467,15 +513,15 @@ for (Id_Site in parentSites$Id_Site[which(parentSites$level==levFirstInter)]) {
     
     if(length(list_Id_SpecificSite_week)==0) {
       receivedReports_specific_W12 <- NULL
-    
-      }else{
-    
+      
+    }else{
+      
       receivedReports_specific_W12 <- length(fullreport$id[which(fullreport$FK_SiteRelationShipId %in% list_Id_SpecificSite_week & fullreport$weekNumber == numSem)])
     }
     
     reportingValues_W12$nbReceived[which(reportingValues_W12$Id_Site==Id_Site & reportingValues_W12$week==numSem)] <- sum(receivedReports_whole_W12,receivedReports_specific_W12)
     
-
+    
     # Nb of reports received and validated (taken into account in the analyses)
     
     recValReports_fullId_whole_W12 <- NULL # fullreport ID of reports received and validated at least once from sites active the whole period
@@ -569,7 +615,7 @@ for (Id_Site in parentSites$Id_Site[which(parentSites$level==levFirstInter)]) {
     # Timeliness of data review for the period
     
     reportingValues_W12$timeReview[which(reportingValues_W12$Id_Site==Id_Site & reportingValues_W12$week==numSem)] <- reportingValues_W12$nbRevTime[which(reportingValues_W12$Id_Site==Id_Site & reportingValues_W12$week==numSem)] / reportingValues_W12$nbRecTime[which(reportingValues_W12$Id_Site==Id_Site & reportingValues_W12$week==numSem)]
-
+    
   }  
   
 }
@@ -642,7 +688,7 @@ for (levInterest in seq(levFirstInter-1, 1, by=-1)) { # completion of the upper 
       
       
       #nbReceivedBelow : number of reports received from below sites
-
+      
       receivedBelow_whole_W12 <- NULL # number of reports received from sites active the whole period
       receivedBelow_whole_W12 <- length(fullreport$id[which(fullreport$FK_SiteRelationShipId %in% expectedSites_whole_W12 & fullreport$weekNumber==numSem)])
       
@@ -739,16 +785,16 @@ for (levInterest in seq(levFirstInter-1, 1, by=-1)) { # completion of the upper 
       # Timeliness of data review for the period
       
       reportingValues_W12$timeReview[which(reportingValues_W12$Id_Site==Id_Site & reportingValues_W12$week==numSem)] <- reportingValues_W12$nbRevTime[which(reportingValues_W12$Id_Site==Id_Site & reportingValues_W12$week==numSem)] / reportingValues_W12$nbRecTimeBelow[which(reportingValues_W12$Id_Site==Id_Site & reportingValues_W12$week==numSem)] 
-        
+      
     } 
   }
 }
 
-# Overall table for the 12th previous weeks
-
+#############
+## reportingValues_W12_overall : same variables as reportingValues_W12 with aggregated data for the whole period for each site.
+#############
 
 reportingValues_W12_overall<- colSums(reportingValues_W12[,6:14]) # For each week of the 12th previous week
-
 
 reportingValues_W12_overall <- parentSites
 reportingValues_W12_overall$nbExpected <- NA # Nb of expected reports
@@ -776,6 +822,7 @@ reportingValues_W12_overall$compReport <- reportingValues_W12_overall$nbReceived
 reportingValues_W12_overall$timeReport <- reportingValues_W12_overall$nbRecTime/reportingValues_W12_overall$nbExpected
 reportingValues_W12_overall$compReview <- reportingValues_W12_overall$nbReviewed/reportingValues_W12_overall$nbReceivedBelow
 reportingValues_W12_overall$timeReview <- reportingValues_W12_overall$nbRevTime/reportingValues_W12_overall$nbRecTimeBelow
+
 
 #############
 ## 
@@ -871,17 +918,31 @@ for (IdParentSite in tempFirstIntermediate$Id_parentSite) {
 
 noReport_W3 <- noReport_W3[-nrow(noReport_W3),]
 
-# Table with list of leaf sites with reports not received (including sum of previous consecutive reports missing, path, contact)
+#### Make the list of diseases that have crossed thresholds in the 12th previous weeks and the previous week
 
-#### Make the list of diseases that will appear in the graphs and in the maps
 
-#### Graphs for diseases with suspect trends for the level before national level
 
-#### Map with the number of cases for diseases with suspect trends
 
-#### List of alerts received in the 10 previous days
+#### Table with for each disease crossing threshold in the 12th previous week, the number of cases and death per week for the whole country
 
-#### Cumulative table since beginning of year
+
+
+#### Table with one row for each site/disease crossing threshold in the previous week, the number of cases and death and longitude and latitude of the unit, path of the site and contact
+
+
+
+
+#### List of alerts received in the 10 previous days, name of the site, path and contact
+
+
+
+
+#### Cumulative table with the number of cases since beginning of year and the same period the year before for the whole country, one row per disease (all diseases), one column per year, first row: % and nb of reports received and validated out of the number of expected reports for the period.
+
+
+
+
+
 
 ### Elements to pass to the report
 admin_report_input <- list(
