@@ -912,13 +912,9 @@ noReport_W3 <- noReport_W3[-nrow(noReport_W3),]
 
 
 
-<<<<<<< Updated upstream
-=======
 ### Elements to pass to the report
 admin_report_input <- list(
   noReport_W3 = noReport_W3,
   noReport_W8 = noReport_W8,
   reportingValues_W12 = reportingValues_W12,
   reportingValues_W12_overall = reportingValues_W12_overall)
->>>>>>> Stashed changes
-
