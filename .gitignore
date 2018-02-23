@@ -1,3 +1,7 @@
 *~
 db
 *.html
+packrat/lib*/
+.Rproj.user
+*.gz
+packrat/src/
