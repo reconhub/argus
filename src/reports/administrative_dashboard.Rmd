@@ -5,6 +5,7 @@ output:
     orientation: rows
     vertical_layout: scroll
     smooth_scroll: true
+    css: style.css
 ---
 
 ```{r setup, include=FALSE}
@@ -17,45 +18,21 @@ library(DT)
 library(shiny.semantic)
 library(shiny)
 library(htmltools)
+library(crosstalk)
 ```
 
 ```{r layout, include=FALSE}
+max_intermediate_levels <- 50
+
 plot_colors <- c('#5A0A69', '#62B200')
 
 bar_plot_margins <- list(
-  l = 50,
+  l = 70,
   r = 50,
-  b = 100,
+  b = 70,
   t = 10,
   pad = 4
 )
-```
-
-
-<style>                     
-.navbar {
-  background-color:#5A0A69;
-  border-color:black;
-}
-</style>  
-
-Row {data-height=100}
--------------------------------------
-
-```{r}
-uicard <- function(header, meta, description) {
-  div(class = "ui fluid cards",
-  div(class = "red card",
-    div(class = "content",
-        div(class = "header", header),
-        div(class = "meta", meta),
-        div(class = "description", description))))
-}
-
-uirender(uicard("KPI 1", "XYZ", "Description"))
-uirender(uicard("KPI 2", "XYZ", "Description"))
-uirender(uicard("KPI 3", "XYZ", "Description"))
-uirender(uicard("KPI 4", "XYZ", "Description"))
 ```
 
 ```{r}
@@ -63,11 +40,6 @@ load("../assets/admin_report_input.RData")
 source("../plots/ploting.R")
 source("../munging/munging.R")
 ```
-
-Row
--------------------------------------
-
-### Central level reporting completeness and timeliness 
 
 ```{r}
 last_12_weeks_report_status <- admin_report_input$reportingValues_W12 %>%
@@ -77,13 +49,38 @@ last_12_weeks_level_2 <- last_12_weeks_report_status %>%
   dplyr::filter(level == 1) %>%
   mutate(
     year = ifelse(week < 8, 2018, 2017), # This is temporary - year column needs to be in the raw data
-    year_week = paste(year, week)) %>%
-  select(Id_Site, year_week, week, compReport, timeReport, reference)
+    year_week = paste0(year, " - W", week))
+
+min_year <- min(last_12_weeks_level_2$year)
+max_year <- max(last_12_weeks_level_2$year)
+
+ min_week <- last_12_weeks_level_2 %>%
+  filter(year == min_year) %>%
+  pull(week) %>% min()
+ 
+max_week <- last_12_weeks_level_2 %>%
+  filter(year == max_year) %>%
+  pull(week) %>% max()
 
 last_12_weeks_level_1_long <- last_12_weeks_level_2 %>%
+  select(Id_Site, year_week, week, compReport, timeReport, reference) %>% 
   gather(key = label, value = number, -Id_Site, -year_week, -week, -reference) %>%
   mutate(label = recode_report(label))
+```
 
+<style>                     
+.navbar {
+  background-color:#5A0A69;
+  border-color:black;
+}
+</style>
+
+Row
+-------------------------------------
+
+### Completeness and timeliness of weekly reporting for the whole country
+
+```{r}
 last_12_weeks_level_1_long %>%
     plot_reporting_central_level(plot_colors)
 ```
@@ -91,7 +88,7 @@ last_12_weeks_level_1_long %>%
 
 Row
 -------------------------------------
-### Overall reporting completeness/timeliness from last 12 weeks
+### Overall completeness and timeliness of weekly reporting from week `r paste0(min_week, " (", min_year, ")")` to `r paste0(max_week, " (", max_year, ")")`
 
 ```{r}
 overall_12_weeks_report_status <- admin_report_input$reportingValues_W12_overall %>%
@@ -99,12 +96,17 @@ overall_12_weeks_report_status <- admin_report_input$reportingValues_W12_overall
 
 first_intermediate_level <- overall_12_weeks_report_status$level %>% max()
 
+count_levels <- overall_12_weeks_report_status %>%  group_by(level) %>% count()
+count_first_intermediate_level <- count_levels %>% filter(level == first_intermediate_level) %>% pull(n)
+
+selected_level <- ifelse(count_first_intermediate_level < max_intermediate_levels, first_intermediate_level, first_intermediate_level + 1)
+
 parent_sites <- overall_12_weeks_report_status %>%
-  dplyr::filter(level == first_intermediate_level) %>%
+  dplyr::filter(level == selected_level) %>%
   select(compReport, timeReport, Id_Site, reference, FK_ParentId) %>% 
   gather(key = label, value = number, -Id_Site, -reference, -FK_ParentId) %>%
   mutate(label = recode_report(label),
-         parent_label = factor(paste(FK_ParentId, label, sep = "_"))) %>%
+         parent_label = factor(paste(FK_ParentId, reference, sep = "_"))) %>%
   arrange(parent_label)
 
 order_sites <- unique(parent_sites$parent_label)
@@ -113,69 +115,88 @@ parent_sites %>%
   plot_1st_itermediate_level(plot_colors = plot_colors,
                              margins = bar_plot_margins,
                              order_x = order_sites,
-                             x_title = 'Sites at the first intermediate level',
-                             y_title = 'Reporting <br> completeness/timeliness[%]')
+                             x_title = '',
+                             y_title = '%')
 ```
 
-### Overall review completeness/timeliness from last 12 weeks
+Row
+-------------------------------------
+
+### Overall completeness and timeliness of data review at each level from week `r paste0(min_week, " (", min_year, ")")` to `r paste0(max_week, " (", max_year, ")")`
 
 ```{r}
-reviewing_sites <- overall_12_weeks_report_status %>%
-  filter(level <= first_intermediate_level)
+reviewing_sites <- overall_12_weeks_report_status
 
 reviewing_sites_long <- reviewing_sites %>%
-  select(compReview, timeReview, level, reference) %>% 
-  gather(key = label, value = number, -reference, -level) %>%
+  select(compReview, timeReview, FK_ParentId, reference, level) %>% 
+  gather(key = label, value = number, -reference, -FK_ParentId, -level) %>%
   mutate(label = recode_review(label)) %>%
   arrange(level)
 
 order_sites_review <- unique(reviewing_sites_long$reference)
 
-reviewing_sites_long %>% 
+plots_above_first_intermediate_level <- reviewing_sites_long %>%
+  filter(level < first_intermediate_level) %>%
   plot_1st_itermediate_level(plot_colors = plot_colors,
                              margins = bar_plot_margins,
                              order_x = order_sites_review,
-                             x_title = 'Sites from central level to the first intermediate level',
-                             y_title = 'Reviewing <br> completeness/timeliness[%]')
+                             x_title = '',
+                             y_title = '%',
+                             is_show_legend = FALSE)
+
+reviewing_sites_long_1st_intermediate_level <-  reviewing_sites_long %>%
+  filter(level == first_intermediate_level)
+
+reviewing_sites_long_1st_intermediate_level %>% 
+  split(reviewing_sites_long_1st_intermediate_level$FK_ParentId) %>%
+  map(function(df){
+    plot_1st_itermediate_level(data = df, plot_colors = plot_colors,
+                             margins = bar_plot_margins,
+                             order_x = order_sites_review,
+                             x_title = '',
+                             y_title = '%',
+                             is_show_legend = FALSE) }) -> plots_first_intermediate_level
+
+plots_first_intermediate_level[[1]]$x$attrs[[1]]$showlegend <- TRUE
+nrow_charts <- ceiling(max(length(plots_first_intermediate_level)/2, 1))
+
+subplots_plots_first_intermediate_level <- plots_first_intermediate_level %>%
+  subplot(nrows = nrow_charts, titleX = TRUE, titleY = TRUE, margin = 0.15)
+
+subplot(plots_above_first_intermediate_level, subplots_plots_first_intermediate_level,
+        nrows = nrow_charts + 1)
 ```
 
 
 Row
 -------------------------------------
 
-### List of sites with values above thresholds for the previous week
+### Silent sites: reporting sites with no reports received for 8 weeks and longer
 
 ```{r}
-thresholds <- data.frame(
-  path = paste("Path", 1:10),
-  variable = paste("Variables", 1:10),
-  value = round(runif(10, min = 10, max =20), 2),
-  threshold = 10,
-  stringsAsFactors = FALSE
-)
+sites_no_report_3weeks <- admin_report_input$noReport_W3 %>%
+  select(`Area` = name_parentSite,
+         `Site name` = siteName,
+         Contact = contact,
+         Phone = phone)
 
-datatable(thresholds, extensions = 'Buttons',
-          options = list(dom = 'Bt', buttons = c('copy', 'csv', 'excel', 'pdf', 'print')))
+sites_no_report_8weeks <- admin_report_input$noReport_W8 %>%
+  select(`Area` = name_parentSite,
+         `Site name` = siteName,
+         Contact = contact,
+         Phone = phone)
+  
+datatable(data = sites_no_report_8weeks, extensions = 'Buttons',
+          options = list(
+            dom = 'tpB', buttons = c('copy', 'csv', 'excel', 'pdf', 'print')))
+
 ```
 
-### List of alerts receives since 10 days
+### Silent sites: reporting sites with no reports received for 3 weeks and longer
 
 ```{r}
-alerts <- data.frame(
-  header = paste("Alert", 1:10),
-  description = paste("Description", 1:10),
-  stringsAsFactors = FALSE
-)
+datatable(data = sites_no_report_3weeks, extensions = 'Buttons',
+          options = list(
+            dom = 'tpB', buttons = c('copy', 'csv', 'excel', 'pdf', 'print')))
 
-shiny.semantic::uilist(alerts, icon = "alarm", is_divided = TRUE,
-                       is_description = TRUE)
-```
-
-Row
--------------------------------------
-
-###  +/- 1 table with cumulative numbers since the beginning of the year for the country
-
-```{r}
-datatable(iris, options = list(dom = 't'))
 ```

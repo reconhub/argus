@@ -4,3 +4,4 @@ db
 packrat/lib*/
 .Rproj.user
 *.gz
+.Rhistory

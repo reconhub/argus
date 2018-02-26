@@ -10,12 +10,13 @@ plot_reporting_central_level <- function(last_12_weeks_level_1_long, plot_colors
           text = ~paste0(label, ": ", number), hoverinfo = "text",
           showlegend = TRUE) %>%
     layout(
-      xaxis = list(title = ~paste("<b>", reference,  '</b> Year Week', min(year_week), "-", max(year_week))),
-      yaxis = list(title = 'Reporting <br> completeness/timeliness[%]', range =~c(0, 100)))
+      legend = list(orientation = 'h', y = 1.1, x = 0.5, font = list(size = 14)),
+      xaxis = list(title = "Epidemiological week number"),
+      yaxis = list(title = '%', range =~c(0, 100)))
 }
 
 plot_1st_itermediate_level <- function(data, plot_colors, margins, order_x,
-                                                 x_title, y_title) {
+                                                 x_title, y_title, is_show_legend = TRUE) {
   plot_ly(data,
           x = ~reference,
           y = ~number,
@@ -25,8 +26,9 @@ plot_1st_itermediate_level <- function(data, plot_colors, margins, order_x,
           split = ~label,
           text = ~paste0(label, ": ", number),
           hoverinfo = "text",
-          showlegend = TRUE) %>%
+          showlegend = is_show_legend) %>%
     layout(
+      legend = list(orientation = 'h', y = 1.1, x = 0.5, font = list(size = 14)),
       margin =  bar_plot_margins,
       barmode = 'group',
       xaxis = list(
