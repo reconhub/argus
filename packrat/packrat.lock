@@ -159,6 +159,12 @@ Source: CRAN
 Version: 1.10.4
 Hash: 2c7c47ccb40d01c7b214c8eff818108d
 
+Package: debugme
+Source: CRAN
+Version: 1.1.0
+Hash: c233690edd9fa17a63f7c8d83c1ca153
+Requires: crayon
+
 Package: devtools
 Source: CRAN
 Version: 1.13.5
@@ -373,6 +379,12 @@ Version: 1.8.4
 Hash: 02588dd72bf343b964fa2fe450e0cf96
 Requires: Rcpp
 
+Package: processx
+Source: CRAN
+Version: 2.0.0.1
+Hash: cfb7e4911fb7451f16f812580571652f
+Requires: R6, assertthat, crayon, debugme
+
 Package: purrr
 Source: CRAN
 Version: 0.2.4
@@ -475,6 +487,12 @@ Package: viridisLite
 Source: CRAN
 Version: 0.2.0
 Hash: 10f0c25af3dc84eaae10f5854f47efdb
+
+Package: webshot
+Source: CRAN
+Version: 0.5.0
+Hash: 5f3174d4a88c04e8f1a1fb1a7805fd4b
+Requires: jsonlite, magrittr, processx, withr
 
 Package: whisker
 Source: CRAN
