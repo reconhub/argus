@@ -22,10 +22,6 @@ GithubRepo: DT
 GithubUsername: rstudio
 GithubRef: master
 GithubSha1: a314d79c012e53adda2bf9119b34c4dc4da2379f
-RemoteHost: https://api.github.com
-RemoteRepo: DT
-RemoteUsername: rstudio
-RemoteSha: a314d79c012e53adda2bf9119b34c4dc4da2379f
 
 Package: Formula
 Source: CRAN
@@ -163,6 +159,13 @@ Source: CRAN
 Version: 1.10.4
 Hash: 2c7c47ccb40d01c7b214c8eff818108d
 
+Package: devtools
+Source: CRAN
+Version: 1.13.5
+Hash: 80061b2ad6853fd3665bf883123a1b1a
+Requires: digest, git2r, httr, jsonlite, memoise, rstudioapi, whisker,
+    withr
+
 Package: dichromat
 Source: CRAN
 Version: 2.0-0
@@ -197,6 +200,11 @@ Source: CRAN
 Version: 2.2.1
 Hash: 46e5cb78836848aa44655e577433f54b
 Requires: digest, gtable, lazyeval, plyr, reshape2, scales, tibble
+
+Package: git2r
+Source: CRAN
+Version: 0.21.0
+Hash: 64747922e287be74e8e8b46c107fd3ef
 
 Package: glue
 Source: CRAN
@@ -256,8 +264,8 @@ Requires: Rcpp
 
 Package: httr
 Source: CRAN
-Version: 1.2.1
-Hash: 7de1f8f760441881804af7c1ff324340
+Version: 1.3.1
+Hash: 2d32e01e53d532c812052e27a1021441
 Requires: R6, curl, jsonlite, mime, openssl
 
 Package: jsonlite
@@ -334,10 +342,6 @@ GithubRepo: packrat
 GithubUsername: rstudio
 GithubRef: master
 GithubSha1: 474fea70a977454ae4e9186468f4f1c5676603e0
-RemoteHost: https://api.github.com
-RemoteRepo: packrat
-RemoteUsername: rstudio
-RemoteSha: 474fea70a977454ae4e9186468f4f1c5676603e0
 
 Package: pillar
 Source: CRAN
@@ -427,10 +431,6 @@ GithubRepo: shiny.semantic
 GithubUsername: Appsilon
 GithubRef: ui_list
 GithubSha1: b19abdf64f14ee0a26b1f3a53698faab7346de75
-RemoteHost: https://api.github.com
-RemoteRepo: shiny.semantic
-RemoteUsername: Appsilon
-RemoteSha: b19abdf64f14ee0a26b1f3a53698faab7346de75
 
 Package: sourcetools
 Source: CRAN
@@ -475,6 +475,16 @@ Package: viridisLite
 Source: CRAN
 Version: 0.2.0
 Hash: 10f0c25af3dc84eaae10f5854f47efdb
+
+Package: whisker
+Source: CRAN
+Version: 0.3-2
+Hash: 803d662762e532705c2c066a82d066e7
+
+Package: withr
+Source: CRAN
+Version: 2.1.1
+Hash: a86856ae0b4a7c3daf9a3ef0097a403b
 
 Package: xtable
 Source: CRAN
