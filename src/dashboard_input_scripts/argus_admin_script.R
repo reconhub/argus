@@ -12,12 +12,15 @@
 # Set the variables of interest
 # Set the periods of interest
 # Retrieve raw data of interest from SQL database
-#
-#
-#
+# Modification of the format of some variables
+# Creation of tables of interest for the dashboards
+# Preparatory tables
+# Dataframes with sites active for specific periods
+# development of each table presented in the results below
 
 #### Results
 # Data tables with all data needed to create the Argus dashboards
+#
 # reportingValues_YR: table with overall indicators of interest since the beginning of the year (week 1) for each level from the first intermediate level:
 # .	Id_Site: the id of the site in the sites_id table.
 # .	level: the level of the site (1: central level ; max: leafsite)
@@ -51,6 +54,58 @@
 #
 #reportingValues_W12_overall: same table as reportingValues_W12 with aggregated data for the whole period for each site.
 #
+#noReport_W3: table with list of leaf sites without any report received for >= 3 weeks grouped by first intermediate level:
+# .	noReport_W8$Id_parentSite: site id of the parent site (first intermediate level)
+# .	noReport_W8$name_parentSite: name of the parent site
+# .	noReport_W8$siteName:  name of the site with no reporting
+# .	noReport_W8$contact: name of the contact at the site with no reporting
+# .	noReport_W8$phone: phone of the contact at the site with no reporting
+# 
+# noReport_W8: table with list of leaf sites without any report received for >= 8 weeks grouped by first intermediate level:
+# .	noReport_W8$Id_parentSite: site id of the parent site (first intermediate level)
+# .	noReport_W8$name_parentSite: name of the parent site
+# .	noReport_W8$siteName: name of the site with no reporting
+# .	noReport_W8$contact: name of the contact at the site with no reporting
+# .	noReport_W8$phone: phone of the contact at the site with no reporting
+#
+# diseaseThreshold_W12: table with the number of cases of each disease for which the threshold has been reached in any of the 12 previous weeks for the whole country:
+# .	disease: reference of the disease
+# .	diseaseName: name of the disease
+# .	threshold_value: value of the threshold for the disease
+# .	variable: variable of interest
+# .	week: week
+# .	occurrence: number of cases of the disease for the specific week for the whole country
+# 
+# diseaseThreshold_W2: table with one row for each disease having crossed threshold for the whole country during the 12 previous weeks, and for sites having reported cases in the two previous week, the number of cases for the two previous weeks and longitude and latitude of the site, and contact
+# .	FK_SiteId: id number of the site
+# .	FK_ParentId: id number of the parent site
+# .	name: reference of the site
+# .	longitude: longitude of the site
+# .	latitude: latitude of the site
+# .	name_parentSite: name of the parent site
+# .	siteName: name of the site
+# .	contact: name of the contact
+# .	phone: phone number of the contact
+# .	disease: disease
+# .	variable: variable of interst
+# .	threshold_value: threshold value of the disease
+# .	occurence: number of cases for the disease at the site.
+# 
+# alertList_D10: list of alerts received in the 10 previous days
+# .	receptionDate: reception date of the alert
+# .	contactName: name of the contact
+# .	contactPhoneNumber: phone number of the contact
+# .	FK_SiteRelationShipId: ids of the site in the table site_relationship
+# .	message: content of the alert
+# .	name_parentSite: name of the parent site
+# .	name_Site: name of the site.
+# 
+# tableBeginYear: cumulative numbers for each disease since the beginning of the year and the previous year for the same period.
+# .	id: disease id
+# .	disease: disease reference
+# .	name: disease name
+# .	XX.YEAR : nb of cases  for each variable XX of interest in the previous year and then in the current year (nb of columns= nb of unique variables of interest x 2).
+
 #
 #######################################
 
@@ -78,14 +133,12 @@ get_config <- function(config) {
 
 config_list <- get_config(db_config)
 
-# first day of the week
-
 weekFirstDay <- 1 # either 1 for Monday or 7 for Sunday
 
 # name of the variables used for the number of cases and the number of deaths
-nbCase_label <- 
-  
-nbDeath_label <- 
+# nbCase_label <- 
+#   
+# nbDeath_label <- 
 
 ##########################################   
 #### Set the periods of interest
@@ -117,11 +170,24 @@ if(weekFunction(floor_date(today(),unit = "year"))==1) {
   dateStart_YR <- floor_date(floor_date(today(),unit = "year")+7,unit="week",week_start = weekFirstDay)
 } 
 
+if(weekFunction(floor_date(today()-years(1),unit = "year"))==1) {
+  dateStart_YR_previous <- floor_date(floor_date(today()-years(1),unit = "year"),unit="week",week_start = weekFirstDay)
+} else {
+  dateStart_YR_previous <- floor_date(floor_date(today()-years(1),unit = "year")+7,unit="week",week_start = weekFirstDay)
+} 
+
 dateStart <- min(dateStart_W12,dateStart_YR)
 
 # End date of interest for the weekly reports: first day of the last week to be reported
 
 dateEnd <- floor_date(today()-weeks(1),unit="week", week_start = weekFirstDay)
+
+dateEnd_YR_previous <- floor_date(today()-weeks(1) - years(1),unit="week", week_start = weekFirstDay)
+
+# Years of interest
+
+yearCurrent <- year(today())
+yearPrevious <- yearCurrent -1
 
 # Creation of a vector including the Weeks of interest
 
@@ -130,6 +196,17 @@ weekStart_W8 <- weekFunction(dateStart_W8)
 weekStart_W3 <- weekFunction(dateStart_W3)
 
 weekEnd <- weekFunction(today()-weeks(1))
+
+weekEnd_YR_previous <- weekFunction(today()-weeks(1) - years(1))
+
+if(weekEnd>weekEnd_YR_previous) {
+  dateEnd_YR_previous <- floor_date(today() - years(1),unit="week", week_start = weekFirstDay)
+} else {
+  if(weekEnd < weekEnd_YR_previous) {
+    dateEnd_YR_previous <- floor_date(today()-weeks(2) - years(1),unit="week", week_start = weekFirstDay)
+  } else {
+  }
+}
 
 nbWeeksYear <- ifelse(weekFunction(floor_date(today(),unit = "year"))==1,weekFunction(floor_date(today(),unit = "year")-weeks(1)),weekFunction(floor_date(today(),unit = "year"))) # to know if 52 or 53 weeks in the previous year.
 
@@ -141,6 +218,9 @@ if(weekEnd>weekStart_W12){
   numSem_W12 <- c(seq(from=weekStart_W12, to=nbWeeksYear, by=1), seq(from=1, to=weekEnd, by=1))
 }
 
+yearSem_W12 <- NA # vector with the year of the 12 previous weeks
+yearSem_W12 <- ifelse(numSem_W12>numSem_W12[length(numSem_W12)], yearPrevious, yearCurrent)
+
 numSem_W8 <- NA # vector with the 12 previous weeks
 
 if(weekEnd>weekStart_W8){
@@ -149,6 +229,8 @@ if(weekEnd>weekStart_W8){
   numSem_W8 <- c(seq(from=weekStart_W8, to=nbWeeksYear, by=1), seq(from=1, to=weekEnd, by=1))
 }
 
+yearSem_W8 <- ifelse(numSem_W8>numSem_W8[length(numSem_W8)], yearPrevious, yearCurrent)
+
 numSem_W3 <- NA # vector with the 12 previous weeks
 
 if(weekEnd>weekStart_W3){
@@ -156,6 +238,9 @@ if(weekEnd>weekStart_W3){
 } else {
   numSem_W3 <- c(seq(from=weekStart_W3, to=nbWeeksYear, by=1), seq(from=1, to=weekEnd, by=1))
 }
+
+yearSem_W3 <- ifelse(numSem_W3>numSem_W3[length(numSem_W3)], yearPrevious, yearCurrent)
+
 
 numSem_YR <- seq(from=1, to=weekEnd, by=1) # vector with the weeks since first week 1
 
@@ -174,13 +259,21 @@ sites_contact <- dbGetQuery(baseSql, "SELECT * FROM sesdashboard_contacts")
 
 sites_relationships <- dbGetQuery(baseSql, "SELECT * FROM sesdashboard_sites_relationship")
 
-sites_dimdates <- dbGetQuery(baseSql, paste("SELECT * FROM sesdashboard_indicatordimdate WHERE fullDate >=", paste("'",dateStart," 00:00:00'", sep=""),"AND fullDate <=",paste("'",today()," 23:59:59'", sep=""),";", sep=" "))
+sites_dimdates <- dbGetQuery(baseSql, paste("SELECT * FROM sesdashboard_indicatordimdate WHERE fullDate >=", paste("'",dateStart_YR_previous," 00:00:00'", sep=""),"AND fullDate <=",paste("'",today()," 23:59:59'", sep=""),";", sep=" "))
 
 diseases_name <- dbGetQuery(baseSql, "SELECT * FROM sesdashboard_diseases")
 
 diseases_variable <- dbGetQuery(baseSql, "SELECT * FROM sesdashboard_diseasevalues")
 
 diseases_threshold <- dbGetQuery(baseSql, "SELECT * FROM sesdashboard_thresholds")
+
+fullreport_YR_previous <- dbGetQuery(baseSql, paste("SELECT * FROM sesdashboard_fullreport WHERE startDate >=", paste("'",dateStart_YR_previous," 00:00:00'", sep=""),"AND startDate <=",paste("'",today()," 23:59:59'", sep=""),";", sep=" "))
+
+partreport_YR_previous <- dbGetQuery(baseSql, paste("SELECT * FROM sesdashboard_partreport WHERE FK_FullReportId IN (",paste(fullreport_YR_previous$id,collapse =","),");"))
+
+report_YR_previous <- dbGetQuery(baseSql, paste("SELECT * FROM sesdashboard_report WHERE FK_PartReportId IN (",paste(partreport_YR_previous$id,collapse =","),");"))
+
+report_values_YR_previous <- dbGetQuery(baseSql, paste("SELECT * FROM sesdashboard_reportvalues WHERE FK_ReportId IN (",paste(report_YR_previous$id,collapse =","),");"))
 
 fullreport <- dbGetQuery(baseSql, paste("SELECT * FROM sesdashboard_fullreport WHERE startDate >=", paste("'",dateStart," 00:00:00'", sep=""),"AND startDate <=",paste("'",today()," 23:59:59'", sep=""),";", sep=" "))
 
@@ -206,8 +299,14 @@ sites_relationships$FK_DimDateToId <- ymd(sites_relationships$FK_DimDateToId) # 
 
 # fullreport
 
+fullreport_YR_previous$startDate <- ymd_hms(fullreport_YR_previous$startDate)
+fullreport_YR_previous$createdDate <- ymd_hms(fullreport_YR_previous$createdDate)
+
 fullreport$startDate <- ymd_hms(fullreport$startDate)
 fullreport$createdDate <- ymd_hms(fullreport$createdDate)
+
+# alerts
+alerts$receptionDate <- ymd_hms(alerts$receptionDate)
 
 
 ########################################## 
@@ -238,6 +337,23 @@ parentSites <- parentSites[-which(parentSites$level==0),]
 parentSites <- merge(parentSites,sites_id[,c("id","reference","weeklyTimelinessMinutes")], by.x = "FK_SiteId", by.y="id")
 colnames(parentSites)[which(colnames(parentSites)=="FK_SiteId")] <- "Id_Site"
 
+# Thresholds
+
+thresholds <- unique(diseases_threshold[,c("maximalValue","FK_DiseaseId","FK_DiseaseValueId")])
+
+colnames(thresholds)[which(colnames(thresholds)=="maximalValue")] <- "threshold_value"
+
+rowLineId <- NA
+for (rowLineId in 1:nrow(thresholds)) {
+  thresholds$disease[rowLineId] <- diseases_name$disease[which(diseases_name$id==thresholds$FK_DiseaseId[rowLineId])]
+  thresholds$diseaseName[rowLineId] <- diseases_name$name[which(diseases_name$id==thresholds$FK_DiseaseId[rowLineId])]
+  thresholds$variable[rowLineId] <- diseases_variable$value[which(diseases_variable$id==thresholds$FK_DiseaseValueId[rowLineId])]
+}
+
+# longitude and latitude when values are missing
+
+longLat <- unique(sites_relationships[which(!is.na(sites_relationships$longitude) | !is.na(sites_relationships$latitude)),c("name","FK_SiteId","level","longitude","latitude")])
+
 
 ###############
 # Dataframes with sites active for specific periods
@@ -253,6 +369,11 @@ temp <- NA # to compute the list of sites active for the whole period of interes
 temp <- which(sites_relationships$FK_DimDateFromId <= dateStart_YR + 6 & (is.na(sites_relationships$FK_DimDateToId) | sites_relationships$FK_DimDateToId -1 >= dateEnd +7))
 
 sites_wholePeriod_YR <- sites_relationships[temp, c("FK_SiteId","id","level","FK_ParentId","FK_DimDateFromId","FK_DimDateToId")]
+
+temp <- NA # to compute the list of sites active for the whole period of interest since week 1 in the previous year
+temp <- which(sites_relationships$FK_DimDateFromId <= dateStart_YR_previous + 6 & (is.na(sites_relationships$FK_DimDateToId) | sites_relationships$FK_DimDateToId -1 >= dateEnd_YR_previous +7))
+
+sites_wholePeriod_YR_previous <- sites_relationships[temp, c("FK_SiteId","id","level","FK_ParentId","FK_DimDateFromId","FK_DimDateToId")]
 
 temp <- NA # to compute the list of sites active for the 12 previous weeks
 temp <- which(sites_relationships$FK_DimDateFromId <= dateStart_W12 +6 & (is.na(sites_relationships$FK_DimDateToId) | sites_relationships$FK_DimDateToId -1 >= dateEnd +7))
@@ -276,27 +397,53 @@ sites_wholePeriod_W3 <- sites_relationships[temp, c("FK_SiteId","id","level","FK
 temp <- NA # to compute the sites active only for specific weeks since week 1
 temp <- which((sites_relationships$FK_DimDateFromId > dateStart_YR +6 & sites_relationships$FK_DimDateFromId <= dateEnd +7) | (sites_relationships$FK_DimDateToId -1 < dateEnd +7 & sites_relationships$FK_DimDateToId -1 >= dateStart_YR +7))
 
-sites_specificPeriod_YR <- sites_relationships[temp, c("FK_SiteId","id","level","FK_ParentId","FK_DimDateFromId","FK_DimDateToId")]
+if (length(temp)==0) {
+  sites_specificPeriod_YR <- NULL
+} else {
+  sites_specificPeriod_YR <- sites_relationships[temp, c("FK_SiteId","id","level","FK_ParentId","FK_DimDateFromId","FK_DimDateToId")]
+  
+  sites_specificPeriod_YR$weekStart <- ifelse(sites_specificPeriod_YR$FK_DimDateFromId > dateStart_YR +6, weekFunction(sites_specificPeriod_YR$FK_DimDateFromId), 1)
+  
+  sites_specificPeriod_YR$weekEnd <- ifelse((sites_specificPeriod_YR$FK_DimDateToId -1 < dateEnd +7) & !is.na(sites_specificPeriod_YR$FK_DimDateToId), weekFunction(sites_specificPeriod_YR$FK_DimDateToId-8), weekEnd)
+  
+  sites_specificPeriod_YR$duration <- NA # nb of weeks for which site active
+  sites_specificPeriod_YR$duration <- sites_specificPeriod_YR$weekEnd - sites_specificPeriod_YR$weekStart +1
+}
 
-sites_specificPeriod_YR$weekStart <- ifelse(sites_specificPeriod_YR$FK_DimDateFromId > dateStart_YR +6, weekFunction(sites_specificPeriod_YR$FK_DimDateFromId), 1)
+## Since week 1 of the previous year
+temp <- NA # to compute the sites active only for specific weeks since week 1
+temp <- which((sites_relationships$FK_DimDateFromId > dateStart_YR_previous +6 & sites_relationships$FK_DimDateFromId <= dateEnd_YR_previous +7) | (sites_relationships$FK_DimDateToId -1 < dateEnd_YR_previous +7 & sites_relationships$FK_DimDateToId -1 >= dateStart_YR_previous +7))
 
-sites_specificPeriod_YR$weekEnd <- ifelse((sites_specificPeriod_YR$FK_DimDateToId -1 < dateEnd +7) & !is.na(sites_specificPeriod_YR$FK_DimDateToId), weekFunction(sites_specificPeriod_YR$FK_DimDateToId-8), weekEnd)
+if (length(temp)==0) {
+  sites_specificPeriod_YR_previous <- NULL
+} else {
+  sites_specificPeriod_YR_previous <- sites_relationships[temp, c("FK_SiteId","id","level","FK_ParentId","FK_DimDateFromId","FK_DimDateToId")]
+  
+  sites_specificPeriod_YR_previous$weekStart <- ifelse(sites_specificPeriod_YR_previous$FK_DimDateFromId > dateStart_YR_previous +6, weekFunction(sites_specificPeriod_YR_previous$FK_DimDateFromId), 1)
+  
+  sites_specificPeriod_YR_previous$weekEnd <- ifelse((sites_specificPeriod_YR_previous$FK_DimDateToId -1 < dateEnd +7) & !is.na(sites_specificPeriod_YR_previous$FK_DimDateToId), weekFunction(sites_specificPeriod_YR_previous$FK_DimDateToId-8), weekEnd)
+  
+  sites_specificPeriod_YR_previous$duration <- NA # nb of weeks for which site active
+  sites_specificPeriod_YR_previous$duration <- sites_specificPeriod_YR_previous$weekEnd - sites_specificPeriod_YR_previous$weekStart +1
+}
 
-sites_specificPeriod_YR$duration <- NA # nb of weeks for which site active
-sites_specificPeriod_YR$duration <- sites_specificPeriod_YR$weekEnd - sites_specificPeriod_YR$weekStart +1
 
 ## 12 previous weeks
 temp <- NA # to compute the list of sites active for the 12 previous weeks
 temp <- which((sites_relationships$FK_DimDateFromId > dateStart_W12 +6 & sites_relationships$FK_DimDateFromId <= dateEnd +7) | (sites_relationships$FK_DimDateToId -1 < dateEnd +7 & sites_relationships$FK_DimDateToId -1 >= dateStart_W12 +7))
 
-sites_specificPeriod_W12 <- sites_relationships[temp, c("FK_SiteId","id","level","FK_ParentId","FK_DimDateFromId","FK_DimDateToId")]
-
-sites_specificPeriod_W12$weekStart <- ifelse(sites_specificPeriod_W12$FK_DimDateFromId > dateStart_W12 +6, weekFunction(sites_specificPeriod_W12$FK_DimDateFromId), weekStart_W12)
-
-sites_specificPeriod_W12$weekEnd <- ifelse((sites_specificPeriod_W12$FK_DimDateToId -1 < dateEnd +7) & !is.na(sites_specificPeriod_W12$FK_DimDateToId), weekFunction(sites_specificPeriod_W12$FK_DimDateToId-8), weekEnd)
-
-sites_specificPeriod_W12$duration <- NA # nb of weeks for which site active
-sites_specificPeriod_W12$duration <- ifelse(sites_specificPeriod_W12$weekEnd >= sites_specificPeriod_W12$weekStart, sites_specificPeriod_W12$weekEnd - sites_specificPeriod_W12$weekStart +1, nbWeeksYear - sites_specificPeriod_W12$weekStart +1 + sites_specificPeriod_W12$weekEnd)
+if (length(temp)==0) {
+  sites_specificPeriod_W12 <- NULL
+} else {
+  sites_specificPeriod_W12 <- sites_relationships[temp, c("FK_SiteId","id","level","FK_ParentId","FK_DimDateFromId","FK_DimDateToId")]
+  
+  sites_specificPeriod_W12$weekStart <- ifelse(sites_specificPeriod_W12$FK_DimDateFromId > dateStart_W12 +6, weekFunction(sites_specificPeriod_W12$FK_DimDateFromId), weekStart_W12)
+  
+  sites_specificPeriod_W12$weekEnd <- ifelse((sites_specificPeriod_W12$FK_DimDateToId -1 < dateEnd +7) & !is.na(sites_specificPeriod_W12$FK_DimDateToId), weekFunction(sites_specificPeriod_W12$FK_DimDateToId-8), weekEnd)
+  
+  sites_specificPeriod_W12$duration <- NA # nb of weeks for which site active
+  sites_specificPeriod_W12$duration <- ifelse(sites_specificPeriod_W12$weekEnd >= sites_specificPeriod_W12$weekStart, sites_specificPeriod_W12$weekEnd - sites_specificPeriod_W12$weekStart +1, nbWeeksYear - sites_specificPeriod_W12$weekStart +1 + sites_specificPeriod_W12$weekEnd)
+}
 
 #############
 ## reportingValues_YR: table with variables of interest since the beginning of the year (week 1) for each site from the first intermediate level:
@@ -326,7 +473,7 @@ for (Id_Site in reportingValues_YR$Id_Site[which(reportingValues_YR$level==levFi
   # Nb of received reports
   
   receivedReports_whole_YR <- NA # number of reports received from sites active the whole period
-  receivedReports_whole_YR <- length(fullreport$id[which(fullreport$FK_SiteRelationShipId %in% expectedSites_whole_YR & fullreport$weekNumber %in% numSem_YR)])
+  receivedReports_whole_YR <- length(fullreport$id[which(fullreport$FK_SiteRelationShipId %in% expectedSites_whole_YR & fullreport$weekNumber %in% numSem_YR & fullreport$year==yearCurrent)])
   
   receivedReports_specific_YR <- NA #  number of reports from sites reporting only during a specific period, vector with one value per reporting site for a specific period
   
@@ -351,7 +498,7 @@ for (Id_Site in reportingValues_YR$Id_Site[which(reportingValues_YR$level==levFi
         numSemTemp <- c(seq(from=sites_specificPeriod_YR$weekStart[rowLineId], to=nbWeeksYear, by=1), seq(from=1, to=sites_specificPeriod_YR$weekEnd[rowLineId], by=1))
       }
       
-      receivedReports_specific_YR[counter] <- length(fullreport$id[which(fullreport$FK_SiteRelationShipId==Id_SpecificSite & fullreport$weekNumber %in% numSemTemp)])
+      receivedReports_specific_YR[counter] <- length(fullreport$id[which(fullreport$FK_SiteRelationShipId==Id_SpecificSite & fullreport$weekNumber %in% numSemTemp & fullreport$year==yearCurrent)])
       counter <- counter+1
     }
   }
@@ -362,7 +509,7 @@ for (Id_Site in reportingValues_YR$Id_Site[which(reportingValues_YR$level==levFi
   # Nb of reports received and validated (taken into account in the analyses)
   
   recValReports_fullId_whole_YR <- NULL # fullreport ID of reports received and validated at least once from sites active the whole period
-  recValReports_fullId_whole_YR <- fullreport$id[which(fullreport$FK_SiteRelationShipId %in% expectedSites_whole_YR & fullreport$weekNumber %in% numSem_YR & !is.na(fullreport$firstValidationDate))]
+  recValReports_fullId_whole_YR <- fullreport$id[which(fullreport$FK_SiteRelationShipId %in% expectedSites_whole_YR & fullreport$weekNumber %in% numSem_YR & fullreport$year==yearCurrent & !is.na(fullreport$firstValidationDate))]
   
   recValReports_fullId_specific_YR <- NA #  fullreport ID of reports received and validated at least once from sites reporting only during a specific period, vector with one value per reporting site for a specific period
   
@@ -385,7 +532,7 @@ for (Id_Site in reportingValues_YR$Id_Site[which(reportingValues_YR$level==levFi
         numSemTemp <- c(seq(from=sites_specificPeriod_YR$weekStart[rowLineId], to=nbWeeksYear, by=1), seq(from=1, to=sites_specificPeriod_YR$weekEnd[rowLineId], by=1))
       }
       
-      recValReports_fullId_specific_YR[counter] <- paste0(fullreport$id[which(fullreport$FK_SiteRelationShipId==Id_SpecificSite & fullreport$weekNumber %in% numSemTemp & !is.na(fullreport$firstValidationDate))],collapse=",")
+      recValReports_fullId_specific_YR[counter] <- paste0(fullreport$id[which(fullreport$FK_SiteRelationShipId==Id_SpecificSite & fullreport$weekNumber %in% numSemTemp & fullreport$year==yearCurrent & !is.na(fullreport$firstValidationDate))],collapse=",")
       
       counter <- counter+1
     }
@@ -415,6 +562,126 @@ for (levInterest in seq(levFirstInter-1, 1, by=-1)) { # completion of the upper 
     reportingValues_YR$nbReceivedValidated[which(reportingValues_YR$Id_Site==Id_Site)] <-  sum(reportingValues_YR$nbReceivedValidated[which(reportingValues_YR$FK_ParentId==Id_Site)])
     
     reportingValues_YR$ids_fullreport_recVal[which(reportingValues_YR$Id_Site==Id_Site)] <- paste0(reportingValues_YR$ids_fullreport_recVal[which(reportingValues_YR$FK_ParentId==Id_Site)],collapse=",")
+  }
+}
+
+#############
+## reportingValues_YR_previous: table with variables of interest for the same period the previous year for the first intermediate level:
+#############
+
+reportingValues_YR_previous <- parentSites # Since week 1
+
+reportingValues_YR_previous$nbExpected <- NA # Nb of expected reports
+reportingValues_YR_previous$nbReceived <- NA # Nb of reports received
+reportingValues_YR_previous$ids_fullreport_recVal <- # ids of full reports received and validated
+  reportingValues_YR_previous$nbReceivedValidated <- NA # Nb of reports received and validated (taken into account in the analyses)
+
+Id_Site <- NA
+
+for (Id_Site in reportingValues_YR_previous$Id_Site[which(reportingValues_YR_previous$level==levFirstInter)]) {
+  
+  # Nb of expected reports
+  
+  expectedSites_whole_YR_previous <- NA # relationships IDs of reporting sites for the whole period
+  expectedSites_whole_YR_previous <- sites_wholePeriod_YR_previous$id[which(sites_wholePeriod_YR_previous$FK_ParentId==Id_Site)]
+  
+  expectedReports_specific_YR_previous <- NA # expected number of reports from sites reporting only during a specific period (sum of weekly reporting duration for each site)
+  expectedReports_specific_YR_previous <- sum(sites_specificPeriod_YR_previous$duration[which(sites_specificPeriod_YR_previous$FK_ParentId==Id_Site)])
+  
+  reportingValues_YR_previous$nbExpected[which(reportingValues_YR_previous$Id_Site==Id_Site)] <- length(expectedSites_whole_YR_previous)*length(numSem_YR) + expectedReports_specific_YR_previous
+  
+  # Nb of received reports
+  
+  receivedReports_whole_YR_previous <- NA # number of reports received from sites active the whole period
+  receivedReports_whole_YR_previous <- length(fullreport_YR_previous$id[which(fullreport_YR_previous$FK_SiteRelationShipId %in% expectedSites_whole_YR_previous & fullreport_YR_previous$weekNumber %in% numSem_YR & fullreport_YR_previous$year==yearPrevious)])
+  
+  receivedReports_specific_YR_previous <- NA #  number of reports from sites reporting only during a specific period, vector with one value per reporting site for a specific period
+  
+  list_Id_SpecificSite <- NA
+  list_Id_SpecificSite <- sites_specificPeriod_YR_previous$id[which(sites_specificPeriod_YR_previous$FK_ParentId==Id_Site)]
+  
+  if(length(list_Id_SpecificSite)==0) {
+    receivedReports_specific_YR_previous <- 0
+    
+  }else{
+    
+    Id_SpecificSite <- NA
+    for (Id_SpecificSite in list_Id_SpecificSite) { # in case there is reporting sites for a specific period
+      counter <- 1
+      numSemTemp <- NA
+      rowLineId <- NA
+      rowLineId <- which(sites_specificPeriod_YR_previous$id==Id_SpecificSite)
+      
+      if(sites_specificPeriod_YR_previous$weekEnd[rowLineId] >= sites_specificPeriod_YR_previous$weekStart[rowLineId]){
+        numSemTemp <- seq(from=sites_specificPeriod_YR_previous$weekStart[rowLineId], to=sites_specificPeriod_YR_previous$weekEnd[rowLineId], by=1)
+      } else {
+        numSemTemp <- c(seq(from=sites_specificPeriod_YR_previous$weekStart[rowLineId], to=nbWeeksYear, by=1), seq(from=1, to=sites_specificPeriod_YR_previous$weekEnd[rowLineId], by=1))
+      }
+      
+      receivedReports_specific_YR_previous[counter] <- length(fullreport_YR_previous$id[which(fullreport_YR_previous$FK_SiteRelationShipId==Id_SpecificSite & fullreport_YR_previous$weekNumber %in% numSemTemp & fullreport_YR_previous$year==yearPrevious)])
+      counter <- counter+1
+    }
+  }
+  
+  reportingValues_YR_previous$nbReceived[which(reportingValues_YR_previous$Id_Site==Id_Site)] <- receivedReports_whole_YR_previous + sum(receivedReports_specific_YR_previous)
+  
+  
+  # Nb of reports received and validated (taken into account in the analyses)
+  
+  recValReports_fullId_whole_YR_previous <- NULL # fullreport_YR_previous ID of reports received and validated at least once from sites active the whole period
+  recValReports_fullId_whole_YR_previous <- fullreport_YR_previous$id[which(fullreport_YR_previous$FK_SiteRelationShipId %in% expectedSites_whole_YR_previous & fullreport_YR_previous$weekNumber %in% numSem_YR & fullreport_YR_previous$year==yearPrevious & !is.na(fullreport_YR_previous$firstValidationDate))]
+  
+  recValReports_fullId_specific_YR_previous <- NA #  fullreport_YR_previous ID of reports received and validated at least once from sites reporting only during a specific period, vector with one value per reporting site for a specific period
+  
+  if(length(list_Id_SpecificSite)==0) {
+    recValReports_fullId_specific_YR_previous <- NULL
+    
+  }else{
+    
+    Id_SpecificSite <- NA
+    counter <- 1
+    
+    for (Id_SpecificSite in list_Id_SpecificSite) { # in case there is reporting sites for a specific period
+      numSemTemp <- NA
+      rowLineId <- NA
+      rowLineId <- which(sites_specificPeriod_YR_previous$id==Id_SpecificSite)
+      
+      if(sites_specificPeriod_YR_previous$weekEnd[rowLineId] >= sites_specificPeriod_YR_previous$weekStart[rowLineId]){
+        numSemTemp <- seq(from=sites_specificPeriod_YR_previous$weekStart[rowLineId], to=sites_specificPeriod_YR_previous$weekEnd[rowLineId], by=1)
+      } else {
+        numSemTemp <- c(seq(from=sites_specificPeriod_YR_previous$weekStart[rowLineId], to=nbWeeksYear, by=1), seq(from=1, to=sites_specificPeriod_YR_previous$weekEnd[rowLineId], by=1))
+      }
+      
+      recValReports_fullId_specific_YR_previous[counter] <- paste0(fullreport_YR_previous$id[which(fullreport_YR_previous$FK_SiteRelationShipId==Id_SpecificSite & fullreport_YR_previous$weekNumber %in% numSemTemp & fullreport_YR_previous$year==yearPrevious & !is.na(fullreport_YR_previous$firstValidationDate))],collapse=",")
+      
+      counter <- counter+1
+    }
+  }
+  
+  reportingValues_YR_previous$nbReceivedValidated[which(reportingValues_YR_previous$Id_Site==Id_Site)] <- length(recValReports_fullId_whole_YR_previous) + length(strsplit(paste0(recValReports_fullId_specific_YR_previous,collapse = ","),split=",")[[1]])
+  
+  # Ids of fullreports received and validated since week 1(taken into account in the analyses)
+  
+  reportingValues_YR_previous$ids_fullreport_recVal[which(reportingValues_YR_previous$Id_Site==Id_Site)] <- paste0(recValReports_fullId_whole_YR_previous,paste(recValReports_fullId_specific_YR_previous,collapse=","),collapse = ",")
+  
+}
+
+
+levInterest <- NA
+
+for (levInterest in seq(levFirstInter-1, 1, by=-1)) { # completion of the upper levels (sum of the below child nodes)
+  
+  Id_Site <- NA
+  
+  for (Id_Site in reportingValues_YR_previous$Id_Site[which(reportingValues_YR_previous$level==levInterest)]) {
+    
+    reportingValues_YR_previous$nbExpected[which(reportingValues_YR_previous$Id_Site==Id_Site)] <-  sum(reportingValues_YR_previous$nbExpected[which(reportingValues_YR_previous$FK_ParentId==Id_Site)])
+    
+    reportingValues_YR_previous$nbReceived[which(reportingValues_YR_previous$Id_Site==Id_Site)] <-  sum(reportingValues_YR_previous$nbReceived[which(reportingValues_YR_previous$FK_ParentId==Id_Site)])
+    
+    reportingValues_YR_previous$nbReceivedValidated[which(reportingValues_YR_previous$Id_Site==Id_Site)] <-  sum(reportingValues_YR_previous$nbReceivedValidated[which(reportingValues_YR_previous$FK_ParentId==Id_Site)])
+    
+    reportingValues_YR_previous$ids_fullreport_recVal[which(reportingValues_YR_previous$Id_Site==Id_Site)] <- paste0(reportingValues_YR_previous$ids_fullreport_recVal[which(reportingValues_YR_previous$FK_ParentId==Id_Site)],collapse=",")
   }
 }
 
@@ -794,8 +1061,6 @@ for (levInterest in seq(levFirstInter-1, 1, by=-1)) { # completion of the upper 
 ## reportingValues_W12_overall : same variables as reportingValues_W12 with aggregated data for the whole period for each site.
 #############
 
-reportingValues_W12_overall<- colSums(reportingValues_W12[,6:14]) # For each week of the 12th previous week
-
 reportingValues_W12_overall <- parentSites
 reportingValues_W12_overall$nbExpected <- NA # Nb of expected reports
 reportingValues_W12_overall$nbReceived <- NA # Nb of received reports from leaf sites
@@ -809,13 +1074,15 @@ reportingValues_W12_overall$compReport <- NA # Completeness of data reporting fo
 reportingValues_W12_overall$timeReport <- NA # Timeliness of data reporting for the period
 reportingValues_W12_overall$compReview <- NA # Completeness of data review for the period
 reportingValues_W12_overall$timeReview <- NA # Timeliness of data review for the period
+reportingValues_W12_overall$ids_fullreport_recVal <- NA # id of the fullreports that has been validated at least once
 
 IdSite <- NA
 colnamesSum <- c("nbExpected","nbReceived","nbReceivedBelow","nbReceivedValidated","nbRecTime","nbRecTimeBelow","nbReviewed","nbRevTime")
 
-
 for (IdSite in reportingValues_W12_overall$Id_Site) {
-  reportingValues_W12_overall[reportingValues_W12_overall$Id_Site==IdSite,colnamesSum] <- colSums(reportingValues_W12[reportingValues_W12$Id_Site==IdSite,colnamesSum])
+  reportingValues_W12_overall[reportingValues_W12_overall$Id_Site==IdSite,colnamesSum] <- colSums(reportingValues_W12[which(reportingValues_W12$Id_Site==IdSite),colnamesSum])
+  
+  reportingValues_W12_overall$ids_fullreport_recVal[reportingValues_W12_overall$Id_Site==IdSite] <- paste0(reportingValues_W12$ids_fullreport_recVal[which(reportingValues_W12$Id_Site==IdSite)],collapse = ",")
 }
 
 reportingValues_W12_overall$compReport <- reportingValues_W12_overall$nbReceived/reportingValues_W12_overall$nbExpected
@@ -825,8 +1092,8 @@ reportingValues_W12_overall$timeReview <- reportingValues_W12_overall$nbRevTime/
 
 
 #############
-## 
-
+## noReport_W8 and noReport_W3: table with list of leaf sites without any report received for >= 8 weeks  and >= 3 weeks grouped by first intermediate level:
+#############
 
 # Table with list of leaf sites without any report received for >= 3 weeks and >= 8 weeks grouped by first intermediate level (name, path, contact of the site)
 
@@ -918,30 +1185,294 @@ for (IdParentSite in tempFirstIntermediate$Id_parentSite) {
 
 noReport_W3 <- noReport_W3[-nrow(noReport_W3),]
 
-#### Make the list of diseases that have crossed thresholds in the 12th previous weeks and the previous week
+#############
+## diseaseThreshold_W12
+#############
 
+# Table with number of cases of each disease with thresholds in the 12 previous weeks for the whole country
 
+fullrep_IDs <- NA # Ids of fullreport of interests
+partrep_IDs <- NA # IDs of partreports (versions of the fullreports) of interest
+rep_IDs <- NA # Ids of reports (specific values of each report version) of interest
 
+fullrep_IDs <- strsplit(reportingValues_W12_overall$ids_fullreport_recVal[which(reportingValues_W12_overall$level==1)],split=",")[[1]]
+fullrep_IDs <- as.numeric(fullrep_IDs)
 
-#### Table with for each disease crossing threshold in the 12th previous week, the number of cases and death per week for the whole country
+if(any(is.na(fullrep_IDs))) {
+  fullrep_IDs <- fullrep_IDs[-which(is.na(fullrep_IDs))]
+} else {
+}
 
+partrep_IDs <- partreport$id[which(partreport$FK_FullReportId %in% fullrep_IDs & partreport$status=="VALIDATED")]
 
+diseaseThreshold_W12_overall <- thresholds[,c("disease","diseaseName","threshold_value","variable")] # database with the number of cases of each disease with thresholds in the 12 previous weeks for the whole country
 
-#### Table with one row for each site/disease crossing threshold in the previous week, the number of cases and death and longitude and latitude of the unit, path of the site and contact
+diseaseThreshold_W12_overall$occurence <- NA # nb of cases during the 12 previous weeks for the whole country
 
+diseaseName <- NA
 
+for (diseaseName in diseaseThreshold_W12_overall$disease) {
+  
+  rep_IDs <- report$id[which(report$FK_PartReportId %in% partrep_IDs & report$disease==diseaseName  & report$isArchived==0 & report$isDeleted==0)]
+  
+  varDisease <- NA
+  varDisease <- diseaseThreshold_W12_overall$variable[which(diseaseThreshold_W12_overall$disease==diseaseName)]
+  
+  diseaseThreshold_W12_overall$occurence[which(diseaseThreshold_W12_overall$disease==diseaseName)] <- sum(report_values$Value[which(report_values$Key==varDisease & report_values$FK_ReportId %in% rep_IDs)])
+  
+}
 
+# Table with the number of cases of each disease with threshold crossed in any week of the 12 previous weeks for the whole country
+
+diseaseThreshold_W12 <- thresholds[,c("disease","diseaseName","threshold_value","variable")] # database with the number of cases of each disease with thresholds in the 12 previous weeks for the whole country
+
+diseaseThreshold_W12$week <- NA
+
+numSem <- NA
+
+for (numSem in numSem_W12) {
+  temp <- NA
+  temp <- thresholds[,c("disease","diseaseName","threshold_value","variable")]
+  temp$week <- NA
+  temp$week <- numSem
+  diseaseThreshold_W12 <- rbind(diseaseThreshold_W12,temp)
+}
+
+diseaseThreshold_W12$occurence <- NA # nb of cases during the 12 previous weeks for the whole country
+
+diseaseThreshold_W12 <- diseaseThreshold_W12[-which(is.na(diseaseThreshold_W12$week)),]
+
+listDiseaseNonZero_W12 <- diseaseThreshold_W12_overall$disease[which(diseaseThreshold_W12_overall$occurence>=1)]
+
+diseaseName <- NA
+
+numSem <- NA
+
+fullrep_IDs <- NA
+partrep_IDs <- NA
+rep_IDs <- NA
+
+for (numSem in numSem_W12) {
+  
+  for (diseaseName in listDiseaseNonZero_W12) {
+    
+    fullrep_IDs <- strsplit(reportingValues_W12$ids_fullreport_recVal[which(reportingValues_W12$level==1 & reportingValues_W12$week==numSem)],split=",")[[1]]
+    fullrep_IDs <- as.numeric(fullrep_IDs)
+    fullrep_IDs <- fullrep_IDs[-which(is.na(fullrep_IDs))]
+    
+    partrep_IDs <- partreport$id[which(partreport$FK_FullReportId %in% fullrep_IDs & partreport$status=="VALIDATED")]
+    
+    rep_IDs <- report$id[which(report$FK_PartReportId %in% partrep_IDs & report$disease==diseaseName  & report$isArchived==0 & report$isDeleted==0)]
+    
+    varDisease <- NA
+    varDisease <- unique(diseaseThreshold_W12_overall$variable[which(diseaseThreshold_W12_overall$disease==diseaseName)])
+    
+    diseaseThreshold_W12$occurence[which(diseaseThreshold_W12$disease==diseaseName & diseaseThreshold_W12$week==numSem)] <- sum(report_values$Value[which(report_values$Key==varDisease & report_values$FK_ReportId %in% rep_IDs)])
+    
+  }
+}
+
+diseaseThreshold_W12 <- diseaseThreshold_W12[-which(is.na(diseaseThreshold_W12$occurence)),]
+
+diseasesInterest_W12 <- unique(diseaseThreshold_W12$disease[which(diseaseThreshold_W12$occurence >= diseaseThreshold_W12$threshold_value)])
+
+diseaseThreshold_W12 <- diseaseThreshold_W12[which(diseaseThreshold_W12$disease %in% diseasesInterest_W12),]
+
+#############
+## diseaseThreshold_W2
+#############
+
+#### Table with one row for each site/disease having crossed threshold in any of the two previous week, the number of cases and longitude and latitude of the unit, path of the site and contact
+
+fullrep_IDs <- NA # Ids of fullreport of interests
+partrep_IDs <- NA # IDs of partreports (versions of the fullreports) of interest
+rep_IDs <- NA 
+
+################# The below one is the correct one
+# fullrep_IDs <- strsplit(reportingValues_W12$ids_fullreport_recVal[which(reportingValues_W12$level==1 & reportingValues_W12$week %in% c(weekEnd-1, weekEnd))],split=",")[[1]]
+
+################ The below one is for test only 
+print("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!WARNING SOME CODE USED FOR TEST, UNCOMMENT THE CORRECT LINES ABOVE AND DELETE THE LINES USED FOR TEST!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
+fullrep_IDs <- strsplit(reportingValues_W12$ids_fullreport_recVal[which(reportingValues_W12$level==1 & reportingValues_W12$week %in% c(4, 5))],split=",")[[1]]
+################The above one is for thest only
+
+fullrep_IDs <- as.numeric(fullrep_IDs)
+
+if(any(is.na(fullrep_IDs))) {
+  fullrep_IDs <- fullrep_IDs[-which(is.na(fullrep_IDs))]
+} else {
+}
+
+diseaseThreshold_W2 <- NA # table of interest
+
+diseaseThreshold_W2 <- sites_relationships[which(sites_relationships$id %in% fullreport$FK_SiteRelationShipId[which(fullreport$id %in% fullrep_IDs)]),c("FK_SiteId","FK_ParentId","name","longitude","latitude")]
+
+diseaseThreshold_W2$name_parentSite <- NA # name of the parent site
+diseaseThreshold_W2$siteName  <- NA # name of the site
+diseaseThreshold_W2$contact <- NA # name of the contact at the site
+diseaseThreshold_W2$phone <- NA # phone of the contact at the site
+
+rowLineId <- NA
+for (rowLineId in 1:nrow(diseaseThreshold_W2)) {
+  
+  if (is.na(diseaseThreshold_W2$longitude[rowLineId]) | is.na(diseaseThreshold_W2$longitude[rowLineId]) ) {
+    diseaseThreshold_W2$longitude[rowLineId] <- longLat$longitude[which(longLat$FK_SiteId==diseaseThreshold_W2$FK_ParentId[rowLineId])]
+    diseaseThreshold_W2$latitude[rowLineId] <- longLat$latitude[which(longLat$FK_SiteId==diseaseThreshold_W2$FK_ParentId[rowLineId])]
+  } else {
+  }
+  
+  diseaseThreshold_W2$name_parentSite[rowLineId] <- sites_id$reference[which(sites_id$id==diseaseThreshold_W2$FK_ParentId[rowLineId])]
+  diseaseThreshold_W2$siteName[rowLineId] <- sites_id$reference[which(sites_id$id==diseaseThreshold_W2$FK_SiteId[rowLineId])]
+  diseaseThreshold_W2$contact[rowLineId] <- paste(sites_contact$name[which(sites_contact$FK_SiteId==diseaseThreshold_W2$FK_SiteId[rowLineId] & (sites_contact$isDeleted==0 | is.na(sites_contact$isDeleted)))], collapse = ", ")
+  diseaseThreshold_W2$phone[rowLineId] <- paste(sites_contact$phoneNumber[which(sites_contact$FK_SiteId==diseaseThreshold_W2$FK_SiteId[rowLineId])], collapse = ", ")
+}
+
+disInt <- NA
+diseaseThreshold_W2$disease <- NA
+diseaseThreshold_W2$variable <- NA
+diseaseThreshold_W2$threshold_value <- NA
+temp <- NA
+temp <- diseaseThreshold_W2
+
+for (disInt in unique(diseaseThreshold_W12$disease)) {
+  temp$disease <- NA
+  temp$disease <- disInt
+  temp$threshold_value <- diseaseThreshold_W12_overall$threshold_value[which(diseaseThreshold_W12_overall$disease==disInt)]
+  diseaseThreshold_W2 <- rbind(diseaseThreshold_W2,temp)
+}
+
+diseaseThreshold_W2 <- diseaseThreshold_W2[-which(is.na(diseaseThreshold_W2$disease)),]
+
+diseaseThreshold_W2$occurence <- NA
+
+fullrep_IDs_site <- NA
+
+site_ID <- NA
+
+for (site_ID in unique(diseaseThreshold_W2$FK_SiteId)) {
+  
+  for (diseaseName in unique(diseaseThreshold_W12$disease)) {
+    
+    fullrep_IDs_site <- NA
+    fullrep_IDs_site <- fullreport$id[which(fullreport$id %in% fullrep_IDs & fullreport$FK_SiteId==site_ID)]
+    
+    partrep_IDs <- partreport$id[which(partreport$FK_FullReportId %in% fullrep_IDs_site & partreport$status=="VALIDATED")]
+    
+    rep_IDs <- report$id[which(report$FK_PartReportId %in% partrep_IDs & report$disease==diseaseName  & report$isArchived==0 & report$isDeleted==0)]
+    
+    varDisease <- NA
+    varDisease <- unique(diseaseThreshold_W12_overall$variable[which(diseaseThreshold_W12_overall$disease==diseaseName)])
+    
+    diseaseThreshold_W2$variable[which(diseaseThreshold_W2$disease==diseaseName & diseaseThreshold_W2$FK_SiteId==site_ID)] <- varDisease
+    
+    diseaseThreshold_W2$occurence[which(diseaseThreshold_W2$disease==diseaseName & diseaseThreshold_W2$FK_SiteId==site_ID)] <- sum(report_values$Value[which(report_values$Key==varDisease & report_values$FK_ReportId %in% rep_IDs)])
+    
+  }
+  
+}
+
+diseaseThreshold_W2 <- diseaseThreshold_W2[which(diseaseThreshold_W2$occurence!=0),]
+
+#############
+## alertList_D10
+#############
 
 #### List of alerts received in the 10 previous days, name of the site, path and contact
 
+alertList_D10 <- alerts[which(alerts$receptionDate <= today() -10),c("receptionDate","contactName","contactPhoneNumber","FK_SiteRelationShipId","message")]
+alertList_D10 <- alertList_D10[order(alertList_D10$receptionDate,decreasing = T),]
+
+alertList_D10$name_parentSite <- NA
+alertList_D10$name_Site <- NA
+
+rowLineId <- NA
+for (rowLineId in 1:nrow(alertList_D10)) {
+  alertList_D10$name_parentSite[rowLineId] <- sites_id$reference[which(sites_id$id==sites_relationships$FK_ParentId[which(sites_relationships$id==alertList_D10$FK_SiteRelationShipId[rowLineId])])]
+  alertList_D10$name_Site[rowLineId] <- sites_id$reference[which(sites_id$id==sites_relationships$FK_SiteId[which(sites_relationships$id==alertList_D10$FK_SiteRelationShipId[rowLineId])])]
+}
+
+#############
+## tableBeginYear
+#############
 
 
 
-#### Cumulative table with the number of cases since beginning of year and the same period the year before for the whole country, one row per disease (all diseases), one column per year, first row: % and nb of reports received and validated out of the number of expected reports for the period.
+#### Cumulative table with the number of cases since beginning of year and the same period the year before for the whole country, one row per disease (all diseases), one column per year
+
+tableBeginYear <- diseases_name[-which(diseases_name$disease=="ALERT"),c("id","disease","name")]
 
 
+variablesNames <- unique(diseases_variable$value[which(diseases_variable$FK_DiseaseId %in% tableBeginYear$id)])
 
+seqId <- NA
+for (seqId in 1:length(variablesNames)) {
+  tableBeginYear <- data.frame(tableBeginYear,a=NA)
+}
 
+colnames(tableBeginYear)[(ncol(tableBeginYear)-length(variablesNames)+1):ncol(tableBeginYear)] <- variablesNames
+
+fullrep_IDs_YR_previous <- NA # Ids of fullreport of interests for the previous year
+partrep_IDs <- NA # IDs of partreports (versions of the fullreports) of interest
+rep_IDs <- NA 
+
+fullrep_IDs_YR_previous <- strsplit(reportingValues_YR_previous$ids_fullreport_recVal[which(reportingValues_YR_previous$level==1)],split=",")[[1]]
+fullrep_IDs_YR_previous <- as.numeric(fullrep_IDs_YR_previous)
+
+if(any(is.na(fullrep_IDs_YR_previous))) {
+  fullrep_IDs_YR_previous <- fullrep_IDs_YR_previous[-which(is.na(fullrep_IDs_YR_previous))]  
+} else {
+}
+
+disInt <- NA
+varInt <- NA
+
+for (disInt in unique(tableBeginYear$disease)) {
+  
+  for (varInt in variablesNames) {
+    partrep_IDs <- partreport_YR_previous$id[which(partreport_YR_previous$FK_FullReportId %in% fullrep_IDs_YR_previous & partreport_YR_previous$status=="VALIDATED")]
+    
+    rep_IDs <- report_YR_previous$id[which(report_YR_previous$FK_PartReportId %in% partrep_IDs & report_YR_previous$disease==disInt  & report_YR_previous$isArchived==0 & report_YR_previous$isDeleted==0)]
+    
+    tableBeginYear[which(tableBeginYear$disease==disInt),varInt] <- sum(report_values_YR_previous$Value[which(report_values_YR_previous$Key==varInt & report_values_YR_previous$FK_ReportId %in% rep_IDs)])
+  }
+}
+
+colnames(tableBeginYear)[(ncol(tableBeginYear)-length(variablesNames)+1):ncol(tableBeginYear)] <- paste(variablesNames,yearPrevious)
+
+seqId <- NA
+for (seqId in 1:length(variablesNames)) {
+  tableBeginYear <- data.frame(tableBeginYear,a=NA)
+}
+
+colnames(tableBeginYear)[(ncol(tableBeginYear)-length(variablesNames)+1):ncol(tableBeginYear)] <- variablesNames
+
+fullrep_IDs_YR <- NA # Ids of fullreport of interests
+partrep_IDs <- NA # IDs of partreports (versions of the fullreports) of interest
+rep_IDs <- NA 
+
+fullrep_IDs_YR <- strsplit(reportingValues_YR$ids_fullreport_recVal[which(reportingValues_YR$level==1)],split=",")[[1]]
+fullrep_IDs_YR <- as.numeric(fullrep_IDs_YR)
+
+if(any(is.na(fullrep_IDs_YR))) {
+  fullrep_IDs_YR <- fullrep_IDs_YR[-which(is.na(fullrep_IDs_YR))]  
+} else {
+}
+
+disInt <- NA
+varInt <- NA
+
+for (disInt in unique(tableBeginYear$disease)) {
+  
+  for (varInt in variablesNames) {
+    partrep_IDs <- partreport$id[which(partreport$FK_FullReportId %in% fullrep_IDs_YR & partreport$status=="VALIDATED")]
+    
+    rep_IDs <- report$id[which(report$FK_PartReportId %in% partrep_IDs & report$disease==disInt  & report$isArchived==0 & report$isDeleted==0)]
+    
+    tableBeginYear[which(tableBeginYear$disease==disInt),varInt] <- sum(report_values$Value[which(report_values$Key==varInt & report_values$FK_ReportId %in% rep_IDs)])
+  }
+}
+
+colnames(tableBeginYear)[(ncol(tableBeginYear)-length(variablesNames)+1):ncol(tableBeginYear)] <- paste(variablesNames,yearCurrent)
 
 
 ### Elements to pass to the report
@@ -952,3 +1483,12 @@ admin_report_input <- list(
   reportingValues_W12_overall = reportingValues_W12_overall)
 
 save(admin_report_input, file = "src/assets/admin_report_input.RData")
+
+epi_report_input <- list(
+  diseaseThreshold_W12 = diseaseThreshold_W12,
+  diseaseThreshold_W2 = diseaseThreshold_W2,
+  alertList_D10 = alertList_D10,
+  tableBeginYear = tableBeginYear
+)
+
+save(epi_report_input, file = "src/assets/epidemiological_report_input.RData")
