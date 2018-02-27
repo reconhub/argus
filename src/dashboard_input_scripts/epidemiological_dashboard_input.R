@@ -6,7 +6,7 @@ library(purrr)
 load("src/assets/epidemiological_report_input.RData")
 source("src/plots/ploting.R")
 
-plot_colors <- "red"
+plot_colors <- c("red", "blue", "green", "pink", "yellow")
 bar_plot_margins <- list(
     l = 50,
     r = 50,
@@ -25,7 +25,7 @@ max_occurence <- max(disease_occurance_w12$occurence) + 1
 
 plots_disease_occurance_w12 <- disease_occurance_w12 %>%
   split(disease_occurance_w12$disease) %>% 
-  map(~plot_occurance(., max_occurence, plot_colors,
+  map2(plot_colors, ~plot_occurance(.x, max_occurence, .y,
                       line_plot_margins = bar_plot_margins))
 
 plots_disease_occurance_w12[[1]]$x$attrs[[1]]$showlegend <- TRUE
@@ -47,3 +47,9 @@ subplots_disease_occurance_w12 %>%
       width: 1200, height: 800, filename: 'subplots_disease_occurance_w12'});
     }"
     )
+
+epi_report_input$diseaseThreshold_W2 %>%
+  group_by(disease, longitude, latitude) %>%
+  summarise(occurence  = sum(occurence))
+
+leaflet() %>% addTiles()
