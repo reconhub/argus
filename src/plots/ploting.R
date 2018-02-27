@@ -1,3 +1,22 @@
+plot_occurance <- function(disease_occurance_w12, max_occurence, plot_colors, line_plot_margins){
+  plot_ly(data = disease_occurance_w12,
+          x = ~year_week, y = ~occurence,
+          type = 'scatter', mode = 'lines+markers',
+          color = ~disease,
+          line = list(width = 4),
+          marker = list(size = 8),
+          colors = plot_colors,
+          split = ~disease,
+          text = ~paste0(disease, ": ", occurence), hoverinfo = "text",
+          showlegend = TRUE) %>%
+    layout(
+      barmode = 'group',
+      margin =  line_plot_margins,
+      legend = list(orientation = 'h', y = 1.1, x = 0.5, font = list(size = 14)),
+      xaxis = list(title = "Epidemiological week number", tickangle = 45),
+      yaxis = list(title = 'Occurence', range =~c(0, max_occurence)))
+}
+
 plot_reporting_central_level <- function(last_12_weeks_level_1_long, plot_colors){
   plot_ly(data = last_12_weeks_level_1_long,
           x = ~year_week, y = ~number,
