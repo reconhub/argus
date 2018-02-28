@@ -17,7 +17,8 @@ plot_reporting_central_level <- function(last_12_weeks_level_1_long, plot_colors
 }
 
 plot_1st_itermediate_level <- function(data, plot_colors, margins, order_x,
-                                                 x_title, y_title, is_show_legend = TRUE) {
+                                       x_title, y_title, is_show_legend = TRUE,
+                                       plot_margins) {
   plot_ly(data,
           x = ~reference,
           y = ~number,
@@ -30,7 +31,7 @@ plot_1st_itermediate_level <- function(data, plot_colors, margins, order_x,
           showlegend = is_show_legend) %>%
     layout(
       legend = list(orientation = 'h', y = 1.1, x = 0.5, font = list(size = 14)),
-      margin =  bar_plot_margins,
+      margin =  plot_margins,
       barmode = 'group',
       xaxis = list(
         categoryorder = "array",

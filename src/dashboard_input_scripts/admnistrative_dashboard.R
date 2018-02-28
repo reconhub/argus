@@ -3,22 +3,13 @@ library(tidyr)
 library(dplyr)
 library(purrr)
 
-load("src/assets/admin_report_input.RData")
+load("src/assets/admin_report_raw_input.RData")
 source("src/plots/ploting.R")
 source("src/munging/munging.R")
+source("src/constants.R")
 
-## CONSTANTS
-max_intermediate_levels <- 50
-
-plot_colors <- c('#5A0A69', '#62B200')
-
-bar_plot_margins <- list(
-  l = 70,
-  r = 50,
-  b = 70,
-  t = 10,
-  pad = 4
-)
+## Options
+options(viewer = NULL)
 
 ## Reporting
 last_12_weeks_report_status <- admin_report_input$reportingValues_W12 %>%
@@ -27,8 +18,9 @@ last_12_weeks_report_status <- admin_report_input$reportingValues_W12 %>%
 last_12_weeks_level_2 <- last_12_weeks_report_status %>%
   dplyr::filter(level == 1) %>%
   mutate(
-    year = ifelse(week < 8, 2018, 2017), # This is temporary - year column needs to be in the raw data
-    year_week = paste0(year, " - W", week))
+    year = ifelse(week < 12, 2018, 2017), # This is temporary - year column needs to be in the raw data
+    year_week = paste0(year, " - W", week)) %>%
+  arrange(year_week)
 
 min_year <- min(last_12_weeks_level_2$year)
 max_year <- max(last_12_weeks_level_2$year)
@@ -47,9 +39,9 @@ last_12_weeks_level_1_long <- last_12_weeks_level_2 %>%
   mutate(label = recode_report(label))
 
 central_plots <- last_12_weeks_level_1_long %>%
-  plot_reporting_central_level(plot_colors, line_plot_margins = bar_plot_margins)
+  plot_reporting_central_level(plot_colors, line_plot_margins = admin_plot_margins)
 
-options(viewer = NULL)
+
 central_plots %>%
   htmlwidgets::onRender(
     "function(el, x) {
@@ -58,7 +50,7 @@ central_plots %>%
    }"
   )
 
-export(central_plots, "src/assets/central_plot.png")
+export(central_plots, "src/assets/administrative_report/central_plot.png")
 
 ## Overall reporting
 overall_12_weeks_report_status <- admin_report_input$reportingValues_W12_overall %>%
@@ -83,12 +75,12 @@ order_sites <- unique(parent_sites$parent_label)
 
 reporting_parent_sites <- parent_sites %>%
   plot_1st_itermediate_level(plot_colors = plot_colors,
-                             margins = bar_plot_margins,
+                             margins = admin_plot_margins,
                              order_x = order_sites,
                              x_title = '',
-                             y_title = '%')
+                             y_title = '%',
+                             plot_margins = admin_plot_margins)
 
-options(viewer = NULL)
 reporting_parent_sites %>%
   htmlwidgets::onRender(
     "function(el, x) {
@@ -97,7 +89,7 @@ reporting_parent_sites %>%
    }"
   )
 
-export(reporting_parent_sites, "src/assets/reporting_parent_sites.png")
+export(reporting_parent_sites, "src/assets/administrative_report/reporting_parent_sites.png")
 
 ## Review 
 reviewing_sites <- overall_12_weeks_report_status
@@ -113,11 +105,12 @@ order_sites_review <- unique(reviewing_sites_long$reference)
 plots_above_first_intermediate_level <- reviewing_sites_long %>%
   filter(level < first_intermediate_level) %>%
   plot_1st_itermediate_level(plot_colors = plot_colors,
-                             margins = bar_plot_margins,
+                             margins = admin_plot_margins,
                              order_x = order_sites_review,
                              x_title = '',
                              y_title = '%',
-                             is_show_legend = FALSE)
+                             is_show_legend = FALSE,
+                             plot_margins = admin_plot_margins)
 
 reviewing_sites_long_1st_intermediate_level <-  reviewing_sites_long %>%
   filter(level == first_intermediate_level)
@@ -126,11 +119,12 @@ reviewing_sites_long_1st_intermediate_level %>%
   split(reviewing_sites_long_1st_intermediate_level$FK_ParentId) %>%
   map(function(df){
     plot_1st_itermediate_level(data = df, plot_colors = plot_colors,
-                               margins = bar_plot_margins,
+                               margins = admin_plot_margins,
                                order_x = order_sites_review,
                                x_title = '',
                                y_title = '%',
-                               is_show_legend = FALSE) }) -> plots_first_intermediate_level
+                               is_show_legend = FALSE,
+                               plot_margins = admin_plot_margins) }) -> plots_first_intermediate_level
 
 plots_first_intermediate_level[[1]]$x$attrs[[1]]$showlegend <- TRUE
 nrow_charts <- ceiling(max(length(plots_first_intermediate_level)/2, 1))
@@ -141,7 +135,6 @@ subplots_plots_first_intermediate_level <- plots_first_intermediate_level %>%
 review_plots <- subplot(plots_above_first_intermediate_level, subplots_plots_first_intermediate_level,
         nrows = nrow_charts + 1)
 
-options(viewer = NULL)
 review_plots %>%
   htmlwidgets::onRender(
     "function(el, x) {
@@ -150,7 +143,7 @@ review_plots %>%
    }"
   )
 
-export(review_plots, "src/assets/review_plots.png")
+export(review_plots, "src/assets/administrative_report/review_plots.png")
 
 ## Silent sites
 sites_no_report_3weeks <- admin_report_input$noReport_W3 %>%
@@ -168,3 +161,10 @@ sites_no_report_8weeks <- admin_report_input$noReport_W8 %>%
 ## Save output for markdown report
 save(min_week, max_week, min_year, max_year,
   sites_no_report_3weeks, sites_no_report_8weeks, file = "src/assets/admin_report.RData")
+
+write.csv(sites_no_report_8weeks, "src/assets/administrative_report/sites_no_report_8weeks.csv", row.names = FALSE)
+write.csv(sites_no_report_3weeks, "src/assets/administrative_report/sites_no_report_3weeks.csv", row.names = FALSE)
+
+files_to_zip <- dir("src/assets/administrative_report/", full.names = TRUE)
+zip(zipfile = 'src/assets/administrative_report', files = files_to_zip)
+unlink('src/assets/administrative_report', recursive = TRUE)
