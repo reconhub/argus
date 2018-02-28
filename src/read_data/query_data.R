@@ -24,11 +24,7 @@ library(purrr)
 
 ############ Needed variables
 # access to the server
-
-main_api_url <- "http://avadar.novel-t.ch/argus-r/sesdashboard/web/"
-user_name <- ""
-api_password <- ""
-langueage <- "en"
+source("src/constants.R")
 
 # period of interest
 
