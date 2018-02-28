@@ -8,3 +8,4 @@ packrat/lib*/
 *.png
 *_files
 packrat/src/
+*.zip
