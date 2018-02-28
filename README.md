@@ -3,7 +3,24 @@
 This project hosts the development of scripts used for generating analysis
 reports for WHO's *Argus* system.
 
+## R packages
+R libraries are managed by `packrat`.
 
+## Other requirements
+Browser (e.g. chrome) for downloading the svg images for the report. In order to avoid loading `plotly` dependencies with the report the plots are rendered and saved using Plotly.downloadImage() via htmlwidgets::onRender() (see ?plotly::export for more information). This requires a web browser, with browser's download setting location set to `assets` folder.
+
+## Workflow
+
+1. Generate dashboard raw input
+Produce R object that are further prepocessed to produce the final output (charts and tables) for the reports.
+
+Run `src/dashboard_input_script/argus_dashboard_raw_input_script.R` this will produce 2 RData raw inputs for administrative and epidemiological report in `src/assets`.
+
+2. Preprocessing
+In order to minimize the size of the report charts and tables are preprocessed outside the Rmd files.
+
+3. Rendering the dashboards
+In order to render the dashboards please knit the `src/reports/administrative_dashboard.Rmd` and `src/reports/epidemiological_dashboard.Rmd`.
 
 ### Contributors
 
