@@ -13,7 +13,6 @@ output:
 
 ```{r setup, include=FALSE}
 library(flexdashboard)
-library(DT)
 
 load("../assets/admin_report.RData")
 ```
@@ -44,6 +43,16 @@ Row
 
 <img src="../assets/review_plots.svg" alt="Overall completeness and timeliness of data review">
 
+<script type="text/javascript">
+(function() {
+    var randomValue = Math.floor((Math.random() * 1000000) + 1);
+    var images = document.getElementsByTagName("img");
+    for (index in images) {
+        var image = images[index];
+        image.src = image.src + "?cacheResetValue=" + randomValue;
+    }
+})()
+</script>
 
 Row
 -------------------------------------
@@ -51,15 +60,17 @@ Row
 ### Silent sites: reporting sites with no reports received for 8 weeks and longer
 
 ```{r}
-datatable(data = sites_no_report_8weeks,
-          options = list(dom = 'tp'))
+knitr::kable(sites_no_report_8weeks)
+# DT::datatable(data = sites_no_report_8weeks,
+#           options = list(dom = 'tp'))
 
 ```
 
 ### Silent sites: reporting sites with no reports received for 3 weeks and longer
 
 ```{r}
-datatable(data = sites_no_report_3weeks,
-          options = list(dom = 'tp'))
+knitr::kable(sites_no_report_3weeks)
+# DT::datatable(data = sites_no_report_3weeks,
+#           options = list(dom = 'tp'))
 
 ```
