@@ -1482,7 +1482,7 @@ admin_report_input <- list(
   reportingValues_W12 = reportingValues_W12,
   reportingValues_W12_overall = reportingValues_W12_overall)
 
-save(admin_report_input, file = "src/assets/admin_report_input.RData")
+save(admin_report_input, file = "src/assets/admin_report_raw_input.RData")
 
 epi_report_input <- list(
   diseaseThreshold_W12 = diseaseThreshold_W12,
@@ -1491,4 +1491,4 @@ epi_report_input <- list(
   tableBeginYear = tableBeginYear
 )
 
-save(epi_report_input, file = "src/assets/epidemiological_report_input.RData")
+save(epi_report_input, file = "src/assets/epidemiological_report_raw_input.RData")
