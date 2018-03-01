@@ -3,7 +3,7 @@ library(tidyr)
 library(dplyr)
 library(purrr)
 
-load("src/assets/epidemiological_report_input.RData")
+load("src/assets/epidemiological_report_raw_input.RData")
 source("src/plots/ploting.R")
 
 plot_colors <- c('#5A0A69', '#62B200')
