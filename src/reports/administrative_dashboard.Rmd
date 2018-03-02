@@ -60,17 +60,13 @@ Row
 ### Silent sites: reporting sites with no reports received for 8 weeks and longer
 
 ```{r}
-knitr::kable(sites_no_report_8weeks)
-# DT::datatable(data = sites_no_report_8weeks,
-#           options = list(dom = 'tp'))
-
+DT::datatable(data = sites_no_report_8weeks,
+          options = list(dom = 'tp'))
 ```
 
 ### Silent sites: reporting sites with no reports received for 3 weeks and longer
 
 ```{r}
-knitr::kable(sites_no_report_3weeks)
-# DT::datatable(data = sites_no_report_3weeks,
-#           options = list(dom = 'tp'))
-
+DT::datatable(data = sites_no_report_3weeks,
+          options = list(dom = 'tp'))
 ```
