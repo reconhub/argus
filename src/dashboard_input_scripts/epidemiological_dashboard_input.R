@@ -2,9 +2,14 @@ library(plotly)
 library(tidyr)
 library(dplyr)
 library(purrr)
+library(sf)
+library(ggplot2)
+library(hrbrthemes)
 
 load("src/assets/epidemiological_report_raw_input.RData")
 source("src/plots/ploting.R")
+
+sp_files <- st_read("src/assets/ne_50m_admin_0_countries.shp")
 
 plot_colors <- c('#5A0A69', '#62B200')
 bar_plot_margins <- list(
@@ -61,11 +66,20 @@ disease_location <- diseaseThreshold_W2 %>%
   group_by(disease, longitude, latitude) %>%
   summarise(occurence  = sum(occurence))
 
-leaflet(disease_location[1,]) %>%
-  setView(lng = a$longitude[1], lat = a$latitude[1], zoom = 9) %>%
-  addProviderTiles(providers$CartoDB.Positron) %>%
-  addCircleMarkers(lng = ~longitude, lat = ~latitude, radius = ~occurence) %>%
-  addLegend(colors = "blue", labels = "a")
+country_data <- sp_files %>% dplyr::filter(GEOUNIT == "Togo")
+
+disease_maps <- ggplot() +
+  geom_sf(data = country_data, fill = "white") +
+  geom_point(data = disease_location, aes(x = longitude, y = latitude, size = occurence),
+             color = plot_colors[1], alpha = 0.7) +
+  scale_size(breaks = unique(disease_location$occurence)) +
+  facet_wrap(~disease, ncol = 2) +
+  theme_ipsum() +
+  theme(axis.line=element_blank(), axis.ticks=element_blank(), axis.text=element_blank(),
+        legend.text = element_text(size = 10), legend.title = element_blank(),
+        legend.key = element_rect(fill = "white", colour = "white"))
+
+ggsave(file = "src/assets/maps.svg", plot = disease_maps, width = 10, height = 8)
 
 disease_occurance_above_threshold <- diseaseThreshold_W2 %>%
   select(`Site name`, `Parent site name`, Contact, Phone, `Disease threshold`)
