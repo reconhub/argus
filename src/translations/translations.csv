@@ -22,6 +22,11 @@ compReport,Completeness of weekly reporting
 timeReport,Timeliness of weekly reporting
 compReview,Completeness of weekly reviewing
 timeReview,Timeliness of weekly reviewing
+country_reporting_header,Completeness and timeliness of weekly reporting for the whole country
+overall_reporting_header,Overall completeness and timeliness of weekly reporting
+overall_review_header,Overall completeness and timeliness of data review at each level from week
+silent_sites_8_weeks_header,Silent sites: reporting sites with no reports received for 8 weeks and longer
+silent_sites_3_weeks_header,Silent sites: reporting sites with no reports received for 3 weeks and longer
 *** Common *** ,
 epi_week_nb,Epidemiological week number
 siteName,Site Name

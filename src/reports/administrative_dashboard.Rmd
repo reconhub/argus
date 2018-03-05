@@ -13,6 +13,14 @@ output:
 
 ```{r setup, include=FALSE}
 library(flexdashboard)
+library(shiny.i18n)
+source("../constants.R")
+
+## file with translations
+i18n <- Translator$new(translation_csvs_path = "../translations")
+
+## set translation language
+i18n$set_translation_language("en")
 
 load("../assets/admin_report.RData")
 ```
@@ -27,19 +35,19 @@ load("../assets/admin_report.RData")
 Row
 -------------------------------------
 
-### Completeness and timeliness of weekly reporting for the whole country
+### `r i18n$t("country_reporting_header")`
 
 <img src="../assets/central_plot.svg" alt="Completeness and timeliness of weekly reporting for the whole country">
 
 
-### Overall completeness and timeliness of weekly reporting from week `r paste0(min_week, " (", min_year, ")")` to `r paste0(max_week, " (", max_year, ")")`
+### `r paste(i18n$t("overall_reporting_header"), paste0(min_week, " (", min_year, ")"), paste0(max_week, " (", max_year, ")"))`
 
 <img src="../assets/reporting_parent_sites.svg" alt="Overall completeness and timeliness of weekly reporting">
 
 Row
 -------------------------------------
 
-### Overall completeness and timeliness of data review at each level from week `r paste0(min_week, " (", min_year, ")")` to `r paste0(max_week, " (", max_year, ")")`
+###  `r paste(i18n$t("overall_review_header"), paste0(min_week, " (", min_year, ")"), paste0(max_week, " (", max_year, ")"))`
 
 <img src="../assets/review_plots.svg" alt="Overall completeness and timeliness of data review">
 
@@ -57,14 +65,14 @@ Row
 Row
 -------------------------------------
 
-### Silent sites: reporting sites with no reports received for 8 weeks and longer
+### `r i18n$t("silent_sites_8_weeks_header")`
 
 ```{r}
 DT::datatable(data = sites_no_report_8weeks,
           options = list(dom = 'tp'))
 ```
 
-### Silent sites: reporting sites with no reports received for 3 weeks and longer
+### `r i18n$t("silent_sites_3_weeks_header")`
 
 ```{r}
 DT::datatable(data = sites_no_report_3weeks,
