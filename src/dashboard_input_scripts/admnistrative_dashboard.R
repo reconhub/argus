@@ -2,11 +2,21 @@ library(plotly)
 library(tidyr)
 library(dplyr)
 library(purrr)
+library(shiny.i18n)
 
 load("src/assets/admin_report_raw_input.RData")
 source("src/plots/ploting.R")
 source("src/munging/munging.R")
 source("src/constants.R")
+
+## clean assets
+unlink(adiministrative_report_plots_paths)
+
+## file with translations
+i18n <- Translator$new(translation_csvs_path = translations_path)
+
+## set translation language
+i18n$set_translation_language("en")
 
 ## Options
 options(viewer = NULL)
@@ -39,7 +49,10 @@ last_12_weeks_level_1_long <- last_12_weeks_level_2 %>%
   mutate(label = recode_report(label))
 
 central_plots <- last_12_weeks_level_1_long %>%
-  plot_reporting_central_level(plot_colors, line_plot_margins = admin_plot_margins)
+  plot_reporting_central_level(plot_colors,
+                               line_plot_margins = admin_plot_margins,
+                               x_title = i18n$t("epi_week_nb"),
+                               y_title = '%')
 
 
 central_plots %>%
@@ -50,7 +63,7 @@ central_plots %>%
    }"
   )
 
-export(central_plots, "src/assets/administrative_report/central_plot.png")
+export(central_plots, paste0(assets_admin_path, "central_plot.png"))
 
 ## Overall reporting
 overall_12_weeks_report_status <- admin_report_input$reportingValues_W12_overall %>%
@@ -89,7 +102,7 @@ reporting_parent_sites %>%
    }"
   )
 
-export(reporting_parent_sites, "src/assets/administrative_report/reporting_parent_sites.png")
+export(reporting_parent_sites, paste0(assets_admin_path, "reporting_parent_sites.png"))
 
 ## Review 
 reviewing_sites <- overall_12_weeks_report_status
@@ -143,28 +156,32 @@ review_plots %>%
    }"
   )
 
-export(review_plots, "src/assets/administrative_report/review_plots.png")
+export(review_plots, paste0(assets_admin_path, "review_plots.png"))
 
 ## Silent sites
 sites_no_report_3weeks <- admin_report_input$noReport_W3 %>%
-  select(`Area` = name_parentSite,
-         `Site name` = siteName,
-         Contact = contact,
-         Phone = phone)
+  select(name_parentSite, siteName, contact, phone)
+
+data.table::setnames(sites_no_report_3weeks,
+                    old = names(sites_no_report_3weeks),
+                    new = c(i18n$t("name_parentSite"), i18n$t("siteName"), i18n$t("contact"),
+                            i18n$t("phone")))
 
 sites_no_report_8weeks <- admin_report_input$noReport_W8 %>%
-  select(`Area` = name_parentSite,
-         `Site name` = siteName,
-         Contact = contact,
-         Phone = phone)
+  select(name_parentSite, siteName, contact, phone)
+
+data.table::setnames(sites_no_report_8weeks,
+                    old = names(sites_no_report_8weeks),
+                    new = c(i18n$t("name_parentSite"), i18n$t("siteName"), i18n$t("contact"),
+                            i18n$t("phone")))
 
 ## Save output for markdown report
 save(min_week, max_week, min_year, max_year,
-  sites_no_report_3weeks, sites_no_report_8weeks, file = "src/assets/admin_report.RData")
+  sites_no_report_3weeks, sites_no_report_8weeks, file = paste0(assets_path, "admin_report.RData"))
 
-write.csv(sites_no_report_8weeks, "src/assets/administrative_report/sites_no_report_8weeks.csv", row.names = FALSE)
-write.csv(sites_no_report_3weeks, "src/assets/administrative_report/sites_no_report_3weeks.csv", row.names = FALSE)
+write.csv(sites_no_report_8weeks, paste0(assets_admin_path, "sites_no_report_8weeks.csv"), row.names = FALSE)
+write.csv(sites_no_report_3weeks, paste0(assets_admin_path, "sites_no_report_3weeks.csv"), row.names = FALSE)
 
-files_to_zip <- dir("src/assets/administrative_report/", full.names = TRUE)
-zip(zipfile = 'src/assets/administrative_report', files = files_to_zip)
-unlink('src/assets/administrative_report', recursive = TRUE)
+files_to_zip <- dir(assets_admin_path, full.names = TRUE)
+zip(zipfile = assets_admin_path, files = files_to_zip)
+unlink(assets_admin_path, recursive = TRUE)

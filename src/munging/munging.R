@@ -1,9 +1,11 @@
 recode_report <- function(label) {
-  recode(label, "compReport" = "Completeness of weekly reporting", "timeReport" = "Timeliness of weekly reporting")
+  recode(label, "compReport" = i18n$t("compReport"),
+         "timeReport" = i18n$t("timeReport"))
 }
 
 recode_review <- function(label) {
-  recode(label, "compReview" = "Completeness of weekly reviewing", "timeReview" = "Timeliness of weekly reviewing")
+  recode(label, "compReview" = i18n$t("compReview"),
+         "timeReview" = i18n$t("timeReview"))
 }
 
 round_ratio_to_perc <- function(x) round(x * 100, 2)

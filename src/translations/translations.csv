@@ -7,7 +7,7 @@ disease_table_alerts_header,Disease alerts
 disease_table_cumulative_header,Disease cumulative
 *** Epidemiological report charts and tables ***,
 siteName,Site Name
-name_parentSite,Parent Site Name
+name_parentSite,Area
 contact,Contact
 phone,Phone
 disease_threshold,Threshold
@@ -22,3 +22,8 @@ cas_this_year,Cas 2018
 desease_this_year,Desease 2018
 epi_week_nb,Epidemiological week number
 nb_of_cases,Number of cases
+*** Administrative report ***,
+compReport,Completeness of weekly reporting
+timeReport,Timeliness of weekly reporting
+compReview,Completeness of weekly reviewing
+timeReview,Timeliness of weekly reviewing

@@ -533,11 +533,19 @@ RemoteUsername: tidyverse
 RemoteSha: 9ea33dd3922c83304ab4a97b2fbc42a93113bd06
 
 Package: rmarkdown
-Source: CRAN
-Version: 1.9
-Hash: ab7f84e6f41ed8d8e8b9a2031cf631f8
+Source: github
+Version: 1.9.2
+Hash: 279cc120c8a789c303726901d34b65c4
 Requires: base64enc, evaluate, htmltools, jsonlite, knitr, mime,
     rprojroot, stringr, yaml
+GithubRepo: rmarkdown
+GithubUsername: rstudio
+GithubRef: master
+GithubSha1: 9313596292dfa887f883478a5137158e34089be2
+RemoteHost: https://api.github.com
+RemoteRepo: rmarkdown
+RemoteUsername: rstudio
+RemoteSha: 9313596292dfa887f883478a5137158e34089be2
 
 Package: rprojroot
 Source: CRAN
