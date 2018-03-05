@@ -13,6 +13,13 @@ output:
 
 ```{r setup, include=FALSE}
 library(flexdashboard)
+library(shiny.i18n)
+
+## file with translations
+i18n <- Translator$new(translation_csvs_path = "../translations")
+
+## set translation language
+i18n$set_translation_language("en")
 
 load("../assets/epi_report.Rdata")
 ```
@@ -27,12 +34,12 @@ load("../assets/epi_report.Rdata")
 Row {data-height=650}
 -------------------------------------
 
-### Chart 1 
+### `r i18n$t("disease_charts_header")`
 
 <img src="../assets/subplots_disease_occurance_w12.svg" alt="chart1">
 
 
-### Chart 2
+### `r i18n$t("disease_maps_header")`
 
 <img src="../assets/maps.svg" alt="chart2">
 
@@ -51,14 +58,14 @@ Row {data-height=650}
 Row
 -------------------------------------
 
-### Table 
+### `r i18n$t("disease_table_occurence_header")`
 
 ```{r}
 DT::datatable(data = disease_occurance_above_threshold,
           options = list(dom = 'tp'))
 ```
 
-### Table 2
+### `r i18n$t("disease_table_alerts_header")`
 ```{r}
 DT::datatable(data = alert_list_D10,
           options = list(dom = 'tp'))
@@ -67,7 +74,7 @@ DT::datatable(data = alert_list_D10,
 Row
 -------------------------------------
 
-### Table 3
+### `r i18n$t("disease_table_cumulative_header")`
 
 ```{r}
 DT::datatable(data = cumulative_table,
