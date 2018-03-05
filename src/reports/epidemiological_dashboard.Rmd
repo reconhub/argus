@@ -1,5 +1,4 @@
 ---
-title: "Epidemiological summary"
 output: 
   flexdashboard::flex_dashboard:
     orientation: rows
@@ -9,6 +8,9 @@ output:
     theme: cosmo
     self_contained: false
     mathjax: NULL
+    params:
+  custom_title: "Epidemiological summary"
+title: "`r params$custom_title`"
 ---
 
 ```{r setup, include=FALSE}
