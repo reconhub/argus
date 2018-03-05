@@ -6,7 +6,4 @@ packrat/lib*/
 *.gz
 .Rhistory
 *.png
-=======
 *_files
-
-packrat/src/
