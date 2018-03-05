@@ -1,0 +1,24 @@
+raw,en
+*** Epidemiological report headers ***,
+disease_charts_header,Disease charts header
+disease_maps_header,Disease maps header
+disease_table_occurence_header,Disease table occurrence
+disease_table_alerts_header,Disease alerts
+disease_table_cumulative_header,Disease cumulative
+*** Epidemiological report charts and tables ***,
+siteName,Site Name
+name_parentSite,Parent Site Name
+contact,Contact
+phone,Phone
+disease_threshold,Threshold
+name_Site,Site Name
+message,Alert
+contactName,Contact
+contactPhoneNumber,Phone
+disease,Disease
+cas_previous_year,Cas 2017
+desease_previous_year,Desease 2017
+cas_this_year,Cas 2018
+desease_this_year,Desease 2018
+epi_week_nb,Epidemiological week number
+nb_of_cases,Number of cases
