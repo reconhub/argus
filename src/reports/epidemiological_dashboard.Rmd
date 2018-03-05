@@ -1,0 +1,75 @@
+---
+title: "Epidemiological summary"
+output: 
+  flexdashboard::flex_dashboard:
+    orientation: rows
+    vertical_layout: scroll
+    smooth_scroll: true
+    css: style.css
+    theme: cosmo
+    self_contained: false
+    mathjax: NULL
+---
+
+```{r setup, include=FALSE}
+library(flexdashboard)
+
+load("../assets/epi_report.Rdata")
+```
+
+<style>                     
+.navbar {
+  background-color:#5A0A69;
+  border-color:black;
+}
+</style>
+
+Row {data-height=650}
+-------------------------------------
+
+### Chart 1 
+
+<img src="../assets/subplots_disease_occurance_w12.svg" alt="chart1">
+
+
+### Chart 2
+
+<img src="../assets/maps.svg" alt="chart2">
+
+<script type="text/javascript">
+(function() {
+    var randomValue = Math.floor((Math.random() * 1000000) + 1);
+    var images = document.getElementsByTagName("img");
+    for (index in images) {
+        var image = images[index];
+        image.src = image.src + "?cacheResetValue=" + randomValue;
+    }
+})()
+</script>
+
+
+Row
+-------------------------------------
+
+### Table 
+
+```{r}
+DT::datatable(data = disease_occurance_above_threshold,
+          options = list(dom = 'tp'))
+```
+
+### Table 2
+```{r}
+DT::datatable(data = alert_list_D10,
+          options = list(dom = 'tp'))
+```
+
+Row
+-------------------------------------
+
+### Table 3
+
+```{r}
+DT::datatable(data = cumulative_table,
+          options = list(dom = 'tp'))
+```
