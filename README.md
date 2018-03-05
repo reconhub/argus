@@ -17,6 +17,7 @@ R libraries are managed by `packrat`.
 
 `sudo apt-get install libudunits2-dev libgdal-dev libgeos-dev libproj-dev`
 
+3. Pandoc 1.16.0.2 (for `rmarkdown`)
 
 ## Workflow
 
