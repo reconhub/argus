@@ -12,7 +12,9 @@ R libraries are managed by `packrat`.
 2. For Unix-alikes, GDAL (>= 2.0.0), GEOS (>= 3.3.0) and Proj.4 (>= 4.8.0) are required.
 
 `sudo add-apt-repository ppa:ubuntugis/ubuntugis-unstable`
+
 `sudo apt-get update`
+
 `sudo apt-get install libudunits2-dev libgdal-dev libgeos-dev libproj-dev`
 
 
@@ -25,7 +27,9 @@ Run `[PROJECT_DIRECTORY]/src/dashboard_input_script/argus_dashboard_raw_input_sc
 
 2. Preprocessing
 In order to minimize the size of the report charts and tables are preprocessed outside the Rmd files.
+
 Run `[PROJECT_DIRECTORY]/src/dashboard_input_scripts/epidemiological_dashboard_input` to generate input for epidemoiological report.
+
 Run `[PROJECT_DIRECTORY]/src/dashboard_input_scripts/adimistrative_dashboard_input` to generate input for administrative report.
 
 3. Rendering the dashboards
