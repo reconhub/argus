@@ -19,6 +19,8 @@ R libraries are managed by `packrat`.
 
 3. Pandoc 1.16.0.2 (for `rmarkdown`)
 
+4. R 3.4.1 
+
 ## Workflow
 
 1. Generate dashboard raw input
