@@ -7,7 +7,14 @@ reports for WHO's *Argus* system.
 R libraries are managed by `packrat`.
 
 ## Other requirements
-Browser (e.g. chrome) for downloading the svg images for the report. In order to avoid loading `plotly` dependencies with the report the plots are rendered and saved using Plotly.downloadImage() via htmlwidgets::onRender() (see ?plotly::export for more information). This requires a web browser, with browser's download setting location set to `assets` folder.
+1. Chrome browser for downloading the svg images for the report. In order to avoid loading `plotly` dependencies with the report the plots are rendered and saved using `Plotly.downloadImage()` via `htmlwidgets::onRender()` (see `?plotly::export` for more information). This requires a web browser, with browser's download setting location set to `[PROJECT_DIRECTORY]/assets` folder.
+
+2. For Unix-alikes, GDAL (>= 2.0.0), GEOS (>= 3.3.0) and Proj.4 (>= 4.8.0) are required.
+
+`sudo add-apt-repository ppa:ubuntugis/ubuntugis-unstable`
+`sudo apt-get update`
+`sudo apt-get install libudunits2-dev libgdal-dev libgeos-dev libproj-dev`
+
 
 ## Workflow
 

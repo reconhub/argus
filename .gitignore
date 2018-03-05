@@ -5,4 +5,5 @@ packrat/lib*/
 .Rproj.user
 *.gz
 .Rhistory
+*.png
 *_files
