@@ -23,6 +23,8 @@ R libraries are managed by `packrat`.
 
 ## Workflow
 
+Set variables in the environment: `Sys.setenv(api_user_name = "", api_password = "", api_locale = "en")`
+
 1. Generate dashboard raw input
 Produce R object that are further prepocessed to produce the final output (charts and tables) for the reports.
 
