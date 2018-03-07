@@ -2,7 +2,7 @@
 main_api_url <- "http://avadar.novel-t.ch/argus-r/sesdashboard/web/"
 user_name <- Sys.getenv("api_user_name")
 api_password <- Sys.getenv("api_password")
-langueage <-  Sys.getenv("api_locale")
+language <-  Sys.getenv("api_locale")
 
 ## Paths
 assets_path <- "src/assets/"
