@@ -1,8 +1,8 @@
 ## API connection constants
 main_api_url <- "http://avadar.novel-t.ch/argus-r/sesdashboard/web/"
-user_name <- ""
-api_password <- ""
-langueage <- "en"
+user_name <- Sys.getenv("api_user_name")
+api_password <- Sys.getenv("api_password")
+langueage <-  Sys.getenv("api_locale")
 
 ## Dashboard settings
 plot_colors <- c('#5A0A69', '#62B200')
