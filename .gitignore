@@ -9,8 +9,5 @@ packrat/lib*/
 *_files
 packrat/src/
 *.zip
-<<<<<<< HEAD
 src/assets/ne_50m_admin_0_countries.*
-=======
 *.svg
->>>>>>> master
