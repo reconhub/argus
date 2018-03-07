@@ -1,31 +1,9 @@
-library(plotly)
-library(tidyr)
-library(dplyr)
-library(purrr)
-library(sf)
-library(ggplot2)
-library(hrbrthemes)
-library(shiny.i18n)
-
-## file with translations
-i18n <- Translator$new(translation_csvs_path = "src/translations")
-
-## set translation language
-i18n$set_translation_language("en")
-
 load("src/assets/epidemiological_report_raw_input.RData")
-source("src/plots/ploting.R")
 
-sp_files <- st_read("src/assets/ne_50m_admin_0_countries.shp")
+## clean assets
+unlink(epidemiological_report_plots_paths)
 
-plot_colors <- c('#5A0A69', '#62B200')
-bar_plot_margins <- list(
-    l = 50,
-    r = 50,
-    b = 120,
-    t = 20,
-    pad = 4
-  )
+sp_files <- st_read(paste0(assets_path, shape_files))
 
 disease_occurance_w12 <- epi_report_input$diseaseThreshold_W12 %>%
   mutate(
@@ -52,12 +30,13 @@ subplots_disease_occurance_w12 <- plots_disease_occurance_w12 %>%
                   margin = 0.08,
                   widths = c(0.3, 0.4, 0.3))
 
-subplots_disease_occurance_w12
-
+## Options
 options(viewer = NULL)
+
 subplots_disease_occurance_w12 %>%
   htmlwidgets::onRender(
     "function(el, x) {
+      console.log(1);
       var gd = document.getElementById(el.id); 
       Plotly.downloadImage(gd, {format: 'svg',
       width: 1200, height: 800, filename: 'subplots_disease_occurance_w12'});
@@ -85,7 +64,7 @@ disease_maps <- ggplot() +
         legend.text = element_text(size = 10), legend.title = element_blank(),
         legend.key = element_rect(fill = "white", colour = "white"))
 
-ggsave(file = "src/assets/maps.svg", plot = disease_maps, width = 10, height = 8)
+ggsave(file = paste0(assets_path, "maps.svg"), plot = disease_maps, width = 10, height = 8)
 
 disease_occurance_above_threshold <- diseaseThreshold_W2 %>%
   select(siteName, name_parentSite, contact, phone, disease_threshold)
@@ -112,4 +91,6 @@ data.table::setnames(cumulative_table,
                              i18n$t("cas_this_year"), i18n$t("desease_this_year")))
 
 save(disease_occurance_above_threshold, alert_list_D10, cumulative_table,
-     file = "src/assets/epi_report.Rdata")
+     file = paste0(assets_path, "epi_report.Rdata"))
+
+print("All")

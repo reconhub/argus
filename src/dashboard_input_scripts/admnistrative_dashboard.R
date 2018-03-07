@@ -1,25 +1,7 @@
-library(plotly)
-library(tidyr)
-library(dplyr)
-library(purrr)
-library(shiny.i18n)
-
 load("src/assets/admin_report_raw_input.RData")
-source("src/plots/ploting.R")
-source("src/munging/munging.R")
-source("src/constants.R")
 
 ## clean assets
 unlink(adiministrative_report_plots_paths)
-
-## file with translations
-i18n <- Translator$new(translation_csvs_path = translations_path)
-
-## set translation language
-i18n$set_translation_language("en")
-
-## Options
-options(viewer = NULL)
 
 ## Reporting
 last_12_weeks_report_status <- admin_report_input$reportingValues_W12 %>%

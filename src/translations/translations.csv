@@ -1,5 +1,6 @@
 raw,en
 *** Epidemiological report headers ***,
+epi_report_title,Epidemiological dashboard
 disease_charts_header,Disease charts header
 disease_maps_header,Disease maps header
 disease_table_occurence_header,Disease table occurrence
@@ -18,6 +19,7 @@ cas_this_year,Cas 2018
 desease_this_year,Desease 2018
 nb_of_cases,Number of cases
 *** Administrative report ***,
+admin_report_title,Administrative report
 compReport,Completeness of weekly reporting
 timeReport,Timeliness of weekly reporting
 compReview,Completeness of weekly reviewing
