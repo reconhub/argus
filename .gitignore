@@ -7,3 +7,6 @@ packrat/lib*/
 .Rhistory
 *.png
 *_files
+packrat/src/
+*.zip
+*.svg
