@@ -38,12 +38,8 @@ central_plots <- last_12_weeks_level_1_long %>%
 
 
 central_plots %>%
-  htmlwidgets::onRender(
-    "function(el, x) {
-     var gd = document.getElementById(el.id); 
-     Plotly.downloadImage(gd, {format: 'svg', width: 800, height: 400, filename: 'central_plot'});
-   }"
-  )
+  export(file = "central_plot.svg", #width: 1200, height: 800
+         selenium = rselenium_server)
 
 export(central_plots, paste0(assets_admin_path, "central_plot.png"))
 
@@ -77,12 +73,8 @@ reporting_parent_sites <- parent_sites %>%
                              plot_margins = admin_plot_margins)
 
 reporting_parent_sites %>%
-  htmlwidgets::onRender(
-    "function(el, x) {
-     var gd = document.getElementById(el.id); 
-     Plotly.downloadImage(gd, {format: 'svg', width: 800, height: 400, filename: 'reporting_parent_sites'});
-   }"
-  )
+  export(file = "reporting_parent_sites.svg", #width: 1200, height: 800
+         selenium = rselenium_server)
 
 export(reporting_parent_sites, paste0(assets_admin_path, "reporting_parent_sites.png"))
 
@@ -131,12 +123,8 @@ review_plots <- subplot(plots_above_first_intermediate_level, subplots_plots_fir
         nrows = nrow_charts + 1)
 
 review_plots %>%
-  htmlwidgets::onRender(
-    "function(el, x) {
-     var gd = document.getElementById(el.id); 
-     Plotly.downloadImage(gd, {format: 'svg', width: 800, height: 400, filename: 'review_plots'});
-   }"
-  )
+  export(file = "review_plots.svg", #width: 1200, height: 800
+         selenium = rselenium_server)
 
 export(review_plots, paste0(assets_admin_path, "review_plots.png"))
 

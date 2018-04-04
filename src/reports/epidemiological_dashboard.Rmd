@@ -34,7 +34,7 @@ load("../assets/epi_report.Rdata")
 }
 </style>
 
-Row {data-height=650}
+Row {data-height=670}
 -------------------------------------
 
 ### `r i18n$t("disease_charts_header")`

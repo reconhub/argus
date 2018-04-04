@@ -4,6 +4,18 @@ user_name <- Sys.getenv("api_user_name")
 api_password <- Sys.getenv("api_password")
 language <-  Sys.getenv("locale")
 
+## RSelenium options
+## Options
+extra_capabilities <- list(
+  chromeOptions = 
+    list(prefs = list(
+      "profile.default_content_settings.popups" = 0L,
+      "download.prompt_for_download" = FALSE,
+      "download.default_directory" = "/home/olga/Documents/WHO/argus/src/assets"
+    )
+    )
+)
+
 ## Paths
 assets_path <- "src/assets/"
 assets_admin_path <- paste0(assets_path, "administrative_report/")
@@ -27,7 +39,7 @@ max_intermediate_levels <- 50
 admin_plot_margins <- list(
   l = 70,
   r = 50,
-  b = 70,
+  b = 100,
   t = 10,
   pad = 4
 )

@@ -1,3 +1,29 @@
+Sys.setenv(locale = "en")
+
+## Options
+options(viewer = NULL)
+options(browser = "/opt/google/chrome/chrome")
+
+library(plotly)
+library(tidyr)
+library(dplyr)
+library(purrr)
+library(sf)
+library(ggplot2)
+library(hrbrthemes)
+library(shiny.i18n)
+
+source("src/plots/ploting.R")
+source("src/munging/munging.R")
+source("src/constants.R")
+
+## file with translations
+i18n <- Translator$new(translation_csvs_path = translations_path,
+                       translation_csv_config = paste0(translations_path, "/config.yaml"))
+
+## set translation language
+i18n$set_translation_language(language)
+
 load("src/assets/epidemiological_report_raw_input.RData")
 
 ## clean assets
@@ -27,21 +53,12 @@ subplots_disease_occurance_w12 <- plots_disease_occurance_w12 %>%
   plotly::subplot(nrows = nrow_charts,
                   titleX = TRUE,
                   titleY = TRUE,
-                  margin = 0.08,
+                  margin = 0.09,
                   widths = c(0.3, 0.4, 0.3))
 
-## Options
-options(viewer = NULL)
-
 subplots_disease_occurance_w12 %>%
-  htmlwidgets::onRender(
-    "function(el, x) {
-      console.log(1);
-      var gd = document.getElementById(el.id); 
-      Plotly.downloadImage(gd, {format: 'svg',
-      width: 1200, height: 800, filename: 'subplots_disease_occurance_w12'});
-    }"
-    )
+  export(file = "subplots_disease_occurance_w12.svg", #width: 1200, height: 800
+         selenium = rselenium_server)
 
 diseaseThreshold_W2 <- epi_report_input$diseaseThreshold_W2 %>%
   mutate(`disease_threshold` = paste(disease, variable, occurence, ">=", threshold_value))
@@ -92,5 +109,3 @@ data.table::setnames(cumulative_table,
 
 save(disease_occurance_above_threshold, alert_list_D10, cumulative_table,
      file = paste0(assets_path, "epi_report.Rdata"))
-
-print("All")

@@ -35,7 +35,7 @@ load("../assets/admin_report.RData")
 }
 </style>
 
-Row
+Row {data-height=650}
 -------------------------------------
 
 ### `r i18n$t("country_reporting_header")`
@@ -47,12 +47,18 @@ Row
 
 <img src="../assets/reporting_parent_sites.svg" alt="Overall completeness and timeliness of weekly reporting">
 
-Row
+Row {data-height=650}
 -------------------------------------
 
 ###  `r paste(i18n$t("overall_review_header"), paste0(min_week, " (", min_year, ")"), paste0(max_week, " (", max_year, ")"))`
 
-<img src="../assets/review_plots.svg" alt="Overall completeness and timeliness of data review">
+<!-- <img src="../assets/review_plots.svg" alt="Overall completeness and timeliness of data review" height="87px" -->
+<!--     width="100px"> -->
+
+```{r dpi = 30}
+knitr::include_graphics("../assets/review_plots.svg")
+```
+
 
 <script type="text/javascript">
 (function() {
