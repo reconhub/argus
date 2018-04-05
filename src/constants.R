@@ -11,7 +11,7 @@ extra_capabilities <- list(
     list(prefs = list(
       "profile.default_content_settings.popups" = 0L,
       "download.prompt_for_download" = FALSE,
-      "download.default_directory" = "/home/olga/Documents/WHO/argus/src/assets"
+      "download.default_directory" = Sys.getenv("chrome_download_dir")
     )
     )
 )

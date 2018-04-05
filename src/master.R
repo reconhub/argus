@@ -1,9 +1,9 @@
-Sys.setenv(locale = "en")
+### Master file to run all the calculations
 
-## Options
-options(viewer = NULL)
-options(browser = "/opt/google/chrome/chrome")
+# Setting global variables required for the script ####
+Sys.setenv(locale = "en", chrome_download_dir = "/home/olga/Documents/WHO/argus/src/assets")
 
+# Loading Packages and modules with functions ####
 library(plotly)
 library(tidyr)
 library(dplyr)
@@ -18,22 +18,30 @@ source("src/plots/ploting.R")
 source("src/munging/munging.R")
 source("src/constants.R")
 
-## file with translations
+# Translations setting ####
+# file with translations 
 i18n <- Translator$new(translation_csvs_path = translations_path,
                        translation_csv_config = paste0(translations_path, "/config.yaml"))
 
-## set translation language
+# set translation language
 i18n$set_translation_language(language)
 
-## setup RSelenium server
+# Setup RSelenium server ####
+# RSelenium is required to save plotly charts as svg
 rselenium_server <- RSelenium::rsDriver(browser = "chrome", extraCapabilities = extra_capabilities)
 
-source("src/dashboard_input_scripts/admnistrative_dashboard.R", echo = TRUE)
+# Generate tables and charts for the dashboards ####
+# In order to have the flexdashboards as light as possible we generate the charts and tables in the separate scripts
+# not to load plotly dependencies (or other) to Rmarkdown.
+source("src/dashboard_input_scripts/administrative_dashboard_input.R", echo = TRUE)
 source("src/dashboard_input_scripts/epidemiological_dashboard_input.R", echo = TRUE)
 
+# Close RSelenium chrom windows
 rselenium_server$client$closeWindow()
 rselenium_server$server$stop()
 
+# Render dashboards ####
+# Dashboards are rendered as flexdashboards
 rmarkdown::render("src/reports/administrative_dashboard.Rmd",
                   params = list(custom_title = i18n$t("admin_report_title")))
 

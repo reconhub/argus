@@ -1,9 +1,11 @@
+# Load RData from argus_dashboard_raw_input_script.R
 load("src/assets/admin_report_raw_input.RData")
 
-## clean assets
+# Clean assets ####
+# Remove previous plots
 unlink(adiministrative_report_plots_paths)
 
-## Reporting
+# Preprocess data ####
 last_12_weeks_report_status <- admin_report_input$reportingValues_W12 %>%
   round_review_report()
 
@@ -30,6 +32,8 @@ last_12_weeks_level_1_long <- last_12_weeks_level_2 %>%
   gather(key = label, value = number, -Id_Site, -year_week, -week, -reference) %>%
   mutate(label = recode_report(label))
 
+# Create plots ####
+# Central plot
 central_plots <- last_12_weeks_level_1_long %>%
   plot_reporting_central_level(plot_colors,
                                line_plot_margins = admin_plot_margins,
@@ -38,12 +42,12 @@ central_plots <- last_12_weeks_level_1_long %>%
 
 
 central_plots %>%
-  export(file = "central_plot.svg", #width: 1200, height: 800
+  export(file = "central_plot.svg",
          selenium = rselenium_server)
 
 export(central_plots, paste0(assets_admin_path, "central_plot.png"))
 
-## Overall reporting
+# Overall reporting plot
 overall_12_weeks_report_status <- admin_report_input$reportingValues_W12_overall %>%
   round_review_report()
 
@@ -78,7 +82,7 @@ reporting_parent_sites %>%
 
 export(reporting_parent_sites, paste0(assets_admin_path, "reporting_parent_sites.png"))
 
-## Review 
+## Review plot
 reviewing_sites <- overall_12_weeks_report_status
 
 reviewing_sites_long <- reviewing_sites %>%
@@ -123,12 +127,13 @@ review_plots <- subplot(plots_above_first_intermediate_level, subplots_plots_fir
         nrows = nrow_charts + 1)
 
 review_plots %>%
-  export(file = "review_plots.svg", #width: 1200, height: 800
+  export(file = "review_plots.svg",
          selenium = rselenium_server)
 
 export(review_plots, paste0(assets_admin_path, "review_plots.png"))
 
-## Silent sites
+# Generate tables ####
+# Silent sites
 sites_no_report_3weeks <- admin_report_input$noReport_W3 %>%
   select(name_parentSite, siteName, contact, phone)
 
@@ -145,7 +150,7 @@ data.table::setnames(sites_no_report_8weeks,
                     new = c(i18n$t("name_parentSite"), i18n$t("siteName"), i18n$t("contact"),
                             i18n$t("phone")))
 
-## Save output for markdown report
+# Save output for markdown report ####
 save(min_week, max_week, min_year, max_year,
   sites_no_report_3weeks, sites_no_report_8weeks, file = paste0(assets_path, "admin_report.RData"))
 

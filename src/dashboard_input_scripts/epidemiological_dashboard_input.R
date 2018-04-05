@@ -1,36 +1,14 @@
-Sys.setenv(locale = "en")
-
-## Options
-options(viewer = NULL)
-options(browser = "/opt/google/chrome/chrome")
-
-library(plotly)
-library(tidyr)
-library(dplyr)
-library(purrr)
-library(sf)
-library(ggplot2)
-library(hrbrthemes)
-library(shiny.i18n)
-
-source("src/plots/ploting.R")
-source("src/munging/munging.R")
-source("src/constants.R")
-
-## file with translations
-i18n <- Translator$new(translation_csvs_path = translations_path,
-                       translation_csv_config = paste0(translations_path, "/config.yaml"))
-
-## set translation language
-i18n$set_translation_language(language)
-
+# Load RData from argus_dashboard_raw_input_script.R
 load("src/assets/epidemiological_report_raw_input.RData")
 
-## clean assets
+# Clean assets ####
+# Remove previous plots
 unlink(epidemiological_report_plots_paths)
 
+# Load shapefiles ####
 sp_files <- st_read(paste0(assets_path, shape_files))
 
+# Preprocess data ####
 disease_occurance_w12 <- epi_report_input$diseaseThreshold_W12 %>%
   mutate(
     year = ifelse(week < 8, 2018, 2017), # This is temporary - year column needs to be in the raw data
@@ -39,6 +17,8 @@ disease_occurance_w12 <- epi_report_input$diseaseThreshold_W12 %>%
 
 max_occurence <- max(disease_occurance_w12$occurence) + 1
 
+# Create plots ####
+# Disease occurance in the last 12 weeks
 plots_disease_occurance_w12 <- disease_occurance_w12 %>%
   split(disease_occurance_w12$disease) %>% 
   map(~plot_occurance(., max_occurence, plot_colors[1],
@@ -53,13 +33,14 @@ subplots_disease_occurance_w12 <- plots_disease_occurance_w12 %>%
   plotly::subplot(nrows = nrow_charts,
                   titleX = TRUE,
                   titleY = TRUE,
-                  margin = 0.09,
+                  margin = 0.13,
                   widths = c(0.3, 0.4, 0.3))
 
 subplots_disease_occurance_w12 %>%
-  export(file = "subplots_disease_occurance_w12.svg", #width: 1200, height: 800
+  export(file = "subplots_disease_occurance_w12.svg",
          selenium = rselenium_server)
 
+# Create maps ####
 diseaseThreshold_W2 <- epi_report_input$diseaseThreshold_W2 %>%
   mutate(`disease_threshold` = paste(disease, variable, occurence, ">=", threshold_value))
 
@@ -67,7 +48,7 @@ disease_location <- diseaseThreshold_W2 %>%
   group_by(disease, longitude, latitude) %>%
   summarise(occurence  = sum(occurence))
 
-country_data <- sp_files %>% dplyr::filter(GEOUNIT == "Togo")
+country_data <- sp_files %>% dplyr::filter(GEOUNIT == "Togo") #TODO this needs to be read from data
 
 disease_maps <- ggplot() +
   geom_sf(data = country_data, fill = "white") +
@@ -83,6 +64,8 @@ disease_maps <- ggplot() +
 
 ggsave(file = paste0(assets_path, "maps.svg"), plot = disease_maps, width = 10, height = 8)
 
+# Create tables with diseases ####
+# Disease table occurrence
 disease_occurance_above_threshold <- diseaseThreshold_W2 %>%
   select(siteName, name_parentSite, contact, phone, disease_threshold)
 
@@ -90,7 +73,8 @@ data.table::setnames(disease_occurance_above_threshold,
                      old = c("siteName", "name_parentSite", "contact", "phone", "disease_threshold"),
                      new = c(i18n$t("siteName"), i18n$t("name_parentSite"), i18n$t("contact"),
                                i18n$t("phone"), i18n$t("disease_threshold")))
-  
+
+# Disease alerts
 alert_list_D10 <- epi_report_input$alertList_D10 %>%
   select(name_Site, name_parentSite, contactName, contactPhoneNumber, message)
 
@@ -99,6 +83,7 @@ data.table::setnames(alert_list_D10,
                      new = c(i18n$t("name_Site"), i18n$t("name_parentSite"), i18n$t("contactName"),
                              i18n$t("contactPhoneNumber"), i18n$t("message")))
 
+# Cummulative table
 cumulative_table <- epi_report_input$tableBeginYear %>%
   select(-id, -name)
 
@@ -107,5 +92,6 @@ data.table::setnames(cumulative_table,
                      new = c(i18n$t("disease"), i18n$t("cas_previous_year"), i18n$t("desease_previous_year"),
                              i18n$t("cas_this_year"), i18n$t("desease_this_year")))
 
+# Save output for markdown report ####
 save(disease_occurance_above_threshold, alert_list_D10, cumulative_table,
      file = paste0(assets_path, "epi_report.Rdata"))
