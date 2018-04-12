@@ -36,11 +36,13 @@ It is possible to generate the reports in different languages. The international
 Whole workflow is controlled using `src/master.R` file.
 Master file contains comments for every block of logic.
 
+**First please set variables.**
+You can do this using export from your terminal:
+
+`export ARGUS_DATA_API_USER_NAME="" ARGUS_DATA_API_PASSWORD="" ARGUS_DATA_API_LOCALE="en" ARGUS_CHROME_DOWNLOAD_DIR="[PROJECT_DIRECTORY]/src/assets" ARGUS_DASHBOARD_LOCALE="en"`
+
 **To run the workflow:**
 `Rscript src/master.R`
-
-**First please set variables:**
-`Sys.setenv(ARGUS_DATA_API_USER_NAME = "", ARGUS_DATA_API_PASSWORD = "", ARGUS_DATA_API_LOCALE = "en", ARGUS_CHROME_DOWNLOAD_DIR = "[PROJECT_DIRECTORY]/src/assets", ARGUS_DASHBOARD_LOCALE = "en")`
 
 `api_*` - are data API related settings
 `chrome_download_dir` - is the location where svg plots are saved
