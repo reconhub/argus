@@ -3,7 +3,7 @@ load("src/assets/admin_report_raw_input.RData")
 
 # Clean assets ####
 # Remove previous plots
-unlink(adiministrative_report_plots_paths)
+unlink(administrative_report_plots_paths)
 
 # Preprocess data ####
 last_12_weeks_report_status <- admin_report_input$reportingValues_W12 %>%

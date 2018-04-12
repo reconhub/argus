@@ -8,7 +8,7 @@ R libraries are managed by `packrat`.
 
 ## Other requirements
 
-1. Chrome browser for downloading the svg images for the report. In order to avoid loading `plotly` dependencies with the report the plots are rendered and saved using `export()` via `RSeelenium` (see `?plotly::export` for more information). This requires a web browser, with browser's download setting location set to `[PROJECT_DIRECTORY]/src/assets` folder.
+1. Chrome browser for downloading the svg images for the report. In order to avoid loading `plotly` dependencies with the report the plots are rendered and saved using `export()` via `RSelenium` (see `?plotly::export` for more information). This requires a web browser, with browser's download setting location set to `[PROJECT_DIRECTORY]/src/assets` folder.
 
 `sudo apt-get --only-upgrade install google-chrome-stable`
 
@@ -40,7 +40,7 @@ Master file contains comments for every block of logic.
 `Rscript src/master.R`
 
 **First please set variables in the environment in the master file:**
-`Sys.setenv(api_user_name = "", api_password = "", api_locale = "en", chrome_download_dir = "[PROJECT_DIRECTORY]/src/assets", locale = "en")`
+`Sys.setenv(ARGUS_DATA_API_USER_NAME = "", ARGUS_DATA_API_PASSWORD = "", ARGUS_DATA_API_LOCALE = "en", ARGUS_CHROME_DOWNLOAD_DIR = "[PROJECT_DIRECTORY]/src/assets", ARGUS_DASHBOARD_LOCALE = "en")`
 
 `api_*` - are data API related settings
 `chrome_download_dir` - is the location where svg plots are saved

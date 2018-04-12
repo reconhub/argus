@@ -1,8 +1,5 @@
 ### Master file to run all the calculations
 
-# Setting global variables required for the script ####
-Sys.setenv(locale = "en", chrome_download_dir = "/home/olga/Documents/WHO/argus/src/assets")
-
 # Loading Packages and modules with functions ####
 library(plotly)
 library(tidyr)
