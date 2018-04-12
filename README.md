@@ -39,7 +39,7 @@ Master file contains comments for every block of logic.
 **To run the workflow:**
 `Rscript src/master.R`
 
-**First please set variables in the environment in the master file:**
+**First please set variables:**
 `Sys.setenv(ARGUS_DATA_API_USER_NAME = "", ARGUS_DATA_API_PASSWORD = "", ARGUS_DATA_API_LOCALE = "en", ARGUS_CHROME_DOWNLOAD_DIR = "[PROJECT_DIRECTORY]/src/assets", ARGUS_DASHBOARD_LOCALE = "en")`
 
 `api_*` - are data API related settings
