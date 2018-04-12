@@ -41,12 +41,12 @@ You can do this using export from your terminal:
 
 `export ARGUS_DATA_API_USER_NAME="" ARGUS_DATA_API_PASSWORD="" ARGUS_DATA_API_LOCALE="en" ARGUS_CHROME_DOWNLOAD_DIR="[PROJECT_DIRECTORY]/src/assets" ARGUS_DASHBOARD_LOCALE="en"`
 
+`*_API_*` - are data API related settings
+`ARGUS_CHROME_DOWNLOAD_DIR` - is the location where svg plots are saved
+`ARGUS_DASHBOARD_LOCALE` - is the language of the reports. This needs to correspond to column names in the `src/translations/translations.csv`. Use "en" to translate to English.
+
 **To run the workflow:**
 `Rscript src/master.R`
-
-`api_*` - are data API related settings
-`chrome_download_dir` - is the location where svg plots are saved
-`locale` - is the language of the reports. This needs to correspond to column names in the `src/translations/translations.csv`. Use "en" to translate to English.
 
 ### Master script steps:
 
