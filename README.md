@@ -36,7 +36,7 @@ It is possible to generate the reports in different languages. The international
 Whole workflow is controlled using `src/master.R` file.
 Master file contains comments for every block of logic.
 
-**First please set variables.**
+**First please set required environment variables.**
 You can do this using export from your terminal:
 
 `export ARGUS_DATA_API_USER_NAME="" ARGUS_DATA_API_PASSWORD="" ARGUS_DATA_API_LOCALE="en" ARGUS_CHROME_DOWNLOAD_DIR="[PROJECT_DIRECTORY]/src/assets" ARGUS_DASHBOARD_LOCALE="en"`
