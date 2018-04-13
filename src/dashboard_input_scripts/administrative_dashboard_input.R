@@ -1,17 +1,11 @@
-library(plotly)
-library(tidyr)
-library(dplyr)
-library(purrr)
-
+# Load RData from argus_dashboard_raw_input_script.R
 load("src/assets/admin_report_raw_input.RData")
-source("src/plots/ploting.R")
-source("src/munging/munging.R")
-source("src/constants.R")
 
-## Options
-options(viewer = NULL)
+# Clean assets ####
+# Remove previous plots
+unlink(administrative_report_plots_paths)
 
-## Reporting
+# Preprocess data ####
 last_12_weeks_report_status <- admin_report_input$reportingValues_W12 %>%
   round_review_report()
 
@@ -38,21 +32,22 @@ last_12_weeks_level_1_long <- last_12_weeks_level_2 %>%
   gather(key = label, value = number, -Id_Site, -year_week, -week, -reference) %>%
   mutate(label = recode_report(label))
 
+# Create plots ####
+# Central plot
 central_plots <- last_12_weeks_level_1_long %>%
-  plot_reporting_central_level(plot_colors, line_plot_margins = admin_plot_margins)
+  plot_reporting_central_level(plot_colors,
+                               line_plot_margins = admin_plot_margins,
+                               x_title = i18n$t("epi_week_nb"),
+                               y_title = '%')
 
 
 central_plots %>%
-  htmlwidgets::onRender(
-    "function(el, x) {
-     var gd = document.getElementById(el.id); 
-     Plotly.downloadImage(gd, {format: 'svg', width: 800, height: 400, filename: 'central_plot'});
-   }"
-  )
+  export(file = "central_plot.svg",
+         selenium = rselenium_server)
 
-export(central_plots, "src/assets/administrative_report/central_plot.png")
+export(central_plots, paste0(assets_admin_path, "central_plot.png"))
 
-## Overall reporting
+# Overall reporting plot
 overall_12_weeks_report_status <- admin_report_input$reportingValues_W12_overall %>%
   round_review_report()
 
@@ -82,16 +77,12 @@ reporting_parent_sites <- parent_sites %>%
                              plot_margins = admin_plot_margins)
 
 reporting_parent_sites %>%
-  htmlwidgets::onRender(
-    "function(el, x) {
-     var gd = document.getElementById(el.id); 
-     Plotly.downloadImage(gd, {format: 'svg', width: 800, height: 400, filename: 'reporting_parent_sites'});
-   }"
-  )
+  export(file = "reporting_parent_sites.svg", #width: 1200, height: 800
+         selenium = rselenium_server)
 
-export(reporting_parent_sites, "src/assets/administrative_report/reporting_parent_sites.png")
+export(reporting_parent_sites, paste0(assets_admin_path, "reporting_parent_sites.png"))
 
-## Review 
+## Review plot
 reviewing_sites <- overall_12_weeks_report_status
 
 reviewing_sites_long <- reviewing_sites %>%
@@ -136,35 +127,36 @@ review_plots <- subplot(plots_above_first_intermediate_level, subplots_plots_fir
         nrows = nrow_charts + 1)
 
 review_plots %>%
-  htmlwidgets::onRender(
-    "function(el, x) {
-     var gd = document.getElementById(el.id); 
-     Plotly.downloadImage(gd, {format: 'svg', width: 800, height: 400, filename: 'review_plots'});
-   }"
-  )
+  export(file = "review_plots.svg",
+         selenium = rselenium_server)
 
-export(review_plots, "src/assets/administrative_report/review_plots.png")
+export(review_plots, paste0(assets_admin_path, "review_plots.png"))
 
-## Silent sites
+# Generate tables ####
+# Silent sites
 sites_no_report_3weeks <- admin_report_input$noReport_W3 %>%
-  select(`Area` = name_parentSite,
-         `Site name` = siteName,
-         Contact = contact,
-         Phone = phone)
+  select(name_parentSite, siteName, contact, phone)
+
+data.table::setnames(sites_no_report_3weeks,
+                    old = names(sites_no_report_3weeks),
+                    new = c(i18n$t("name_parentSite"), i18n$t("siteName"), i18n$t("contact"),
+                            i18n$t("phone")))
 
 sites_no_report_8weeks <- admin_report_input$noReport_W8 %>%
-  select(`Area` = name_parentSite,
-         `Site name` = siteName,
-         Contact = contact,
-         Phone = phone)
+  select(name_parentSite, siteName, contact, phone)
 
-## Save output for markdown report
+data.table::setnames(sites_no_report_8weeks,
+                    old = names(sites_no_report_8weeks),
+                    new = c(i18n$t("name_parentSite"), i18n$t("siteName"), i18n$t("contact"),
+                            i18n$t("phone")))
+
+# Save output for markdown report ####
 save(min_week, max_week, min_year, max_year,
-  sites_no_report_3weeks, sites_no_report_8weeks, file = "src/assets/admin_report.RData")
+  sites_no_report_3weeks, sites_no_report_8weeks, file = paste0(assets_path, "admin_report.RData"))
 
-write.csv(sites_no_report_8weeks, "src/assets/administrative_report/sites_no_report_8weeks.csv", row.names = FALSE)
-write.csv(sites_no_report_3weeks, "src/assets/administrative_report/sites_no_report_3weeks.csv", row.names = FALSE)
+write.csv(sites_no_report_8weeks, paste0(assets_admin_path, "sites_no_report_8weeks.csv"), row.names = FALSE)
+write.csv(sites_no_report_3weeks, paste0(assets_admin_path, "sites_no_report_3weeks.csv"), row.names = FALSE)
 
-files_to_zip <- dir("src/assets/administrative_report/", full.names = TRUE)
-zip(zipfile = 'src/assets/administrative_report', files = files_to_zip)
-unlink('src/assets/administrative_report', recursive = TRUE)
+files_to_zip <- dir(assets_admin_path, full.names = TRUE)
+zip(zipfile = assets_admin_path, files = files_to_zip)
+unlink(assets_admin_path, recursive = TRUE)

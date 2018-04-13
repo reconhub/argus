@@ -1,0 +1,37 @@
+raw,en
+*** Epidemiological report headers ***,
+epi_report_title,Epidemiological dashboard
+disease_charts_header,Disease charts header
+disease_maps_header,Disease maps header
+disease_table_occurence_header,Disease table occurrence
+disease_table_alerts_header,Disease alerts
+disease_table_cumulative_header,Disease cumulative
+*** Epidemiological report charts and tables ***,
+disease_threshold,Threshold
+name_Site,Site Name
+message,Alert
+contactName,Contact
+contactPhoneNumber,Phone
+disease,Disease
+cas_previous_year,Cas 2017
+desease_previous_year,Desease 2017
+cas_this_year,Cas 2018
+desease_this_year,Desease 2018
+nb_of_cases,Number of cases
+*** Administrative report ***,
+admin_report_title,Administrative report
+compReport,Completeness of weekly reporting
+timeReport,Timeliness of weekly reporting
+compReview,Completeness of weekly reviewing
+timeReview,Timeliness of weekly reviewing
+country_reporting_header,Completeness and timeliness of weekly reporting for the whole country
+overall_reporting_header,Overall completeness and timeliness of weekly reporting
+overall_review_header,Overall completeness and timeliness of data review at each level from week
+silent_sites_8_weeks_header,Silent sites: reporting sites with no reports received for 8 weeks and longer
+silent_sites_3_weeks_header,Silent sites: reporting sites with no reports received for 3 weeks and longer
+*** Common *** ,
+epi_week_nb,Epidemiological week number
+siteName,Site Name
+name_parentSite,Area
+contact,Contact
+phone,Phone

@@ -1,5 +1,4 @@
 ---
-title: "Administrative summary"
 output: 
   flexdashboard::flex_dashboard:
     orientation: rows
@@ -9,10 +8,22 @@ output:
     theme: cosmo
     self_contained: false
     mathjax: NULL
+params:
+  custom_title: "Administrative summary"
+title: "`r params$custom_title`"
 ---
 
 ```{r setup, include=FALSE}
 library(flexdashboard)
+library(shiny.i18n)
+source("../constants.R")
+
+## file with translations
+i18n <- Translator$new(translation_csvs_path = "../translations",
+                       translation_csv_config = "../translations/config.yaml")
+
+## set translation language
+i18n$set_translation_language(language)
 
 load("../assets/admin_report.RData")
 ```
@@ -24,24 +35,30 @@ load("../assets/admin_report.RData")
 }
 </style>
 
-Row
+Row {data-height=650}
 -------------------------------------
 
-### Completeness and timeliness of weekly reporting for the whole country
+### `r i18n$t("country_reporting_header")`
 
 <img src="../assets/central_plot.svg" alt="Completeness and timeliness of weekly reporting for the whole country">
 
 
-### Overall completeness and timeliness of weekly reporting from week `r paste0(min_week, " (", min_year, ")")` to `r paste0(max_week, " (", max_year, ")")`
+### `r paste(i18n$t("overall_reporting_header"), paste0(min_week, " (", min_year, ")"), paste0(max_week, " (", max_year, ")"))`
 
 <img src="../assets/reporting_parent_sites.svg" alt="Overall completeness and timeliness of weekly reporting">
 
-Row
+Row {data-height=650}
 -------------------------------------
 
-### Overall completeness and timeliness of data review at each level from week `r paste0(min_week, " (", min_year, ")")` to `r paste0(max_week, " (", max_year, ")")`
+###  `r paste(i18n$t("overall_review_header"), paste0(min_week, " (", min_year, ")"), paste0(max_week, " (", max_year, ")"))`
 
-<img src="../assets/review_plots.svg" alt="Overall completeness and timeliness of data review">
+<!-- <img src="../assets/review_plots.svg" alt="Overall completeness and timeliness of data review" height="87px" -->
+<!--     width="100px"> -->
+
+```{r dpi = 30}
+knitr::include_graphics("../assets/review_plots.svg")
+```
+
 
 <script type="text/javascript">
 (function() {
@@ -57,14 +74,14 @@ Row
 Row
 -------------------------------------
 
-### Silent sites: reporting sites with no reports received for 8 weeks and longer
+### `r i18n$t("silent_sites_8_weeks_header")`
 
 ```{r}
 DT::datatable(data = sites_no_report_8weeks,
           options = list(dom = 'tp'))
 ```
 
-### Silent sites: reporting sites with no reports received for 3 weeks and longer
+### `r i18n$t("silent_sites_3_weeks_header")`
 
 ```{r}
 DT::datatable(data = sites_no_report_3weeks,
