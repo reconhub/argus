@@ -33,7 +33,8 @@ subplots_disease_occurance_w12 <- plots_disease_occurance_w12 %>%
   plotly::subplot(nrows = nrow_charts,
                   titleX = TRUE,
                   titleY = TRUE,
-                  margin = 0.13)
+                  margin = 0.13,
+                  heights = c(0.3, 0.4, 0.3))
 
 subplots_disease_occurance_w12 %>%
   export(file = "subplots_disease_occurance_w12.svg",
