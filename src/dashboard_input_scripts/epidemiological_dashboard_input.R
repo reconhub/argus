@@ -27,14 +27,13 @@ plots_disease_occurance_w12 <- disease_occurance_w12 %>%
                       y_title = i18n$t("nb_of_cases")))
 
 plots_disease_occurance_w12[[1]]$x$attrs[[1]]$showlegend <- TRUE
-nrow_charts <- ceiling(max(length(plots_disease_occurance_w12)/3, 1))
+nrow_charts <- ceiling(max(length(plots_disease_occurance_w12)/2, 1))
 
 subplots_disease_occurance_w12 <- plots_disease_occurance_w12 %>%
   plotly::subplot(nrows = nrow_charts,
                   titleX = TRUE,
                   titleY = TRUE,
-                  margin = 0.13,
-                  widths = c(0.3, 0.4, 0.3))
+                  margin = 0.13)
 
 subplots_disease_occurance_w12 %>%
   export(file = "subplots_disease_occurance_w12.svg",
@@ -42,7 +41,7 @@ subplots_disease_occurance_w12 %>%
 
 # Create maps ####
 diseaseThreshold_W2 <- epi_report_input$diseaseThreshold_W2 %>%
-  mutate(`disease_threshold` = paste(disease, variable, occurence, ">=", threshold_value))
+  mutate(`Occurence` = paste(disease, variable, occurence))
 
 disease_location <- diseaseThreshold_W2 %>%
   group_by(disease, longitude, latitude) %>%
@@ -54,12 +53,14 @@ disease_maps <- ggplot() +
   geom_sf(data = country_data, fill = "white") +
   geom_point(data = disease_location, aes(x = longitude, y = latitude, size = occurence),
              color = plot_colors[1], alpha = 0.7) +
-  scale_size(breaks = unique(disease_location$occurence)) +
+  scale_size(breaks = unique(disease_location$occurence), name = i18n$t("maps_legend")) +
   facet_wrap(~disease, ncol = 2) +
   theme_ipsum() +
   theme(axis.line = element_blank(), axis.ticks = element_blank(), axis.text = element_blank(),
+        strip.text.x = element_text(size = 16),
         axis.title.x = element_blank(), axis.title.y = element_blank(),
-        legend.text = element_text(size = 10), legend.title = element_blank(),
+        legend.title = element_text(size = 16), 
+        legend.text = element_text(size = 16),
         legend.key = element_rect(fill = "white", colour = "white"))
 
 ggsave(file = paste0(assets_path, "maps.svg"), plot = disease_maps, width = 10, height = 8)
@@ -67,20 +68,22 @@ ggsave(file = paste0(assets_path, "maps.svg"), plot = disease_maps, width = 10, 
 # Create tables with diseases ####
 # Disease table occurrence
 disease_occurance_above_threshold <- diseaseThreshold_W2 %>%
-  select(siteName, name_parentSite, contact, phone, disease_threshold)
+  select(siteName, name_parentSite, contact, phone, occurence, threshold_value)
 
 data.table::setnames(disease_occurance_above_threshold,
-                     old = c("siteName", "name_parentSite", "contact", "phone", "disease_threshold"),
+                     old = c("siteName", "name_parentSite", "contact", "phone", "occurence", "threshold_value"),
                      new = c(i18n$t("siteName"), i18n$t("name_parentSite"), i18n$t("contact"),
-                               i18n$t("phone"), i18n$t("disease_threshold")))
+                             i18n$t("phone"),
+                             i18n$t("occurrence"),
+                             i18n$t("threshold")))
 
 # Disease alerts
 alert_list_D10 <- epi_report_input$alertList_D10 %>%
-  select(name_Site, name_parentSite, contactName, contactPhoneNumber, message)
+  select(receptionDate, name_Site, name_parentSite, contactName, contactPhoneNumber, message)
 
 data.table::setnames(alert_list_D10,
                      old = names(alert_list_D10),
-                     new = c(i18n$t("name_Site"), i18n$t("name_parentSite"), i18n$t("contactName"),
+                     new = c(i18n$t("reception_Date"), i18n$t("name_Site"), i18n$t("name_parentSite"), i18n$t("contactName"),
                              i18n$t("contactPhoneNumber"), i18n$t("message")))
 
 # Cummulative table
