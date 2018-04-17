@@ -1,6 +1,8 @@
 font_annotations <- list(
   family = "sans serif",
-  size = 14)
+  size = 16,
+  xref='paper',
+  yref='paper')
 
 font_plot <- list(
   family = "sans serif",
@@ -71,6 +73,7 @@ plot_1st_itermediate_level <- function(data, plot_colors, margins, order_x,
       legend = list(orientation = 'h', y = 1.1, x = 0.5, font = list(size = 14)),
       margin =  plot_margins,
       barmode = 'group',
+      bargroupgap = 0.1,
       xaxis = list(
         categoryorder = "array",
         categoryarray = order_x,

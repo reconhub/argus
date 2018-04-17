@@ -43,14 +43,14 @@ Row {data-height=650}
 <img src="../assets/central_plot.svg" alt="Completeness and timeliness of weekly reporting for the whole country">
 
 
-### `r paste(i18n$t("overall_reporting_header"), paste0(min_week, " (", min_year, ")"), paste0(max_week, " (", max_year, ")"))`
+### `r paste(i18n$t("overall_reporting_header"), paste0(min_week, " (", min_year, ")"), i18n$t("to_week"), paste0(max_week, " (", max_year, ")"))`
 
 <img src="../assets/reporting_parent_sites.svg" alt="Overall completeness and timeliness of weekly reporting">
 
 Row {data-height=650}
 -------------------------------------
 
-###  `r paste(i18n$t("overall_review_header"), paste0(min_week, " (", min_year, ")"), paste0(max_week, " (", max_year, ")"))`
+###  `r paste(i18n$t("overall_review_header"), paste0(min_week, " (", min_year, ")"), i18n$t("to_week"), paste0(max_week, " (", max_year, ")"))`
 
 <!-- <img src="../assets/review_plots.svg" alt="Overall completeness and timeliness of data review" height="87px" -->
 <!--     width="100px"> -->
@@ -74,16 +74,16 @@ knitr::include_graphics("../assets/review_plots.svg")
 Row
 -------------------------------------
 
-### `r i18n$t("silent_sites_8_weeks_header")`
-
-```{r}
-DT::datatable(data = sites_no_report_8weeks,
-          options = list(dom = 'tp'))
-```
-
 ### `r i18n$t("silent_sites_3_weeks_header")`
 
 ```{r}
 DT::datatable(data = sites_no_report_3weeks,
+          options = list(dom = 'tp'))
+```
+
+### `r i18n$t("silent_sites_8_weeks_header")`
+
+```{r}
+DT::datatable(data = sites_no_report_8weeks,
           options = list(dom = 'tp'))
 ```
