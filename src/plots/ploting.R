@@ -1,6 +1,8 @@
 font_annotations <- list(
   family = "sans serif",
-  size = 14)
+  size = 16,
+  xref = 'paper',
+  yref = 'paper')
 
 font_plot <- list(
   family = "sans serif",
@@ -30,7 +32,7 @@ plot_occurance <- function(disease_occurance_w12, max_occurence, plot_colors, li
         showarrow = FALSE
       ),
       margin =  line_plot_margins,
-      legend = list(orientation = 'h', y = 1.1, x = 0.5, font = font_plot),
+      legend = list(orientation = 'v', y = 1.1, x = 0.5, font = font_plot),
       xaxis = list(title = x_title, tickangle = 45, tickfont = font_plot, titlefont = font_plot),
       yaxis = list(title = y_title, tickfont = font_plot, titlefont = font_plot, range =~c(0, max_occurence)))
 }
@@ -49,7 +51,7 @@ plot_reporting_central_level <- function(last_12_weeks_level_1_long, plot_colors
           showlegend = TRUE) %>%
     layout(
       margin =  line_plot_margins,
-      legend = list(orientation = 'h', y = 1.1, x = 0.5, font = list(size = 14)),
+      legend = list(orientation = 'v', y = 1.1, x = 0.5, font = list(size = 14)),
       xaxis = list(title = x_title, tickfont = font_plot, titlefont = font_plot),
       yaxis = list(title = y_title, tickfont = font_plot, titlefont = font_plot, range =~c(0, 100)))
 }
@@ -68,9 +70,10 @@ plot_1st_itermediate_level <- function(data, plot_colors, margins, order_x,
           hoverinfo = "text",
           showlegend = is_show_legend) %>%
     layout(
-      legend = list(orientation = 'h', y = 1.1, x = 0.5, font = list(size = 14)),
+      legend = list(orientation = 'v', y = 1.1, x = 0.5, font = list(size = 14)),
       margin =  plot_margins,
       barmode = 'group',
+      bargroupgap = 0.1,
       xaxis = list(
         categoryorder = "array",
         categoryarray = order_x,

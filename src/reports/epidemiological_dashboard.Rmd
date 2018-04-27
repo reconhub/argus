@@ -81,5 +81,5 @@ Row
 
 ```{r}
 DT::datatable(data = cumulative_table,
-          options = list(dom = 'tp'))
+          options = list(dom = 't'))
 ```
