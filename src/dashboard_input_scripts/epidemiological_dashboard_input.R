@@ -27,7 +27,7 @@ plots_disease_occurance_w12 <- disease_occurance_w12 %>%
                       y_title = i18n$t("nb_of_cases")))
 
 plots_disease_occurance_w12[[1]]$x$attrs[[1]]$showlegend <- TRUE
-nrow_charts <- ceiling(max(length(plots_disease_occurance_w12)/2, 1))
+nrow_charts <- ceiling(max(length(plots_disease_occurance_w12) / 2, 1))
 
 subplots_disease_occurance_w12 <- plots_disease_occurance_w12 %>%
   plotly::subplot(nrows = nrow_charts,
