@@ -1,8 +1,8 @@
 font_annotations <- list(
   family = "sans serif",
   size = 16,
-  xref='paper',
-  yref='paper')
+  xref = 'paper',
+  yref = 'paper')
 
 font_plot <- list(
   family = "sans serif",
