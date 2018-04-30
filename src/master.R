@@ -25,8 +25,6 @@ i18n$set_translation_language(language)
 
 # Setup RSelenium server ####
 # RSelenium is required to save plotly charts as svg
-#rselenium_server <- RSelenium::rsDriver(browser = "chrome", extraCapabilities = extra_capabilities)
-
 rselenium_server <- RSelenium::rsDriver(remoteServerAddr = "localhost", port = 4445L, browser = "chrome",
                                         extraCapabilities = extra_capabilities)
 
