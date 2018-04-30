@@ -8,9 +8,16 @@ R libraries are managed by `packrat`.
 
 ## Other requirements
 
-1. Chrome browser for downloading the svg images for the report. In order to avoid loading `plotly` dependencies with the report the plots are rendered and saved using `export()` via `RSelenium` (see `?plotly::export` for more information). This requires a web browser, with browser's download setting location set to `[PROJECT_DIRECTORY]/src/assets` folder.
+1. Selenium & Docker
+In order to render plotly to SVG the docker image with Chrome and Selenium is used.
 
-`sudo apt-get --only-upgrade install google-chrome-stable`
+To install docker please see: https://ropensci.github.io/RSelenium/articles/RSelenium-docker.html
+
+If the docker is already installed pull the image `selenium/standalone-chrome`:
+`docker pull selenium/standalone-chrome` from the dockerhub.
+
+To run the docker with the project the project folder (left side) needs to be visible to the docker under the same path as locally:
+`docker run -d -p 4445:4444 -v ~/[PROJECT_DIRECTORY]:/[PROJECT_DIRECTORY] selenium/standalone-chrome`
 
 2. For Unix-alikes, GDAL (>= 2.0.0), GEOS (>= 3.3.0) and Proj.4 (>= 4.8.0) are required.
 
@@ -23,8 +30,6 @@ R libraries are managed by `packrat`.
 3. Pandoc (>= 1.16.0.2) (for `rmarkdown`)
 
 4. R (>= 3.4.1)
-
-5. RSelenium
 
 ## Internationalization
 
