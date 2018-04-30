@@ -50,6 +50,9 @@ You can do this using export from your terminal:
 `ARGUS_CHROME_DOWNLOAD_DIR` - is the location where svg plots are saved
 `ARGUS_DASHBOARD_LOCALE` - is the language of the reports. This needs to correspond to column names in the `src/translations/translations.csv`. Use "en" to translate to English.
 
+**Run docker with Selenium and Chrome**
+`docker run -d -p 4445:4444 -v ~/[PROJECT_DIRECTORY]:/[PROJECT_DIRECTORY] selenium/standalone-chrome`
+
 **To run the workflow:**
 `Rscript src/master.R`
 
