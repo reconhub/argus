@@ -1,4 +1,4 @@
-#####################################
+#Summary ####
 #### Objective
 # Create the data tables needed for the Argus dashboards
 
@@ -107,7 +107,7 @@
 # .	XX.YEAR : nb of cases  for each variable XX of interest in the previous year and then in the current year (nb of columns= nb of unique variables of interest x 2).
 
 #
-#######################################
+##### Load packages ####
 
 library(RMySQL)
 library(RSQLite)
@@ -118,9 +118,9 @@ library(ggplot2)
 #library(grid)
 #library(gtools)
 
-########################################## 
-#### Set the variables of interest
-##########################################
+ 
+#### Set the variables of interest ####
+
 db_config <- "db/db_config"
 
 get_config <- function(config) {
@@ -140,9 +140,9 @@ weekFirstDay <- 1 # either 1 for Monday or 7 for Sunday
 #   
 # nbDeath_label <- 
 
-##########################################   
-#### Set the periods of interest
-########################################## 
+
+#### Set the periods of interest ####
+
 
 # function to correct week() based on the first day of the week, if Monday use isoweek(), if Sunday use epiweek()
 
@@ -244,9 +244,10 @@ yearSem_W3 <- ifelse(numSem_W3>numSem_W3[length(numSem_W3)], yearPrevious, yearC
 
 numSem_YR <- seq(from=1, to=weekEnd, by=1) # vector with the weeks since first week 1
 
-########################################## 
-#### Retrieve raw data of interest from the MySQL database
-########################################## 
+
+
+#### Retrieve raw data of interest from the MySQL database ####
+
 
 baseSql <- dbConnect(MySQL(), user = config_list$DB_USER,
                      password = config_list$DB_PASSWORD,
@@ -288,9 +289,8 @@ alerts <- dbGetQuery(baseSql, paste("SELECT * FROM sesdashboard_alert WHERE rece
 dbDisconnect(baseSql)
 rm(baseSql)
 
-########################################## 
-#### Modification of the format of some variables
-########################################## 
+
+#### Modification of the format of some variables ####
 
 # sites_relationships
 
@@ -309,13 +309,12 @@ fullreport$createdDate <- ymd_hms(fullreport$createdDate)
 alerts$receptionDate <- ymd_hms(alerts$receptionDate)
 
 
-########################################## 
-#### Creation of tables of interest for the dashboards
-########################################## 
 
-###############
-## Preparatory tables
-###############
+#### Creation of tables of interest for the dashboards ####
+
+
+## Preparatory tables ####
+
 
 # Stucture of the system
 
@@ -355,9 +354,7 @@ for (rowLineId in 1:nrow(thresholds)) {
 longLat <- unique(sites_relationships[which(!is.na(sites_relationships$longitude) | !is.na(sites_relationships$latitude)),c("name","FK_SiteId","level","longitude","latitude")])
 
 
-###############
-# Dataframes with sites active for specific periods
-###############
+#### Dataframes with sites active for specific periods ####
 
 
 # Dataframe with the sites active for the whole period of interest
@@ -445,9 +442,8 @@ if (length(temp)==0) {
   sites_specificPeriod_W12$duration <- ifelse(sites_specificPeriod_W12$weekEnd >= sites_specificPeriod_W12$weekStart, sites_specificPeriod_W12$weekEnd - sites_specificPeriod_W12$weekStart +1, nbWeeksYear - sites_specificPeriod_W12$weekStart +1 + sites_specificPeriod_W12$weekEnd)
 }
 
-#############
-## reportingValues_YR: table with variables of interest since the beginning of the year (week 1) for each site from the first intermediate level:
-#############
+## reportingValues_YR: table with variables of interest since the beginning of the year (week 1) for each site from the first intermediate level ####
+
 
 reportingValues_YR <- parentSites # Since week 1
 
@@ -565,9 +561,7 @@ for (levInterest in seq(levFirstInter-1, 1, by=-1)) { # completion of the upper 
   }
 }
 
-#############
-## reportingValues_YR_previous: table with variables of interest for the same period the previous year for the first intermediate level:
-#############
+## reportingValues_YR_previous: table with variables of interest for the same period the previous year for the first intermediate level ####
 
 reportingValues_YR_previous <- parentSites # Since week 1
 
@@ -686,9 +680,7 @@ for (levInterest in seq(levFirstInter-1, 1, by=-1)) { # completion of the upper 
 }
 
 
-#############
-## reportingValues_W12: table with variables of interest for each of the 12 previous weeks for each site from the first intermediate level:
-#############
+## reportingValues_W12: table with variables of interest for each of the 12 previous weeks for each site from the first intermediate level ####
 
 reportingValues_W12<- parentSites # For each week of the 12th previous week
 reportingValues_W12$week <- NA
@@ -1057,9 +1049,7 @@ for (levInterest in seq(levFirstInter-1, 1, by=-1)) { # completion of the upper 
   }
 }
 
-#############
-## reportingValues_W12_overall : same variables as reportingValues_W12 with aggregated data for the whole period for each site.
-#############
+## reportingValues_W12_overall : same variables as reportingValues_W12 with aggregated data for the whole period for each site ####
 
 reportingValues_W12_overall <- parentSites
 reportingValues_W12_overall$nbExpected <- NA # Nb of expected reports
@@ -1091,9 +1081,7 @@ reportingValues_W12_overall$compReview <- reportingValues_W12_overall$nbReviewed
 reportingValues_W12_overall$timeReview <- reportingValues_W12_overall$nbRevTime/reportingValues_W12_overall$nbRecTimeBelow
 
 
-#############
-## noReport_W8 and noReport_W3: table with list of leaf sites without any report received for >= 8 weeks  and >= 3 weeks grouped by first intermediate level:
-#############
+## noReport_W8 and noReport_W3: table with list of leaf sites without any report received for >= 8 weeks  and >= 3 weeks grouped by first intermediate level ####
 
 # Table with list of leaf sites without any report received for >= 3 weeks and >= 8 weeks grouped by first intermediate level (name, path, contact of the site)
 
@@ -1185,9 +1173,8 @@ for (IdParentSite in tempFirstIntermediate$Id_parentSite) {
 
 noReport_W3 <- noReport_W3[-nrow(noReport_W3),]
 
-#############
-## diseaseThreshold_W12
-#############
+
+## diseaseThreshold_W12 ####
 
 # Table with number of cases of each disease with thresholds in the 12 previous weeks for the whole country
 
@@ -1278,9 +1265,9 @@ diseasesInterest_W12 <- unique(diseaseThreshold_W12$disease[which(diseaseThresho
 
 diseaseThreshold_W12 <- diseaseThreshold_W12[which(diseaseThreshold_W12$disease %in% diseasesInterest_W12),]
 
-#############
-## diseaseThreshold_W2
-#############
+
+## diseaseThreshold_W2 ####
+
 
 #### Table with one row for each site/disease having crossed threshold in any of the two previous week, the number of cases and longitude and latitude of the unit, path of the site and contact
 
@@ -1291,7 +1278,7 @@ rep_IDs <- NA
 ################# The below one is the correct one
 # fullrep_IDs <- strsplit(reportingValues_W12$ids_fullreport_recVal[which(reportingValues_W12$level==1 & reportingValues_W12$week %in% c(weekEnd-1, weekEnd))],split=",")[[1]]
 
-################ The below one is for test only 
+################ The below one is for test only ####
 print("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!WARNING SOME CODE USED FOR TEST, UNCOMMENT THE CORRECT LINES ABOVE AND DELETE THE LINES USED FOR TEST!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
 fullrep_IDs <- strsplit(reportingValues_W12$ids_fullreport_recVal[which(reportingValues_W12$level==1 & reportingValues_W12$week %in% c(4, 5))],split=",")[[1]]
 ################The above one is for thest only
@@ -1373,9 +1360,8 @@ for (site_ID in unique(diseaseThreshold_W2$FK_SiteId)) {
 
 diseaseThreshold_W2 <- diseaseThreshold_W2[which(diseaseThreshold_W2$occurence!=0),]
 
-#############
-## alertList_D10
-#############
+
+## alertList_D10 ####
 
 #### List of alerts received in the 10 previous days, name of the site, path and contact
 
@@ -1391,11 +1377,8 @@ for (rowLineId in 1:nrow(alertList_D10)) {
   alertList_D10$name_Site[rowLineId] <- sites_id$reference[which(sites_id$id==sites_relationships$FK_SiteId[which(sites_relationships$id==alertList_D10$FK_SiteRelationShipId[rowLineId])])]
 }
 
-#############
-## tableBeginYear
-#############
 
-
+## tableBeginYear ####
 
 #### Cumulative table with the number of cases since beginning of year and the same period the year before for the whole country, one row per disease (all diseases), one column per year
 
@@ -1475,7 +1458,7 @@ for (disInt in unique(tableBeginYear$disease)) {
 colnames(tableBeginYear)[(ncol(tableBeginYear)-length(variablesNames)+1):ncol(tableBeginYear)] <- paste(variablesNames,yearCurrent)
 
 
-### Elements to pass to the report
+#### Elements to pass to the report ####
 admin_report_input <- list(
   noReport_W3 = noReport_W3,
   noReport_W8 = noReport_W8,

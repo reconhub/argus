@@ -1,3 +1,7 @@
+#### JG; put a header with the objective of the script
+
+#JG: the use of plotly should be replaced by ggplot2 to produce the svg plots. This script is to be removed or updated accordingly.
+
 font_annotations <- list(
   family = "sans serif",
   size = 16,

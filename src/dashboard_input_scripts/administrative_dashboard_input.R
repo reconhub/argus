@@ -1,3 +1,6 @@
+#### JG; put a header with the objective of the script
+
+
 # Load RData from argus_dashboard_raw_input_script.R
 load("src/assets/admin_report_raw_input.RData")
 
@@ -5,7 +8,8 @@ load("src/assets/admin_report_raw_input.RData")
 # Remove previous plots
 unlink(administrative_report_plots_paths)
 
-# Preprocess data ####
+# Preprocess data ####  
+# JG: I will try to update the argus_dashboard_raw_input_script to avoid prepocessing data here
 last_12_weeks_report_status <- admin_report_input$reportingValues_W12 %>%
   round_review_report()
 
@@ -33,7 +37,7 @@ last_12_weeks_level_1_long <- last_12_weeks_level_2 %>%
   mutate(label = recode_report(label))
 
 # Create plots ####
-# Central plot
+# Central plot # JG the use of plotly should be replaced by ggplot2 to produce the svg plots. 
 central_plots <- last_12_weeks_level_1_long %>%
   plot_reporting_central_level(plot_colors,
                                line_plot_margins = admin_plot_margins,
@@ -45,9 +49,9 @@ central_plots %>%
   export(file = "central_plot.svg",
          selenium = rselenium_server)
 
-export(central_plots, paste0(assets_admin_path, "central_plot.png"))
+export(central_plots, paste0(assets_admin_path, "central_plot.png")) # JG: is the png plot used in the dashboards?
 
-# Overall reporting plot
+# Overall reporting plot # JG the use of plotly should be replaced by ggplot2 to produce the svg plots. 
 overall_12_weeks_report_status <- admin_report_input$reportingValues_W12_overall %>%
   round_review_report()
 
@@ -80,9 +84,10 @@ reporting_parent_sites %>%
   export(file = "reporting_parent_sites.svg", #width: 1200, height: 800
          selenium = rselenium_server)
 
-export(reporting_parent_sites, paste0(assets_admin_path, "reporting_parent_sites.png"))
+export(reporting_parent_sites, paste0(assets_admin_path, "reporting_parent_sites.png")) # JG: is the png plot used in the dashboards?
 
-## Review plot
+
+## Review plot # JG the use of plotly should be replaced by ggplot2 to produce the svg plots. 
 reviewing_sites <- overall_12_weeks_report_status
 
 reviewing_sites_long <- reviewing_sites %>%
@@ -130,7 +135,7 @@ review_plots %>%
   export(file = "review_plots.svg",
          selenium = rselenium_server)
 
-export(review_plots, paste0(assets_admin_path, "review_plots.png"))
+export(review_plots, paste0(assets_admin_path, "review_plots.png")) # JG: is the png plot used in the dashboards?
 
 # Generate tables ####
 # Silent sites
@@ -157,6 +162,6 @@ save(min_week, max_week, min_year, max_year,
 write.csv(sites_no_report_8weeks, paste0(assets_admin_path, "sites_no_report_8weeks.csv"), row.names = FALSE)
 write.csv(sites_no_report_3weeks, paste0(assets_admin_path, "sites_no_report_3weeks.csv"), row.names = FALSE)
 
-files_to_zip <- dir(assets_admin_path, full.names = TRUE)
-zip(zipfile = assets_admin_path, files = files_to_zip)
-unlink(assets_admin_path, recursive = TRUE)
+files_to_zip <- dir(assets_admin_path, full.names = TRUE) 
+zip(zipfile = assets_admin_path, files = files_to_zip) # JG: where do we need this zip folder? command fails on my system: Warning message: running command '"zip" -r9X [...] ' had status 127
+unlink(assets_admin_path, recursive = TRUE) # JG: why this line? it didn't remove the folder on my system

@@ -52,7 +52,7 @@ Row {data-height=650}
 
 ###  `r paste(i18n$t("overall_review_header"), paste0(min_week, " (", min_year, ")"), i18n$t("to_week"), paste0(max_week, " (", max_year, ")"))`
 
-<!-- <img src="../assets/review_plots.svg" alt="Overall completeness and timeliness of data review" height="87px" -->
+<!-- <img src="../assets/administrative_report/review_plots.svg" alt="Overall completeness and timeliness of data review" height="87px" -->
 <!--     width="100px"> -->
 
 ```{r dpi = 30}

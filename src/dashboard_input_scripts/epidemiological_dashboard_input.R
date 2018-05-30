@@ -1,3 +1,6 @@
+#### JG; put a header with the objective of the script
+
+
 # Load RData from argus_dashboard_raw_input_script.R
 load("src/assets/epidemiological_report_raw_input.RData")
 
@@ -9,6 +12,8 @@ unlink(epidemiological_report_plots_paths)
 sp_files <- st_read(paste0(assets_path, shape_files))
 
 # Preprocess data ####
+# JG: I will try to update the argus_dashboard_raw_input_script to avoid prepocessing data here
+
 disease_occurance_w12 <- epi_report_input$diseaseThreshold_W12 %>%
   mutate(
     year = ifelse(week < 8, 2018, 2017), # This is temporary - year column needs to be in the raw data
@@ -18,7 +23,8 @@ disease_occurance_w12 <- epi_report_input$diseaseThreshold_W12 %>%
 max_occurence <- max(disease_occurance_w12$occurence) + 1
 
 # Create plots ####
-# Disease occurance in the last 12 weeks
+# Disease occurrence in the last 12 weeks # JG the use of plotly should be replaced by ggplot2 to produce the svg plots. 
+
 plots_disease_occurance_w12 <- disease_occurance_w12 %>%
   split(disease_occurance_w12$disease) %>% 
   map(~plot_occurance(., max_occurence, plot_colors[1],
@@ -38,7 +44,7 @@ subplots_disease_occurance_w12 <- plots_disease_occurance_w12 %>%
 
 subplots_disease_occurance_w12 %>%
   export(file = "subplots_disease_occurance_w12.svg",
-         selenium = rselenium_server)
+         selenium = rselenium_server)  
 
 # Create maps ####
 diseaseThreshold_W2 <- epi_report_input$diseaseThreshold_W2 %>%
@@ -48,7 +54,7 @@ disease_location <- diseaseThreshold_W2 %>%
   group_by(disease, longitude, latitude) %>%
   summarise(occurence  = sum(occurence))
 
-country_data <- sp_files %>% dplyr::filter(GEOUNIT == "Togo") #TODO this needs to be read from data
+country_data <- sp_files %>% dplyr::filter(GEOUNIT == "Togo") #TODO this needs to be read from data #JG: can you explain your comment, do you mean put "Togo" as an option in the constants?
 
 disease_maps <- ggplot() +
   geom_sf(data = country_data, fill = "white") +
