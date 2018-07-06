@@ -9,7 +9,6 @@ library(sf)
 library(ggplot2)
 library(hrbrthemes)
 library(shiny.i18n)
-library(RSelenium)
 
 source("src/plots/ploting.R")
 source("src/munging/munging.R")
@@ -23,20 +22,11 @@ i18n <- Translator$new(translation_csvs_path = translations_path,
 # set translation language
 i18n$set_translation_language(language)
 
-# Setup RSelenium server ####
-# RSelenium is required to save plotly charts as svg
-rselenium_server <- RSelenium::rsDriver(remoteServerAddr = "localhost", port = 4445L, browser = "chrome",
-                                        extraCapabilities = extra_capabilities)
-
 # Generate tables and charts for the dashboards ####
 # In order to have the flexdashboards as light as possible we generate the charts and tables in the separate scripts
 # not to load plotly dependencies (or other) to Rmarkdown.
 source("src/dashboard_input_scripts/administrative_dashboard_input.R", echo = TRUE)
 source("src/dashboard_input_scripts/epidemiological_dashboard_input.R", echo = TRUE)
-
-# Close RSelenium chrom windows
-rselenium_server$client$closeWindow()
-rselenium_server$server$stop()
 
 # Render dashboards ####
 # Dashboards are rendered as flexdashboards

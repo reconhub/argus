@@ -1,20 +1,11 @@
 ## API connection constants
-main_api_url <- "http://avadar.novel-t.ch/argus-r/sesdashboard/web/"
-user_name <- Sys.getenv("ARGUS_DATA_API_USER_NAME")
-api_password <- Sys.getenv("ARGUS_DATA_API_PASSWORD")
-language <-  Sys.getenv("ARGUS_DASHBOARD_LOCALE")
+# main_api_url <- "http://avadar.novel-t.ch/argus-r/sesdashboard/web/"
+# user_name <- Sys.getenv("ARGUS_DATA_API_USER_NAME")
+# api_password <- Sys.getenv("ARGUS_DATA_API_PASSWORD")
+language <-  "en"
 
-## RSelenium options
-## Options
-extra_capabilities <- list(
-  chromeOptions = 
-    list(prefs = list(
-      "profile.default_content_settings.popups" = 0L,
-      "download.prompt_for_download" = FALSE,
-      "download.default_directory" = Sys.getenv("ARGUS_CHROME_DOWNLOAD_DIR")
-    )
-    )
-)
+## Country for which report is generated (used for selecting proper map)
+country <- "Togo"
 
 ## Paths
 assets_path <- "src/assets/"
@@ -35,19 +26,3 @@ administrative_report_plots_paths <- paste0(assets_path, administrative_report_p
 epidemiological_report_plots_paths <- paste0(assets_path, epidemiological_report_plots_names)
 
 max_intermediate_levels <- 50
-
-admin_plot_margins <- list(
-  l = 70,
-  r = 50,
-  b = 100,
-  t = 10,
-  pad = 4
-)
-
-bar_plot_margins <- list(
-  l = 50,
-  r = 50,
-  b = 120,
-  t = 20,
-  pad = 4
-)

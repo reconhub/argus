@@ -34,13 +34,12 @@ load("../assets/epi_report.Rdata")
 }
 </style>
 
-Row {data-height=670}
+Row {data-height=800}
 -------------------------------------
 
 ### `r i18n$t("disease_charts_header")`
 
 <img src="../assets/subplots_disease_occurance_w12.svg" alt="chart1">
-
 
 ### `r i18n$t("disease_maps_header")`
 
@@ -65,13 +64,15 @@ Row
 
 ```{r}
 DT::datatable(data = disease_occurance_above_threshold,
-          options = list(dom = 'tp'))
+              rownames = FALSE,
+              options = list(dom = 'tp'))
 ```
 
 ### `r i18n$t("disease_table_alerts_header")`
 ```{r}
 DT::datatable(data = alert_list_D10,
-          options = list(dom = 'tp'))
+              rownames = FALSE,
+              options = list(dom = 'tp'))
 ```
 
 Row
@@ -81,5 +82,6 @@ Row
 
 ```{r}
 DT::datatable(data = cumulative_table,
-          options = list(dom = 't'))
+              rownames = FALSE,
+              options = list(dom = 't'))
 ```

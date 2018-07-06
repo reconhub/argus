@@ -35,7 +35,7 @@ load("../assets/admin_report.RData")
 }
 </style>
 
-Row {data-height=650}
+Row
 -------------------------------------
 
 ### `r i18n$t("country_reporting_header")`
@@ -47,7 +47,7 @@ Row {data-height=650}
 
 <img src="../assets/reporting_parent_sites.svg" alt="Overall completeness and timeliness of weekly reporting">
 
-Row {data-height=650}
+Row
 -------------------------------------
 
 ###  `r paste(i18n$t("overall_review_header"), paste0(min_week, " (", min_year, ")"), i18n$t("to_week"), paste0(max_week, " (", max_year, ")"))`
@@ -78,6 +78,7 @@ Row
 
 ```{r}
 DT::datatable(data = sites_no_report_3weeks,
+              rownames = FALSE,
           options = list(dom = 'tp'))
 ```
 
@@ -85,5 +86,6 @@ DT::datatable(data = sites_no_report_3weeks,
 
 ```{r}
 DT::datatable(data = sites_no_report_8weeks,
+              rownames = FALSE,
           options = list(dom = 'tp'))
 ```
