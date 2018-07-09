@@ -10,7 +10,6 @@ unlink(epidemiological_report_plots_paths)
 # Load shapefiles ####
 sp_files <- st_read(paste0(assets_path, shape_files))
 
-# Preprocess data ####
 disease_occurance_w12 <- epi_report_input$diseaseThreshold_W12 %>%
   mutate(
     year = ifelse(week <= 8, 2018, 2017), # This is temporary - year column needs to be in the raw data
@@ -20,7 +19,8 @@ disease_occurance_w12 <- epi_report_input$diseaseThreshold_W12 %>%
 max_occurence <- max(disease_occurance_w12$occurence) + 1
 
 # Create plots ####
-# Disease occurance in the last 12 weeks
+# Disease occurrence in the last 12 weeks # JG the use of plotly should be replaced by ggplot2 to produce the svg plots. 
+
 plots_disease_occurance_w12 <- disease_occurance_w12 %>%
   plot_occurance(., plot_colors[1],
                       x_title = i18n$t("epi_week_nb"),

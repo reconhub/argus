@@ -1,7 +1,6 @@
-### Master file to run all the calculations
+### Master file to run all the calculations to compute Argus admnistrative and epidemiological dashboards
 
 # Loading Packages and modules with functions ####
-library(plotly)
 library(tidyr)
 library(dplyr)
 library(purrr)
@@ -28,6 +27,7 @@ i18n$set_translation_language(language)
 # Generate tables and charts for the dashboards ####
 # In order to have the flexdashboards as light as possible we generate the charts and tables in the separate scripts
 # not to load plotly dependencies (or other) to Rmarkdown.
+
 source("src/dashboard_input_scripts/administrative_dashboard_input.R", echo = TRUE)
 source("src/dashboard_input_scripts/epidemiological_dashboard_input.R", echo = TRUE)
 

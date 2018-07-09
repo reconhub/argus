@@ -1,3 +1,5 @@
+#### JG; put a header with the objective of the script
+
 recode_report <- function(label) {
   recode(label, "compReport" = i18n$t("compReport"),
          "timeReport" = i18n$t("timeReport"))

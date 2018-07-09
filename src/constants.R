@@ -1,3 +1,6 @@
+# Purpose of this script is to define constants that are used in the reports generation workflow
+
+
 ########################################## TO SET ###############################################
 ## API connection constants
 # main_api_url <- "http://avadar.novel-t.ch/argus-r/sesdashboard/web/"
@@ -14,7 +17,6 @@ country <- "Togo"
 
 ## Paths
 assets_path <- "src/assets/"
-assets_admin_path <- paste0(assets_path, "administrative_report/")
 translations_path <- "src/translations"
 
 ## Dashboard settings
@@ -25,7 +27,7 @@ administrative_report_plots_names <- c("central_plot.svg", "reporting_parent_sit
                                         "review_plots.svg")
 epidemiological_report_plots_names <- c("subplots_disease_occurance_w12.svg", "maps.svg")
 
-shape_files <- "ne_50m_admin_0_countries.shp"
+shape_files <- "ne_50m_admin_0_countries" #JG: needs to be the unzipped repository
 
 administrative_report_plots_paths <- paste0(assets_path, administrative_report_plots_names)
 epidemiological_report_plots_paths <- paste0(assets_path, epidemiological_report_plots_names)

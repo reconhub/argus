@@ -1,3 +1,5 @@
+# This script contains helper function to produce ggplots displayed in the reports
+
 main_font_size = 14
 axis_font_size = 12
 

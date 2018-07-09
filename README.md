@@ -4,7 +4,7 @@ This project hosts the development of scripts used for generating analysis
 reports for WHO's *Argus* system.
 
 ## R packages
-R libraries are managed by `packrat`.
+R libraries are managed by `packrat` (https://rstudio.github.io/packrat/)
 
 ## Other requirements
 
@@ -16,14 +16,14 @@ R libraries are managed by `packrat`.
 
 `sudo apt-get install libudunits2-dev libgdal-dev libgeos-dev libproj-dev`
 
-2. Pandoc (>= 1.16.0.2) (for `rmarkdown`)
+2. For Unix-alikes, Pandoc (>= 1.16.0.2) (for `rmarkdown`)
 
 3. R (>= 3.4.1)
 
 ## Internationalization
 
 It is possible to generate the reports in different languages. The internationalization is done by `shiny.i18n` package. User needs to provide the translations in the csv file:
-`src/translations/translations.csv`. Raw column contains the alias for the translation for R this shouldn't be modified in the csv (unless also modified in R). To add new translation add new column with the language and provide the translations.
+`src/translations/translations.csv`. Raw column contains the alias for the translation for R. This shouldn't be modified in the csv (unless also modified in R). To add new translation add new column with the language and provide the translations.
 
 ## Workflow
 
@@ -51,9 +51,9 @@ Run `[PROJECT_DIRECTORY]/src/dashboard_input_scripts/epidemiological_dashboard_i
 Run `[PROJECT_DIRECTORY]/src/dashboard_input_scripts/adimistrative_dashboard_input` to generate input for administrative report.
 
 3. Rendering the dashboards
-In order to render the dashboards knit the `[PROJECT_DIRECTORY]/src/reports/administrative_dashboard.Rmd` and `[PROJECT_DIRECTORY]/src/reports/epidemiological_dashboard.Rmd`.
+In order to render the dashboards knit the `[PROJECT_DIRECTORY]/src/reports/administrative_dashboard.Rmd` and `[PROJECT_DIRECTORY]/src/reports/epidemiological_dashboard.Rmd` files.
 
 ## Contributors
 
-- [Thibaut Jombart](http://github.com/thibautjombart)
+- [Olga Mierzwa-Sulima](https://github.com/olgamie)
 - [José Guerra](http://github.com/SNSteamLyon)

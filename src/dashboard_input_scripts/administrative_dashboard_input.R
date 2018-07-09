@@ -7,7 +7,7 @@ load("src/assets/admin_report_raw_input.RData")
 # Remove previous plots
 unlink(administrative_report_plots_paths)
 
-# Preprocess data ####
+# Preprocess data ####  
 last_12_weeks_report_status <- admin_report_input$reportingValues_W12 %>%
   round_review_report()
 
@@ -35,7 +35,6 @@ last_12_weeks_level_1_long <- last_12_weeks_level_2 %>%
   mutate(label = recode_report(label))
 
 # Create plots ####
-# Central plot
 central_plots <- last_12_weeks_level_1_long %>%
   plot_reporting_central_level(plot_colors,
                                x_title = i18n$t("epi_week_nb"),
@@ -45,7 +44,7 @@ central_plots
 
 ggsave(file = paste0(assets_path, "central_plot.svg"), plot = central_plots, width = 10)
 
-# Overall reporting plot
+# Overall reporting plot # JG the use of plotly should be replaced by ggplot2 to produce the svg plots. 
 overall_12_weeks_report_status <- admin_report_input$reportingValues_W12_overall %>%
   round_review_report()
 
@@ -76,7 +75,7 @@ reporting_parent_sites
 
 ggsave(file = paste0(assets_path, "reporting_parent_sites.svg"), plot = reporting_parent_sites, width = 10)
 
-## Review plot
+## Review plot # JG the use of plotly should be replaced by ggplot2 to produce the svg plots. 
 reviewing_sites <- overall_12_weeks_report_status
 
 reviewing_sites_long <- reviewing_sites %>%
@@ -120,10 +119,3 @@ data.table::setnames(sites_no_report_8weeks,
 ## Save output for markdown report ####
 save(min_week, max_week, min_year, max_year,
   sites_no_report_3weeks, sites_no_report_8weeks, file = paste0(assets_path, "admin_report.RData"))
-# 
-# write.csv(sites_no_report_8weeks, paste0(assets_admin_path, "sites_no_report_8weeks.csv"), row.names = FALSE)
-# write.csv(sites_no_report_3weeks, paste0(assets_admin_path, "sites_no_report_3weeks.csv"), row.names = FALSE)
-# 
-# files_to_zip <- dir(assets_admin_path, full.names = TRUE)
-# zip(zipfile = assets_admin_path, files = files_to_zip)
-# unlink(assets_admin_path, recursive = TRUE)
