@@ -25,6 +25,9 @@ R libraries are managed by `packrat` (https://rstudio.github.io/packrat/)
 It is possible to generate the reports in different languages. The internationalization is done by `shiny.i18n` package. User needs to provide the translations in the csv file:
 `src/translations/translations.csv`. Raw column contains the alias for the translation for R. This shouldn't be modified in the csv (unless also modified in R). To add new translation add new column with the language and provide the translations.
 
+## Database
+In order to fetch data for `argus_dashboard_raw_input_script.R` add password to `db/db_config` file.
+
 ## Workflow
 
 Whole workflow is controlled using `src/master.R` file.

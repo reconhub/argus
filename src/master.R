@@ -22,7 +22,7 @@ i18n <- Translator$new(translation_csvs_path = translations_path,
 i18n$set_translation_language(language)
 
 # Generate Rdata for dashboard pre-processing scripts
-# source("src/dashboard_input_scripts/argus_dashboard_raw_input_script.R")
+source("src/dashboard_input_scripts/argus_dashboard_raw_input_script.R")
 
 # Generate tables and charts for the dashboards ####
 # In order to have the flexdashboards as light as possible we generate the charts and tables in the separate scripts
