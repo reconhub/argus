@@ -1,11 +1,16 @@
+########################################## TO SET ###############################################
 ## API connection constants
 # main_api_url <- "http://avadar.novel-t.ch/argus-r/sesdashboard/web/"
-# user_name <- Sys.getenv("ARGUS_DATA_API_USER_NAME")
-# api_password <- Sys.getenv("ARGUS_DATA_API_PASSWORD")
+# user_name <- "ARGUS_DATA_API_USER_NAME"
+# api_password <- "ARGUS_DATA_API_PASSWORD"
+
+## Translation language constant
 language <-  "en"
 
 ## Country for which report is generated (used for selecting proper map)
 country <- "Togo"
+
+#################################################################################################
 
 ## Paths
 assets_path <- "src/assets/"

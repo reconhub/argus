@@ -8,18 +8,7 @@ R libraries are managed by `packrat`.
 
 ## Other requirements
 
-1. Selenium & Docker
-In order to render plotly to SVG the docker image with Chrome and Selenium is used.
-
-To install docker please see: https://ropensci.github.io/RSelenium/articles/RSelenium-docker.html
-
-If the docker is already installed pull the image `selenium/standalone-chrome`:
-`docker pull selenium/standalone-chrome` from the dockerhub.
-
-To run the docker with the project the project folder (left side) needs to be visible to the docker under the same path as locally:
-`docker run -d -p 4445:4444 -v ~/[PROJECT_DIRECTORY]:/[PROJECT_DIRECTORY] selenium/standalone-chrome`
-
-2. For Unix-alikes, GDAL (>= 2.0.0), GEOS (>= 3.3.0) and Proj.4 (>= 4.8.0) are required.
+1. For Unix-alikes, GDAL (>= 2.0.0), GEOS (>= 3.3.0) and Proj.4 (>= 4.8.0) are required for `sf` package.
 
 `sudo add-apt-repository ppa:ubuntugis/ubuntugis-unstable`
 
@@ -27,9 +16,9 @@ To run the docker with the project the project folder (left side) needs to be vi
 
 `sudo apt-get install libudunits2-dev libgdal-dev libgeos-dev libproj-dev`
 
-3. Pandoc (>= 1.16.0.2) (for `rmarkdown`)
+2. Pandoc (>= 1.16.0.2) (for `rmarkdown`)
 
-4. R (>= 3.4.1)
+3. R (>= 3.4.1)
 
 ## Internationalization
 
@@ -41,17 +30,8 @@ It is possible to generate the reports in different languages. The international
 Whole workflow is controlled using `src/master.R` file.
 Master file contains comments for every block of logic.
 
-**First please set required environment variables.**
-You can do this using export from your terminal:
-
-`export ARGUS_DATA_API_USER_NAME="" ARGUS_DATA_API_PASSWORD="" ARGUS_DATA_API_LOCALE="en" ARGUS_CHROME_DOWNLOAD_DIR="[PROJECT_DIRECTORY]/src/assets" ARGUS_DASHBOARD_LOCALE="en"`
-
-`*_API_*` - are data API related settings
-`ARGUS_CHROME_DOWNLOAD_DIR` - is the location where svg plots are saved
-`ARGUS_DASHBOARD_LOCALE` - is the language of the reports. This needs to correspond to column names in the `src/translations/translations.csv`. Use "en" to translate to English.
-
-**Run docker with Selenium and Chrome**
-`docker run -d -p 4445:4444 -v ~/[PROJECT_DIRECTORY]:/[PROJECT_DIRECTORY] selenium/standalone-chrome`
+**First please set required constant variables.**
+In `src/constants.r`please set api connection constants, translation constant and country constant.
 
 **To run the workflow:**
 `Rscript src/master.R`
