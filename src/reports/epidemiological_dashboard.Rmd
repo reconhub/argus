@@ -42,8 +42,8 @@ Row {data-height=800}
 <img src="../assets/subplots_disease_occurance_w12.svg" alt="chart1">
 
 ### `r i18n$t("disease_maps_header")`
-
 <img src="../assets/maps.svg" alt="chart2">
+
 
 <script type="text/javascript">
 (function() {

@@ -17,6 +17,7 @@ body hr {
 .navbar-inverse .navbar-nav > li > a,
 .navbar .navbar-brand {
   text-decoration: none;
+  font-size: 32px;
 }
 
 .navbar-logo {
@@ -42,7 +43,7 @@ body hr {
 .chart-title {
   border-bottom: 1px solid #d7d7d7;
   color: #666;
-  font-size: 18px;
+  font-size: 24px;
   font-weight: 600;
   padding: 7px 10px 4px;
 }
@@ -350,7 +351,7 @@ body hr {
   margin: 0;
   border-bottom: 1px solid #d7d7d7;
   color: #666;
-  font-size: 14px;
+  font-size: 18px;
   font-weight: 300;
   border-top-right-radius: 3px;
   border-top-left-radius: 3px;
@@ -364,7 +365,7 @@ body hr {
 .nav-tabs-custom > .nav-tabs > li > a:active {
   color: #666;
   font-weight: 300;
-  font-size: 14px;
+  font-size: 18px;
   border-radius: 0;
   padding: 3px 10px 5px;
   text-transform: none;
