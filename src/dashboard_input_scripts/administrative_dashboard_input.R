@@ -1,3 +1,5 @@
+## Purpose of this script is to generate svg plots and Rdata with tables input for html report
+
 # Load RData from argus_dashboard_raw_input_script.R
 load("src/assets/admin_report_raw_input.RData")
 
@@ -12,7 +14,7 @@ last_12_weeks_report_status <- admin_report_input$reportingValues_W12 %>%
 last_12_weeks_level_2 <- last_12_weeks_report_status %>%
   dplyr::filter(level == 1) %>%
   mutate(
-    year = ifelse(week <= 8, 2018, 2017), # This is temporary - year column needs to be in the raw data
+    year = ifelse(week <= 8, 2018, 2017), # TODO This is temporary - year column needs to be in the raw data
     year_week = paste0("'", substr(year, 3, 4), " - W", week)) %>%
   arrange(year, week)
 
@@ -80,7 +82,8 @@ reviewing_sites <- overall_12_weeks_report_status
 reviewing_sites_long <- reviewing_sites %>%
   select(compReview, timeReview, FK_ParentId, reference, level) %>% 
   gather(key = label, value = number, -reference, -FK_ParentId, -level) %>%
-  mutate(label = recode_review(label)) %>%
+  mutate(label = recode_review(label),
+         number = ifelse(is.nan(number), 0, number)) %>%
   arrange(level)
 
 order_sites_review <- unique(reviewing_sites_long$reference)

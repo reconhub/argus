@@ -1,3 +1,5 @@
+## Purpose of this script is to generate svg plots and Rdata with tables input for html report
+
 # Load RData from argus_dashboard_raw_input_script.R
 load("src/assets/epidemiological_report_raw_input.RData")
 
