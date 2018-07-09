@@ -39,11 +39,6 @@ disease_location <- diseaseThreshold_W2 %>%
   group_by(disease, longitude, latitude) %>%
   summarise(occurence  = sum(occurence))
 
-mock_data <- data.frame(disease = c("a", "b"), longitude =  rep(0.204, 2), latitude = rep(10.9, 2), occurence = c(20,30),
-                        stringsAsFactors = F)
-
-disease_location <- bind_rows(disease_location, mock_data)
-
 country_data <- sp_files %>% dplyr::filter(GEOUNIT == country)
 
 disease_maps <- plot_maps(country_data)
