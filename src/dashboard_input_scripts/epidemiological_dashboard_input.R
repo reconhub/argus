@@ -1,5 +1,4 @@
-#### JG; put a header with the objective of the script
-
+## Purpose of this script is to generate svg plots and Rdata with tables input for html report
 
 # Load RData from argus_dashboard_raw_input_script.R
 load("src/assets/epidemiological_report_raw_input.RData")
@@ -11,14 +10,11 @@ unlink(epidemiological_report_plots_paths)
 # Load shapefiles ####
 sp_files <- st_read(paste0(assets_path, shape_files))
 
-# Preprocess data ####
-# JG: I will try to update the argus_dashboard_raw_input_script to avoid prepocessing data here
-
 disease_occurance_w12 <- epi_report_input$diseaseThreshold_W12 %>%
   mutate(
-    year = ifelse(week < 8, 2018, 2017), # This is temporary - year column needs to be in the raw data
-    year_week = paste0(year, " - W", week)) %>%
-  arrange(year_week)
+    year = ifelse(week <= 8, 2018, 2017), # This is temporary - year column needs to be in the raw data
+    year_week = paste0("'", substr(year, 3, 4), " - W", week)) %>%
+  arrange(year, week)
 
 max_occurence <- max(disease_occurance_w12$occurence) + 1
 
@@ -26,25 +22,14 @@ max_occurence <- max(disease_occurance_w12$occurence) + 1
 # Disease occurrence in the last 12 weeks # JG the use of plotly should be replaced by ggplot2 to produce the svg plots. 
 
 plots_disease_occurance_w12 <- disease_occurance_w12 %>%
-  split(disease_occurance_w12$disease) %>% 
-  map(~plot_occurance(., max_occurence, plot_colors[1],
-                      line_plot_margins = bar_plot_margins,
+  plot_occurance(., plot_colors[1],
                       x_title = i18n$t("epi_week_nb"),
-                      y_title = i18n$t("nb_of_cases")))
+                      y_title = i18n$t("nb_of_cases"),
+                 max_occurence)
 
-plots_disease_occurance_w12[[1]]$x$attrs[[1]]$showlegend <- TRUE
-nrow_charts <- ceiling(max(length(plots_disease_occurance_w12) / 2, 1))
-
-subplots_disease_occurance_w12 <- plots_disease_occurance_w12 %>%
-  plotly::subplot(nrows = nrow_charts,
-                  titleX = TRUE,
-                  titleY = TRUE,
-                  margin = 0.13,
-                  heights = c(0.3, 0.4, 0.3))
-
-subplots_disease_occurance_w12 %>%
-  export(file = "subplots_disease_occurance_w12.svg",
-         selenium = rselenium_server)  
+plots_disease_occurance_w12
+ggsave(file = paste0(assets_path, "subplots_disease_occurance_w12.svg"),
+       plot = plots_disease_occurance_w12, height = 10, width = 12)
 
 # Create maps ####
 diseaseThreshold_W2 <- epi_report_input$diseaseThreshold_W2 %>%
@@ -54,32 +39,24 @@ disease_location <- diseaseThreshold_W2 %>%
   group_by(disease, longitude, latitude) %>%
   summarise(occurence  = sum(occurence))
 
-country_data <- sp_files %>% dplyr::filter(GEOUNIT == "Togo") #TODO this needs to be read from data #JG: can you explain your comment, do you mean put "Togo" as an option in the constants?
+country_data <- sp_files %>% dplyr::filter(GEOUNIT == country)
 
-disease_maps <- ggplot() +
-  geom_sf(data = country_data, fill = "white") +
-  geom_point(data = disease_location, aes(x = longitude, y = latitude, size = occurence),
-             color = plot_colors[1], alpha = 0.7) +
-  scale_size(breaks = unique(disease_location$occurence), name = i18n$t("maps_legend")) +
-  facet_wrap(~disease, ncol = 2) +
-  theme_ipsum() +
-  theme(axis.line = element_blank(), axis.ticks = element_blank(), axis.text = element_blank(),
-        strip.text.x = element_text(size = 16),
-        axis.title.x = element_blank(), axis.title.y = element_blank(),
-        legend.title = element_text(size = 16), 
-        legend.text = element_text(size = 16),
-        legend.key = element_rect(fill = "white", colour = "white"))
+disease_maps <- plot_maps(country_data)
 
-ggsave(file = paste0(assets_path, "maps.svg"), plot = disease_maps, width = 10, height = 8)
+disease_maps
+
+ggsave(file = paste0(assets_path, "maps.svg"), plot = disease_maps)
 
 # Create tables with diseases ####
 # Disease table occurrence
 disease_occurance_above_threshold <- diseaseThreshold_W2 %>%
-  select(siteName, name_parentSite, contact, phone, occurence, threshold_value)
+  select(siteName, name_parentSite, disease, contact, phone, occurence, threshold_value)
 
 data.table::setnames(disease_occurance_above_threshold,
-                     old = c("siteName", "name_parentSite", "contact", "phone", "occurence", "threshold_value"),
-                     new = c(i18n$t("siteName"), i18n$t("name_parentSite"), i18n$t("contact"),
+                     old = c("siteName", "name_parentSite", "disease", "contact", "phone", "occurence", "threshold_value"),
+                     new = c(i18n$t("siteName"), i18n$t("name_parentSite"),
+                             i18n$t("disease"),
+                             i18n$t("contact"),
                              i18n$t("phone"),
                              i18n$t("occurrence"),
                              i18n$t("threshold")))
@@ -95,13 +72,17 @@ data.table::setnames(alert_list_D10,
 
 # Cummulative table
 cumulative_table <- epi_report_input$tableBeginYear %>%
-  select(-id, -name)
+  select(-id, -disease)
+
+this_year <-  format(Sys.Date(),"%Y")
+last_year <-  as.numeric(format(Sys.Date(),"%Y")) - 1
 
 data.table::setnames(cumulative_table,
                      old = names(cumulative_table),
-                     new = c(i18n$t("disease"), i18n$t("cas_previous_year"), i18n$t("desease_previous_year"),
-                             i18n$t("cas_this_year"), i18n$t("desease_this_year")))
+                     new = c(i18n$t("disease"), paste(i18n$t("cas"), last_year), paste(i18n$t("desease"), last_year),
+                             paste(i18n$t("cas"), this_year), paste(i18n$t("desease"), this_year)))
 
 # Save output for markdown report ####
 save(disease_occurance_above_threshold, alert_list_D10, cumulative_table,
+     disease_maps, country_data,
      file = paste0(assets_path, "epi_report.Rdata"))

@@ -16,10 +16,8 @@ reception_Date,Reception date
 contactName,Contact
 contactPhoneNumber,Phone
 disease,Disease
-cas_previous_year,Cas 2017
-desease_previous_year,Desease 2017
-cas_this_year,Cas 2018
-desease_this_year,Desease 2018
+cas,Cas
+desease,Desease
 nb_of_cases,Number of cases
 *** Administrative report ***,
 admin_report_title,Administrative report

@@ -1,28 +1,22 @@
-#### JG; put a header with the objective of the script
+# Purpose of this script is to define constants that are used in the reports generation workflow
 
-## API connection constants 
-# JG: for the moment, no API will be used
 
+########################################## TO SET ###############################################
+## API connection constants
 # main_api_url <- "http://avadar.novel-t.ch/argus-r/sesdashboard/web/"
-# user_name <- Sys.getenv("ARGUS_DATA_API_USER_NAME")
-# api_password <- Sys.getenv("ARGUS_DATA_API_PASSWORD")
-language <-  Sys.getenv("ARGUS_DASHBOARD_LOCALE")
+# user_name <- "ARGUS_DATA_API_USER_NAME"
+# api_password <- "ARGUS_DATA_API_PASSWORD"
 
-## RSelenium options #JG: to be removed, use of ggplot2 instead to produce the svg files
-## Options
-extra_capabilities <- list(
-  chromeOptions = 
-    list(prefs = list(
-      "profile.default_content_settings.popups" = 0L,
-      "download.prompt_for_download" = FALSE,
-      "download.default_directory" = Sys.getenv("ARGUS_CHROME_DOWNLOAD_DIR")
-    )
-    )
-)
+## Translation language constant
+language <-  "en"
+
+## Country for which report is generated (used for selecting proper map)
+country <- "Togo"
+
+#################################################################################################
 
 ## Paths
 assets_path <- "src/assets/"
-assets_admin_path <- paste0(assets_path, "administrative_report/")
 translations_path <- "src/translations"
 
 ## Dashboard settings
@@ -39,19 +33,3 @@ administrative_report_plots_paths <- paste0(assets_path, administrative_report_p
 epidemiological_report_plots_paths <- paste0(assets_path, epidemiological_report_plots_names)
 
 max_intermediate_levels <- 50
-
-admin_plot_margins <- list(
-  l = 70,
-  r = 50,
-  b = 100,
-  t = 10,
-  pad = 4
-)
-
-bar_plot_margins <- list(
-  l = 50,
-  r = 50,
-  b = 120,
-  t = 20,
-  pad = 4
-)
