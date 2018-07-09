@@ -1,6 +1,6 @@
 PackratFormat: 1.4
 PackratVersion: 0.4.8.57
-RVersion: 3.4.1
+RVersion: 3.4.4
 Repos: CRAN=https://cran.rstudio.com/
 
 Package: BH
@@ -54,10 +54,18 @@ Hash: c8e768dd4ac158ea7422948616bae595
 Requires: BH, DBI, Rcpp, bit64, blob, memoise, pkgconfig, plogr
 
 Package: RSelenium
-Source: CRAN
-Version: 1.7.1
-Hash: df30e4b7228823c97f5c2fc6da269575
+Source: github
+Version: 1.7.3
+Hash: f77bdd0b840c3cd5062b0b9778de7532
 Requires: XML, binman, caTools, httr, openssl, wdman
+GithubRepo: RSelenium
+GithubUsername: ropensci
+GithubRef: master
+GithubSha1: 088db87fce4088b21214bfd0855ba946df000dfa
+RemoteHost: https://api.github.com
+RemoteRepo: RSelenium
+RemoteUsername: ropensci
+RemoteSha: 088db87fce4088b21214bfd0855ba946df000dfa
 
 Package: Rcpp
 Source: CRAN
@@ -71,8 +79,8 @@ Hash: 2348092a1411c06bdb1db4b7834187d3
 
 Package: XML
 Source: CRAN
-Version: 3.98-1.10
-Hash: 4822e9bd2d5ea97804878255829d8981
+Version: 3.98-1.11
+Hash: 93ca736e34d01f5952dc770fbfa5fa62
 
 Package: acepack
 Source: CRAN
@@ -248,19 +256,11 @@ Hash: d5f3e77b4bbf48d08c3b5a519c4f5bfb
 Requires: Rcpp, withr
 
 Package: ggplot2
-Source: github
-Version: 2.2.1.9000
-Hash: 2d7fdbba39bc33bd14c0affab3df3564
+Source: CRAN
+Version: 3.0.0
+Hash: 8332448b76ff31472a1bf6dd31fcddb1
 Requires: digest, gtable, lazyeval, plyr, reshape2, rlang, scales,
     tibble, viridisLite, withr
-GithubRepo: ggplot2
-GithubUsername: tidyverse
-GithubRef: master
-GithubSha1: 39e4a3bdb910a0344e2f75a5ade2e4f27e263a62
-RemoteHost: https://api.github.com
-RemoteRepo: ggplot2
-RemoteUsername: tidyverse
-RemoteSha: 39e4a3bdb910a0344e2f75a5ade2e4f27e263a62
 
 Package: git2r
 Source: CRAN
@@ -431,8 +431,8 @@ Requires: colorspace
 
 Package: openssl
 Source: CRAN
-Version: 0.9.6
-Hash: 5f4711e142a44655dfea4d64fcf2f641
+Version: 1.0.1
+Hash: e04b8ed7b05c1f75aa81c65a086b1d0c
 
 Package: packrat
 Source: github
