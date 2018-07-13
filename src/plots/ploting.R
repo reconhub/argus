@@ -14,11 +14,11 @@ plot_occurance <- function(disease_occurance_w12, plot_colors, x_title, y_title,
     ylim(-0.5, max_occurence + 1) +
     plot_theme() +
     theme(
-      axis.title.x = element_text(size = 18, family = "sans serif"),
-      axis.title.y = element_text(size = 18, family = "sans serif"),
-      axis.text.x = element_text(size = main_font_size, angle = -45, hjust = 0, family = "sans serif"),
-      axis.text.y = element_text(size = main_font_size, family = "sans serif"),
-      legend.position = "none", strip.text.x = element_text(size = 16, family = "sans serif", hjust = 0.5))
+      axis.title.x = element_text(size = main_font_size, family = "sans serif"),
+      axis.title.y = element_text(size = main_font_size, family = "sans serif"),
+      axis.text.x = element_text(size = axis_font_size, angle = -45, hjust = 0, family = "sans serif"),
+      axis.text.y = element_text(size = axis_font_size, family = "sans serif"),
+      legend.position = "none", strip.text.x = element_text(size = main_font_size, family = "sans serif", hjust = 0.5))
 }
 
 plot_theme <- function() {
@@ -56,7 +56,7 @@ plot_1st_itermediate_level <- function(data, plot_colors,
    
 }
 
-plot_maps <- function(country_data){
+plot_maps <- function(country_data, disease_location){
   country_box <- st_bbox(country_data)
   country_length <- country_box$xmax - country_box$xmin 
   x_margin <- 0.3 # percent
@@ -71,13 +71,13 @@ plot_maps <- function(country_data){
       theme(axis.line = element_blank(),
             axis.ticks = element_blank(),
             axis.text = element_blank(),
-            strip.text.x = element_text(size = 8, family = "sans serif", hjust = 0.5),
+            strip.text.x = element_text(size = main_font_size, family = "sans serif", hjust = 0.5),
             axis.title.x = element_blank(),
             axis.title.y = element_blank(),
-            legend.title = element_text(size = 10, family = "sans serif"), 
-            legend.text = element_text(size = 10, family = "sans serif"),
+            legend.title = element_text(size = main_font_size, family = "sans serif"), 
+            legend.text = element_text(size = main_font_size, family = "sans serif"),
             legend.key = element_rect(fill = "white", colour = "white"),
             panel.spacing.x = unit(1, "lines"),
-            legend.position = "top") + 
+            legend.direction = "horizontal", legend.position = "top", legend.box = "vertical") + 
       expand_limits(x = long_range)
 }
