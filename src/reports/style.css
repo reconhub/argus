@@ -14,6 +14,10 @@ body hr {
   margin: 10px 0;
 }
 
+.navbar-fixed-top {
+  position: absolute;
+}
+
 .navbar-inverse .navbar-nav > li > a,
 .navbar .navbar-brand {
   text-decoration: none;
