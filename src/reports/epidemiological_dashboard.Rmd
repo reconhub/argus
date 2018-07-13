@@ -34,16 +34,24 @@ load("../assets/epi_report.Rdata")
 }
 </style>
 
-Row {data-height=800}
+Row
 -------------------------------------
 
 ### `r i18n$t("disease_charts_header")`
 
-<img src="../assets/subplots_disease_occurance_w12.svg" alt="chart1">
+```{r subplots_disease_occurance_w12, echo = FALSE, results = TRUE, message = FALSE, warning = FALSE, error = FALSE, dev='svg', fig.width = 7, fig.asp = 1.3, fig.path ='../assets/'}
+disease_occurance_w12 %>%
+  plot_occurance(., plot_colors[1],
+                      x_title = i18n$t("epi_week_nb"),
+                      y_title = i18n$t("nb_of_cases"),
+                 max_occurence)
+```
 
 ### `r i18n$t("disease_maps_header")`
-<img src="../assets/maps.svg" alt="chart2">
 
+```{r maps, echo = FALSE, results = TRUE, message = FALSE, warning = FALSE, error = FALSE, dev='svg', fig.width = 7, fig.asp = 1.3, fig.path ='../assets/'}
+plot_maps(country_data, disease_location)
+```
 
 <script type="text/javascript">
 (function() {
@@ -64,15 +72,21 @@ Row
 
 ```{r}
 DT::datatable(data = disease_occurance_above_threshold,
+              extensions = "Responsive",
               rownames = FALSE,
-              options = list(dom = 'tp'))
+              options = list(
+                columnDefs = list(list(responsivePriority = 1, targets = 0)),
+                dom = 'tp'))
 ```
 
 ### `r i18n$t("disease_table_alerts_header")`
 ```{r}
 DT::datatable(data = alert_list_D10,
+              extensions = "Responsive",
               rownames = FALSE,
-              options = list(dom = 'tp'))
+              options = list(
+                columnDefs = list(list(responsivePriority = 1, targets = 0)),
+                dom = 'tp'))
 ```
 
 Row
@@ -82,6 +96,9 @@ Row
 
 ```{r}
 DT::datatable(data = cumulative_table,
+               extensions = "Responsive",
               rownames = FALSE,
-              options = list(dom = 't'))
+              options = list(
+                columnDefs = list(list(responsivePriority = 1, targets = 0)),
+                dom = 'tp'))
 ```
