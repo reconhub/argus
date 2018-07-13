@@ -78,14 +78,20 @@ Row
 
 ```{r}
 DT::datatable(data = sites_no_report_3weeks,
+              extensions = "Responsive",
               rownames = FALSE,
-          options = list(dom = 'tp'))
+              options = list(
+                columnDefs = list(list(responsivePriority = 1, targets = 0)),
+                dom = 'tp'))
 ```
 
 ### `r i18n$t("silent_sites_8_weeks_header")`
 
 ```{r}
 DT::datatable(data = sites_no_report_8weeks,
+              extensions = "Responsive",
               rownames = FALSE,
-          options = list(dom = 'tp'))
+              options = list(
+                columnDefs = list(list(responsivePriority = 1, targets = 0)),
+                dom = 'tp'))
 ```

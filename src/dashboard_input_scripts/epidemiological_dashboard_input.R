@@ -18,19 +18,6 @@ disease_occurance_w12 <- epi_report_input$diseaseThreshold_W12 %>%
 
 max_occurence <- max(disease_occurance_w12$occurence) + 1
 
-# Create plots ####
-# Disease occurrence in the last 12 weeks # JG the use of plotly should be replaced by ggplot2 to produce the svg plots. 
-
-plots_disease_occurance_w12 <- disease_occurance_w12 %>%
-  plot_occurance(., plot_colors[1],
-                      x_title = i18n$t("epi_week_nb"),
-                      y_title = i18n$t("nb_of_cases"),
-                 max_occurence)
-
-plots_disease_occurance_w12
-ggsave(file = paste0(assets_path, "subplots_disease_occurance_w12.svg"),
-       plot = plots_disease_occurance_w12, height = 10, width = 12)
-
 # Create maps ####
 diseaseThreshold_W2 <- epi_report_input$diseaseThreshold_W2 %>%
   mutate(`Occurence` = paste(disease, variable, occurence))
@@ -40,12 +27,6 @@ disease_location <- diseaseThreshold_W2 %>%
   summarise(occurence  = sum(occurence))
 
 country_data <- sp_files %>% dplyr::filter(GEOUNIT == country)
-
-disease_maps <- plot_maps(country_data)
-
-disease_maps
-
-ggsave(file = paste0(assets_path, "maps.svg"), plot = disease_maps)
 
 # Create tables with diseases ####
 # Disease table occurrence
@@ -84,5 +65,8 @@ data.table::setnames(cumulative_table,
 
 # Save output for markdown report ####
 save(disease_occurance_above_threshold, alert_list_D10, cumulative_table,
-     disease_maps, country_data,
+     country_data,
+     disease_occurance_w12,
+     max_occurence,
+     country_data, disease_location,
      file = paste0(assets_path, "epi_report.Rdata"))
