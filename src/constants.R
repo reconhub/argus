@@ -13,6 +13,14 @@ language <-  "en"
 ## Country for which report is generated (used for selecting proper map)
 country <- "Togo"
 
+## First week of the day
+weekFirstDay <- 1 # either 1 for Monday or 7 for Sunday
+
+# name of the variables used for the number of cases and the number of deaths
+# nbCase_label <- 
+#   
+# nbDeath_label <- 
+
 #################################################################################################
 
 ## Paths
