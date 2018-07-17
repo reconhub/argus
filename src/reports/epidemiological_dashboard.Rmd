@@ -32,6 +32,9 @@ load("../assets/epi_report.Rdata")
   background-color:#5A0A69;
   border-color:black;
 }
+#dashboard-container { 
+  all: initial !important; 
+}
 </style>
 
 Row
