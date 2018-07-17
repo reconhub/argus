@@ -11,3 +11,4 @@ packrat/src/
 *.svg
 src/assets/ne_50m_admin_0_countries.*
 db_config
+*.RData
