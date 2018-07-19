@@ -44,7 +44,7 @@ In `src/constants.r`please set api connection constants, translation constant an
 1. Generating dashboard raw input
 Produce R object that are further prepocessed to produce the final output (charts and tables) for the reports.
 
-Run `[PROJECT_DIRECTORY]/src/dashboard_input_script/argus_dashboard_raw_input_script.R` this will produce 2 RData raw inputs for administrative and epidemiological report in `[PROJECT_DIRECTORY]/src/assets`.
+Run `[PROJECT_DIRECTORY]/src/dashboard_input_script/argus_dashboard_raw_input_script.R` this will produce objects for administrative and epidemiological report.
 
 2. Preprocessing
 In order to minimize the size of the report charts and tables are preprocessed outside the Rmd files.
