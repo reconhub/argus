@@ -13,21 +13,6 @@ params:
 title: "`r params$custom_title`"
 ---
 
-```{r setup, include=FALSE}
-library(flexdashboard)
-library(shiny.i18n)
-source("../constants.R")
-
-## file with translations
-i18n <- Translator$new(translation_csvs_path = "../translations",
-                       translation_csv_config = "../translations/config.yaml")
-
-## set translation language
-i18n$set_translation_language(language)
-
-load("../assets/admin_report.RData")
-```
-
 <style>                     
 .navbar {
   background-color:#5A0A69;
@@ -46,14 +31,14 @@ Row
 <img src="../assets/central_plot.svg" alt="Completeness and timeliness of weekly reporting for the whole country">
 
 
-### `r paste(i18n$t("overall_reporting_header"), paste0(min_week, " (", min_year, ")"), i18n$t("to_week"), paste0(max_week, " (", max_year, ")"))`
+### `r paste(i18n$t("overall_reporting_header"), paste0(numSem_W12[1], " (",yearSem_W12[1], ")"), i18n$t("to_week"), paste0(numSem_W12[12], " (", yearSem_W12[12], ")"))`
 
 <img src="../assets/reporting_parent_sites.svg" alt="Overall completeness and timeliness of weekly reporting">
 
 Row
 -------------------------------------
 
-###  `r paste(i18n$t("overall_review_header"), paste0(min_week, " (", min_year, ")"), i18n$t("to_week"), paste0(max_week, " (", max_year, ")"))`
+###  `r paste(i18n$t("overall_review_header"), paste0(numSem_W12[1], " (",yearSem_W12[1], ")"), i18n$t("to_week"), paste0(numSem_W12[12], " (", yearSem_W12[12], ")"))`
 
 <!-- <img src="../assets/administrative_report/review_plots.svg" alt="Overall completeness and timeliness of data review" height="87px" -->
 <!--     width="100px"> -->

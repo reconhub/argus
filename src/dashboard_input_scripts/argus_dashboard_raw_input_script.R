@@ -849,22 +849,22 @@ for (Id_Site in parentSites$Id_Site[which(parentSites$level==levFirstInter)]) {
     
     # Completeness of data reporting
     
-    reportingValues_W12$compReport[which(reportingValues_W12$Id_Site==Id_Site & reportingValues_W12$week==numSem)] <- reportingValues_W12$nbReceived[which(reportingValues_W12$Id_Site==Id_Site & reportingValues_W12$week==numSem)] / reportingValues_W12$nbExpected[which(reportingValues_W12$Id_Site==Id_Site & reportingValues_W12$week==numSem)]
+    reportingValues_W12$compReport[which(reportingValues_W12$Id_Site==Id_Site & reportingValues_W12$week==numSem)] <- round((reportingValues_W12$nbReceived[which(reportingValues_W12$Id_Site==Id_Site & reportingValues_W12$week==numSem)] / reportingValues_W12$nbExpected[which(reportingValues_W12$Id_Site==Id_Site & reportingValues_W12$week==numSem)])*100,1)
     
     
     # Timeliness of data reporting
     
-    reportingValues_W12$timeReport[which(reportingValues_W12$Id_Site==Id_Site & reportingValues_W12$week==numSem)] <- reportingValues_W12$nbRecTime[which(reportingValues_W12$Id_Site==Id_Site & reportingValues_W12$week==numSem)] / reportingValues_W12$nbExpected[which(reportingValues_W12$Id_Site==Id_Site & reportingValues_W12$week==numSem)]
+    reportingValues_W12$timeReport[which(reportingValues_W12$Id_Site==Id_Site & reportingValues_W12$week==numSem)] <- round((reportingValues_W12$nbRecTime[which(reportingValues_W12$Id_Site==Id_Site & reportingValues_W12$week==numSem)] / reportingValues_W12$nbExpected[which(reportingValues_W12$Id_Site==Id_Site & reportingValues_W12$week==numSem)])*100,1)
     
     
     # Completeness of data review for the period
     
-    reportingValues_W12$compReview[which(reportingValues_W12$Id_Site==Id_Site & reportingValues_W12$week==numSem)] <- reportingValues_W12$nbReviewed[which(reportingValues_W12$Id_Site==Id_Site & reportingValues_W12$week==numSem)] / reportingValues_W12$nbReceived[which(reportingValues_W12$Id_Site==Id_Site & reportingValues_W12$week==numSem)]
+    reportingValues_W12$compReview[which(reportingValues_W12$Id_Site==Id_Site & reportingValues_W12$week==numSem)] <- round((reportingValues_W12$nbReviewed[which(reportingValues_W12$Id_Site==Id_Site & reportingValues_W12$week==numSem)] / reportingValues_W12$nbReceived[which(reportingValues_W12$Id_Site==Id_Site & reportingValues_W12$week==numSem)])*100,1)
     
     
     # Timeliness of data review for the period
     
-    reportingValues_W12$timeReview[which(reportingValues_W12$Id_Site==Id_Site & reportingValues_W12$week==numSem)] <- reportingValues_W12$nbRevTime[which(reportingValues_W12$Id_Site==Id_Site & reportingValues_W12$week==numSem)] / reportingValues_W12$nbRecTime[which(reportingValues_W12$Id_Site==Id_Site & reportingValues_W12$week==numSem)]
+    reportingValues_W12$timeReview[which(reportingValues_W12$Id_Site==Id_Site & reportingValues_W12$week==numSem)] <- round((reportingValues_W12$nbRevTime[which(reportingValues_W12$Id_Site==Id_Site & reportingValues_W12$week==numSem)] / reportingValues_W12$nbRecTime[which(reportingValues_W12$Id_Site==Id_Site & reportingValues_W12$week==numSem)])*100,1)
     
   }  
   
@@ -1019,22 +1019,22 @@ for (levInterest in seq(levFirstInter-1, 1, by=-1)) { # completion of the upper 
       
       # Completeness of data reporting
       
-      reportingValues_W12$compReport[which(reportingValues_W12$Id_Site==Id_Site & reportingValues_W12$week==numSem)] <- reportingValues_W12$nbReceived[which(reportingValues_W12$Id_Site==Id_Site & reportingValues_W12$week==numSem)] / reportingValues_W12$nbExpected[which(reportingValues_W12$Id_Site==Id_Site & reportingValues_W12$week==numSem)]
+      reportingValues_W12$compReport[which(reportingValues_W12$Id_Site==Id_Site & reportingValues_W12$week==numSem)] <- round((reportingValues_W12$nbReceived[which(reportingValues_W12$Id_Site==Id_Site & reportingValues_W12$week==numSem)] / reportingValues_W12$nbExpected[which(reportingValues_W12$Id_Site==Id_Site & reportingValues_W12$week==numSem)])*100,1)
       
       
       # Timeliness of data reporting
       
-      reportingValues_W12$timeReport[which(reportingValues_W12$Id_Site==Id_Site & reportingValues_W12$week==numSem)] <- reportingValues_W12$nbRecTime[which(reportingValues_W12$Id_Site==Id_Site & reportingValues_W12$week==numSem)] / reportingValues_W12$nbExpected[which(reportingValues_W12$Id_Site==Id_Site & reportingValues_W12$week==numSem)]
+      reportingValues_W12$timeReport[which(reportingValues_W12$Id_Site==Id_Site & reportingValues_W12$week==numSem)] <- round((reportingValues_W12$nbRecTime[which(reportingValues_W12$Id_Site==Id_Site & reportingValues_W12$week==numSem)] / reportingValues_W12$nbExpected[which(reportingValues_W12$Id_Site==Id_Site & reportingValues_W12$week==numSem)])*100,1)
       
       
       # Completeness of data review for the period
       
-      reportingValues_W12$compReview[which(reportingValues_W12$Id_Site==Id_Site & reportingValues_W12$week==numSem)] <- reportingValues_W12$nbReviewed[which(reportingValues_W12$Id_Site==Id_Site & reportingValues_W12$week==numSem)] / reportingValues_W12$nbReceivedBelow[which(reportingValues_W12$Id_Site==Id_Site & reportingValues_W12$week==numSem)]
+      reportingValues_W12$compReview[which(reportingValues_W12$Id_Site==Id_Site & reportingValues_W12$week==numSem)] <- round((reportingValues_W12$nbReviewed[which(reportingValues_W12$Id_Site==Id_Site & reportingValues_W12$week==numSem)] / reportingValues_W12$nbReceivedBelow[which(reportingValues_W12$Id_Site==Id_Site & reportingValues_W12$week==numSem)])*100,1)
       
       
       # Timeliness of data review for the period
       
-      reportingValues_W12$timeReview[which(reportingValues_W12$Id_Site==Id_Site & reportingValues_W12$week==numSem)] <- reportingValues_W12$nbRevTime[which(reportingValues_W12$Id_Site==Id_Site & reportingValues_W12$week==numSem)] / reportingValues_W12$nbRecTimeBelow[which(reportingValues_W12$Id_Site==Id_Site & reportingValues_W12$week==numSem)] 
+      reportingValues_W12$timeReview[which(reportingValues_W12$Id_Site==Id_Site & reportingValues_W12$week==numSem)] <- round((reportingValues_W12$nbRevTime[which(reportingValues_W12$Id_Site==Id_Site & reportingValues_W12$week==numSem)] / reportingValues_W12$nbRecTimeBelow[which(reportingValues_W12$Id_Site==Id_Site & reportingValues_W12$week==numSem)])*100,1)
       
     } 
   }
@@ -1066,10 +1066,10 @@ for (IdSite in reportingValues_W12_overall$Id_Site) {
   reportingValues_W12_overall$ids_fullreport_recVal[reportingValues_W12_overall$Id_Site==IdSite] <- paste0(reportingValues_W12$ids_fullreport_recVal[which(reportingValues_W12$Id_Site==IdSite)],collapse = ",")
 }
 
-reportingValues_W12_overall$compReport <- reportingValues_W12_overall$nbReceived/reportingValues_W12_overall$nbExpected
-reportingValues_W12_overall$timeReport <- reportingValues_W12_overall$nbRecTime/reportingValues_W12_overall$nbExpected
-reportingValues_W12_overall$compReview <- reportingValues_W12_overall$nbReviewed/reportingValues_W12_overall$nbReceivedBelow
-reportingValues_W12_overall$timeReview <- reportingValues_W12_overall$nbRevTime/reportingValues_W12_overall$nbRecTimeBelow
+reportingValues_W12_overall$compReport <- round((reportingValues_W12_overall$nbReceived/reportingValues_W12_overall$nbExpected)*100,1)
+reportingValues_W12_overall$timeReport <- round((reportingValues_W12_overall$nbRecTime/reportingValues_W12_overall$nbExpected)*100,1)
+reportingValues_W12_overall$compReview <- round((reportingValues_W12_overall$nbReviewed/reportingValues_W12_overall$nbReceivedBelow)*100,1)
+reportingValues_W12_overall$timeReview <- round((reportingValues_W12_overall$nbRevTime/reportingValues_W12_overall$nbRecTimeBelow)*100,1)
 
 
 ## noReport_W8 and noReport_W3: table with list of leaf sites without any report received for >= 8 weeks  and >= 3 weeks grouped by first intermediate level ####
@@ -1084,6 +1084,7 @@ colnames(tempFirstIntermediate) <- c("Id_parentSite","name_parentSite")
 noReport_W8 <- data.frame(Id_parentSite=NA, name_parentSite=NA, siteName=NA, contact=NA, phone=NA)
 # noReport_W8$Id_parentSite # site id of the parent site (first intermediate level)
 # noReport_W8$name_parentSite # name of the parent site
+# noReport_W8$siteID # Id of the site
 # noReport_W8$siteName  # name of the site with no reporting
 # noReport_W8$contact # name of the contact at the site with no reporting
 # noReport_W8$phone # phone of the contact at the site with no reporting
@@ -1108,6 +1109,7 @@ for (IdParentSite in tempFirstIntermediate$Id_parentSite) {
       site_ID <- NA
       site_ID <- sites_wholePeriod_W8$FK_SiteId[which(sites_wholePeriod_W8$id==IdSite)]
       
+      noReport_W8$siteID[counter] <- site_ID
       noReport_W8$siteName[counter] <- sites_id$reference[which(sites_id$id==site_ID)]
       noReport_W8$contact[counter] <- paste(sites_contact$name[which(sites_contact$FK_SiteId==site_ID & (sites_contact$isDeleted==0 | is.na(sites_contact$isDeleted)))], collapse = ", ")
       noReport_W8$phone[counter] <- paste(sites_contact$phoneNumber[which(sites_contact$FK_SiteId==site_ID)], collapse = ", ")
@@ -1128,6 +1130,7 @@ colnames(tempFirstIntermediate) <- c("Id_parentSite","name_parentSite")
 noReport_W3 <- data.frame(Id_parentSite=NA, name_parentSite=NA, siteName=NA, contact=NA, phone=NA)
 # noReport_W3$Id_parentSite # site id of the parent site (first intermediate level)
 # noReport_W3$name_parentSite # name of the parent site
+# noReport_W3$siteID # Id of the site
 # noReport_W3$siteName  # name of the site with no reporting
 # noReport_W3$contact # name of the contact at the site with no reporting
 # noReport_W3$phone # phone of the contact at the site with no reporting
@@ -1152,6 +1155,7 @@ for (IdParentSite in tempFirstIntermediate$Id_parentSite) {
       site_ID <- NA
       site_ID <- sites_wholePeriod_W3$FK_SiteId[which(sites_wholePeriod_W3$id==IdSite)]
       
+      noReport_W3$siteID[counter] <- site_ID
       noReport_W3$siteName[counter] <- sites_id$reference[which(sites_id$id==site_ID)]
       noReport_W3$contact[counter] <- paste(sites_contact$name[which(sites_contact$FK_SiteId==site_ID & (sites_contact$isDeleted==0 | is.na(sites_contact$isDeleted)))], collapse = ", ")
       noReport_W3$phone[counter] <- paste(sites_contact$phoneNumber[which(sites_contact$FK_SiteId==site_ID)], collapse = ", ")
@@ -1164,6 +1168,9 @@ for (IdParentSite in tempFirstIntermediate$Id_parentSite) {
 
 noReport_W3 <- noReport_W3[-nrow(noReport_W3),]
 
+# modification of noReport_W3 so that there is no overlap with noReport_W8 (noReport_W3: centers with no reporting during the 3 to 7 previous weeks; noReport_W8: centers with no reporting during the 8 previous weeks)
+
+noReport_W3 <- noReport_W3[-which(noReport_W3$siteID %in% noReport_W8$siteID),]
 
 ## diseaseThreshold_W12 ####
 
@@ -1301,6 +1308,7 @@ for (rowLineId in 1:nrow(diseaseThreshold_W2)) {
 
 disInt <- NA
 diseaseThreshold_W2$disease <- NA
+diseaseThreshold_W2$diseaseName <- NA
 diseaseThreshold_W2$variable <- NA
 diseaseThreshold_W2$threshold_value <- NA
 temp <- NA
@@ -1309,6 +1317,7 @@ temp <- diseaseThreshold_W2
 for (disInt in unique(diseaseThreshold_W12$disease)) {
   temp$disease <- NA
   temp$disease <- disInt
+  temp$diseaseName <- thresholds$diseaseName[which(thresholds$disease==disInt)]
   temp$variable <- diseaseThreshold_W12_overall$variable[which(diseaseThreshold_W12_overall$disease==disInt)]
   temp$threshold_value <- diseaseThreshold_W12_overall$threshold_value[which(diseaseThreshold_W12_overall$disease==disInt)]
   diseaseThreshold_W2 <- rbind(diseaseThreshold_W2,temp)
@@ -1352,7 +1361,9 @@ diseaseThreshold_W2 <- diseaseThreshold_W2[which(diseaseThreshold_W2$occurence!=
 #### List of alerts received in the 10 previous days, name of the site, path and contact
 
 alertList_D10 <- alerts[which(alerts$receptionDate >= today() -10),c("receptionDate","contactName","contactPhoneNumber","FK_SiteRelationShipId","message")]
+alertList_D10$receptionDate <- as.character(alertList_D10$receptionDate)
 alertList_D10 <- alertList_D10[order(alertList_D10$receptionDate,decreasing = T),]
+
 
 if(nrow(alertList_D10)!=0) {
   alertList_D10$name_parentSite <- NA
@@ -1445,22 +1456,3 @@ for (disInt in unique(tableBeginYear$disease)) {
 }
 
 colnames(tableBeginYear)[(ncol(tableBeginYear)-length(variablesNames)+1):ncol(tableBeginYear)] <- paste(variablesNames,yearCurrent)
-
-
-#### Elements to pass to the report ####
-admin_report_input <- list(
-  noReport_W3 = noReport_W3,
-  noReport_W8 = noReport_W8,
-  reportingValues_W12 = reportingValues_W12,
-  reportingValues_W12_overall = reportingValues_W12_overall)
-
-save(admin_report_input, file = "src/assets/admin_report_raw_input.RData")
-
-epi_report_input <- list(
-  diseaseThreshold_W12 = diseaseThreshold_W12,
-  diseaseThreshold_W2 = diseaseThreshold_W2,
-  alertList_D10 = alertList_D10,
-  tableBeginYear = tableBeginYear
-)
-
-save(epi_report_input, file = "src/assets/epidemiological_report_raw_input.RData")

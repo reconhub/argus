@@ -16,6 +16,10 @@ country <- "Togo"
 ## First week of the day
 weekFirstDay <- 1 # either 1 for Monday or 7 for Sunday
 
+## Refreshment frequency of the dashboards (frequency of the cron job in minutes)
+
+freqCron <- 15
+
 # name of the variables used for the number of cases and the number of deaths
 # nbCase_label <- 
 #   

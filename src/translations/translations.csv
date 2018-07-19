@@ -1,11 +1,11 @@
 raw,en
 *** Epidemiological report headers ***,
 epi_report_title,Epidemiological dashboard
-disease_charts_header,Disease charts header
-disease_maps_header,Disease maps header
-disease_table_occurence_header,Disease table occurrence
-disease_table_alerts_header,Disease alerts
-disease_table_cumulative_header,Disease cumulative
+disease_charts_header,Diseases having crossed thresholds in the 12 previous weeks
+disease_maps_header,Thresholds crossed in the 2 previous weeks by district
+disease_table_occurence_header,Reports with values above threshold during 2 previous weeks
+disease_table_alerts_header,Alerts received in the 10 previous days
+disease_table_cumulative_header,Cumulative number of diseases from 
 *** Epidemiological report charts and tables ***,
 occurrence,Occurrence
 threshold,Threshold
@@ -19,6 +19,8 @@ disease,Disease
 cas,Cas
 desease,Desease
 nb_of_cases,Number of cases
+no_alert,No alert in previous 10 days
+representativeness,Nb of reports received and validated: 
 *** Administrative report ***,
 admin_report_title,Administrative report
 compReport,Completeness of weekly reporting
@@ -37,3 +39,5 @@ siteName,Site Name
 name_parentSite,Area
 contact,Contact
 phone,Phone
+weekAbbr,W
+update,updated every

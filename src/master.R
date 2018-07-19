@@ -8,9 +8,11 @@ library(sf)
 library(ggplot2)
 library(hrbrthemes)
 library(shiny.i18n)
+library(scales)
+library(grid)
+library(flexdashboard)
+library(gdtools)
 
-source("src/plots/ploting.R")
-source("src/munging/munging.R")
 source("src/constants.R")
 
 # Translations setting ####
@@ -33,8 +35,10 @@ source("src/dashboard_input_scripts/epidemiological_dashboard_input.R", echo = T
 
 # Render dashboards ####
 # Dashboards are rendered as flexdashboards
+reportTime <- paste0(day(now()),"-",month(now()),"-",year(now())," ",substr(now(),12,16))
+
 rmarkdown::render("src/reports/administrative_dashboard.Rmd",
-                  params = list(custom_title = i18n$t("admin_report_title")))
+                  params = list(custom_title = paste(i18n$t("admin_report_title"),reportTime,i18n$t("update"),paste0(freqCron,"mn"))))     
 
 rmarkdown::render("src/reports/epidemiological_dashboard.Rmd",
-                  params = list(custom_title = i18n$t("epi_report_title")))
+                  params = list(custom_title = paste(i18n$t("epi_report_title"),reportTime,i18n$t("update"),paste0(freqCron,"mn"))))
