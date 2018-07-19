@@ -1,6 +1,5 @@
 # Purpose of this script is to define constants that are used in the reports generation workflow
 
-
 ########################################## TO SET ###############################################
 ## API connection constants
 # main_api_url <- "http://avadar.novel-t.ch/argus-r/sesdashboard/web/"
@@ -8,7 +7,7 @@
 # api_password <- "ARGUS_DATA_API_PASSWORD"
 
 ## Translation language constant
-language <-  "en"
+language <-  "fr"
 
 ## Country for which report is generated (used for selecting proper map)
 country <- "Togo"

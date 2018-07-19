@@ -1,6 +1,6 @@
 ### Master file to run all the calculations to compute Argus admnistrative and epidemiological dashboards
 
-# Loading Packages and modules with functions ####
+# Loading Packages ####
 library(tidyr)
 library(dplyr)
 library(purrr)
@@ -12,6 +12,8 @@ library(scales)
 library(grid)
 library(flexdashboard)
 library(gdtools)
+
+# Set the constants
 
 source("src/constants.R")
 
