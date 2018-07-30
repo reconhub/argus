@@ -1,5 +1,15 @@
 ### Master file to run all the calculations to compute Argus admnistrative and epidemiological dashboards
 
+# workingDir <- ""
+# Set working directory and load correct libraries
+
+# setwd(workingDir)
+# packrat::on(getwd())
+
+# Set the constants
+
+source("src/constants.R")
+
 # Loading Packages ####
 library(tidyr)
 library(dplyr)
@@ -13,9 +23,6 @@ library(grid)
 library(flexdashboard)
 library(gdtools)
 
-# Set the constants
-
-source("src/constants.R")
 
 # Translations setting ####
 # file with translations 
@@ -39,8 +46,8 @@ source("src/dashboard_input_scripts/epidemiological_dashboard_input.R", echo = T
 # Dashboards are rendered as flexdashboards
 reportTime <- paste0(day(now()),"-",month(now()),"-",year(now())," ",substr(now(),12,16))
 
-rmarkdown::render("src/reports/administrative_dashboard.Rmd",
+rmarkdown::render("src/reports/admin_dashboard.Rmd",
                   params = list(custom_title = paste(i18n$t("admin_report_title"),reportTime,i18n$t("update"),paste0(freqCron,"mn"))))     
 
-rmarkdown::render("src/reports/epidemiological_dashboard.Rmd",
+rmarkdown::render("src/reports/epi_dashboard.Rmd",
                   params = list(custom_title = paste(i18n$t("epi_report_title"),reportTime,i18n$t("update"),paste0(freqCron,"mn"))))

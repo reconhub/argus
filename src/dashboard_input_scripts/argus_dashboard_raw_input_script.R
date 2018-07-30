@@ -1273,7 +1273,7 @@ fullrep_IDs <- NA # Ids of fullreport of interests
 partrep_IDs <- NA # IDs of partreports (versions of the fullreports) of interest
 rep_IDs <- NA 
 
-fullrep_IDs <- strsplit(reportingValues_W12$ids_fullreport_recVal[which(reportingValues_W12$level==1 & reportingValues_W12$week %in% c(weekEnd-1, weekEnd))],split=",")[[1]]
+fullrep_IDs <- strsplit(paste0(reportingValues_W12$ids_fullreport_recVal[which(reportingValues_W12$level==1 & reportingValues_W12$week %in% c(weekEnd-1, weekEnd))],collapse = ","),split=",")[[1]]
 
 fullrep_IDs <- as.numeric(fullrep_IDs)
 
@@ -1354,7 +1354,6 @@ for (site_ID in unique(diseaseThreshold_W2$FK_SiteId)) {
 }
 
 diseaseThreshold_W2 <- diseaseThreshold_W2[which(diseaseThreshold_W2$occurence!=0),]
-
 
 ## alertList_D10 ####
 

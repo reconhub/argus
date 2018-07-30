@@ -103,8 +103,8 @@ dev.off()
 
 # Create tables with diseases ####
 # Disease table occurrence
-disease_occurrence_above_threshold <- diseaseThreshold_W2 %>%
-  select(siteName, name_parentSite, diseaseName, contact, phone, threshold_value, occurence)
+
+disease_occurrence_above_threshold <- diseaseThreshold_W2[which(diseaseThreshold_W2$occurence>=diseaseThreshold_W2$threshold_value),c("siteName", "name_parentSite", "diseaseName", "contact", "phone", "threshold_value", "occurence")]
 
 data.table::setnames(disease_occurrence_above_threshold,
                      old = c("siteName", "name_parentSite", "diseaseName", "contact", "phone", "threshold_value", "occurence"),
@@ -119,6 +119,9 @@ data.table::setnames(disease_occurrence_above_threshold,
 
 if(length(alertList_D10$receptionDate)==0) {
   alert_list_D10 <- data_frame(receptionDate=NA, name_Site=NA, name_parentSite=NA, contactName=NA, contactPhoneNumber=NA, message=i18n$t("no_alert"))
+  data.table::setnames(alert_list_D10,
+                       old = names(alert_list_D10),
+                       new = c(i18n$t("reception_Date"), i18n$t("name_Site"), i18n$t("name_parentSite"), i18n$t("contactName"),i18n$t("contactPhoneNumber"), i18n$t("message")))
 } else {
   alert_list_D10 <- alertList_D10 %>%
   select(receptionDate, name_Site, name_parentSite, contactName, contactPhoneNumber, message)
