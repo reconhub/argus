@@ -59,75 +59,95 @@ ggsave(file = paste0(assets_path, "trends_occurrence.svg"), plot = plot_occurren
 
 # Create maps ####
 
-disease_location <- diseaseThreshold_W2 %>%
-  group_by(disease, diseaseName,longitude, latitude) %>%
-  summarise(occurence  = sum(occurence))
+if(nrow(diseaseThreshold_W2)==0) {
 
-diseasesMap <- unique(disease_location$diseaseName)
+} else {
 
-country_data <- sp_files %>% dplyr::filter(GEOUNIT == country)
+  disease_location <- diseaseThreshold_W2 %>%
+    group_by(disease, diseaseName,longitude, latitude) %>%
+    summarise(occurence  = sum(occurence))
 
-svg(paste0(assets_path, "map_occurrence.svg"), width = 10, height = 10)
+  diseasesMap <- unique(disease_location$diseaseName)
 
-grid.newpage()
-pushViewport(viewport(layout = grid.layout(nrow=ceiling(length(diseasesMap)/3), ncol=3)))
+  country_data <- sp_files %>% dplyr::filter(GEOUNIT == country)
 
-j <- rep(x = c(1,2,3), times=ceiling(length(diseasesMap)/3))
+  svg(paste0(assets_path, "map_occurrence.svg"), width = 10, height = 10)
 
-mapTemp <- NA
+  grid.newpage()
+  pushViewport(viewport(layout = grid.layout(nrow=ceiling(length(diseasesMap)/3), ncol=3)))
 
-for (i in 1:length(diseasesMap)) {
+  j <- rep(x = c(1,2,3), times=ceiling(length(diseasesMap)/3))
+
+  mapTemp <- NA
+
+  for (i in 1:length(diseasesMap)) {
   
-mapTemp <-  ggplot() +
-    geom_sf(data = country_data, fill = "white") +
-    geom_point(data = disease_location[which(disease_location$diseaseName==diseasesMap[i]),], aes(x = longitude, y = latitude, size = occurence), color = plot_colors[1], alpha = 1) +
-    scale_size(breaks = sort(unique(disease_location$occurence[which(disease_location$diseaseName==diseasesMap[i])])), name = i18n$t("maps_legend"), range = c(2,4)) +
-    theme_ipsum(base_family = "sans",subtitle_family = "sans") +
-    theme(axis.line = element_blank(),
-          axis.ticks = element_blank(),
-          axis.text = element_blank(),
-          axis.title.x = element_blank(),
-          axis.title.y = element_blank(),
-          legend.title = element_text(size = main_font_size, family = "sans"), 
-          legend.text = element_text(size = main_font_size, family = "sans"),
-          legend.key = element_rect(fill = "white", colour = "white"),
-          panel.spacing.x = unit(1, "lines"),
-          legend.position = "right", legend.box = "vertical") +
-          ggtitle(diseasesMap[i])
+  mapTemp <-  ggplot() +
+      geom_sf(data = country_data, fill = "white") +
+      geom_point(data = disease_location[which(disease_location$diseaseName==diseasesMap[i]),], aes(x = longitude, y = latitude, size = occurence), color = plot_colors[1], alpha = 1) +
+      scale_size(breaks = sort(unique(disease_location$occurence[which(disease_location$diseaseName==diseasesMap[i])])), name = i18n$t("maps_legend"), range = c(2,4)) +
+      theme_ipsum(base_family = "sans",subtitle_family = "sans") +
+      theme(axis.line = element_blank(),
+            axis.ticks = element_blank(),
+            axis.text = element_blank(),
+            axis.title.x = element_blank(),
+            axis.title.y = element_blank(),
+            legend.title = element_text(size = main_font_size, family = "sans"), 
+            legend.text = element_text(size = main_font_size, family = "sans"),
+            legend.key = element_rect(fill = "white", colour = "white"),
+            panel.spacing.x = unit(1, "lines"),
+            legend.position = "right", legend.box = "vertical") +
+            ggtitle(diseasesMap[i])
   
   
-  print(mapTemp, vp=viewport(layout.pos.row=ceiling(i/3), layout.pos.col=j[i]))
-} 
+   print(mapTemp, vp=viewport(layout.pos.row=ceiling(i/3), layout.pos.col=j[i]))
+  } 
 
-dev.off()
-
+  dev.off()
+  
+}
 # Create tables with diseases ####
 # Disease table occurrence
 
-disease_occurrence_above_threshold <- diseaseThreshold_W2[which(diseaseThreshold_W2$occurence>=diseaseThreshold_W2$threshold_value),c("siteName", "name_parentSite", "diseaseName", "contact", "phone", "threshold_value", "occurence")]
+if(nrow(diseaseThreshold_W2)==0) {
+
+  disease_occurrence_above_threshold <- data_frame(name_parentSite=NA, siteName=NA, diseaseName=NA, threshold_value=NA, occurence=NA)
+  
+  data.table::setnames(disease_occurrence_above_threshold,
+                       old = c("name_parentSite", "siteName", "diseaseName", "threshold_value", "occurence"),
+                       new = c(i18n$t("name_parentSite"),
+                               i18n$t("siteName"), 
+                               i18n$t("disease"),
+                               i18n$t("threshold"),
+                               i18n$t("occurrence")))
+  
+} else {
+
+disease_occurrence_above_threshold <- diseaseThreshold_W2[which(diseaseThreshold_W2$occurence>=diseaseThreshold_W2$threshold_value),c("name_parentSite","siteName", "diseaseName", "threshold_value", "occurence")]
+
+disease_occurrence_above_threshold <- data.table::setorder(disease_occurrence_above_threshold,name_parentSite)
 
 data.table::setnames(disease_occurrence_above_threshold,
-                     old = c("siteName", "name_parentSite", "diseaseName", "contact", "phone", "threshold_value", "occurence"),
-                     new = c(i18n$t("siteName"), i18n$t("name_parentSite"),
+                     old = c("name_parentSite", "siteName", "diseaseName", "threshold_value", "occurence"),
+                     new = c(i18n$t("name_parentSite"),
+                             i18n$t("siteName"),
                              i18n$t("disease"),
-                             i18n$t("contact"),
-                             i18n$t("phone"),
                              i18n$t("threshold"),
                              i18n$t("occurrence")))
-
+}
 # Disease alerts
 
 if(length(alertList_D10$receptionDate)==0) {
-  alert_list_D10 <- data_frame(receptionDate=NA, name_Site=NA, name_parentSite=NA, contactName=NA, contactPhoneNumber=NA, message=i18n$t("no_alert"))
+  alert_list_D10 <- data_frame(receptionDate=NA, name_Site=NA, name_parentSite=NA, message=i18n$t("no_alert"))
   data.table::setnames(alert_list_D10,
                        old = names(alert_list_D10),
-                       new = c(i18n$t("reception_Date"), i18n$t("name_Site"), i18n$t("name_parentSite"), i18n$t("contactName"),i18n$t("contactPhoneNumber"), i18n$t("message")))
+                       new = c(i18n$t("reception_Date"), i18n$t("name_Site"), i18n$t("name_parentSite"), i18n$t("message")))
 } else {
   alert_list_D10 <- alertList_D10 %>%
-  select(receptionDate, name_Site, name_parentSite, contactName, contactPhoneNumber, message)
+  select(receptionDate, name_Site, name_parentSite, message)
     data.table::setnames(alert_list_D10,
                        old = names(alert_list_D10),
-                       new = c(i18n$t("reception_Date"), i18n$t("name_Site"), i18n$t("name_parentSite"), i18n$t("contactName"),i18n$t("contactPhoneNumber"), i18n$t("message")))
+                       new = c(i18n$t("reception_Date"), i18n$t("name_Site"), i18n$t("name_parentSite"), i18n$t("message")))
 }
 
 # Cummulative table

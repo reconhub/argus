@@ -51,7 +51,7 @@ central_plots <- ggplot(data = last_12_weeks_central, aes(x = week, y = number, 
   plot_theme() +
   theme(axis.text.x = element_text(angle = 0), axis.title.y = element_text(angle = 180,vjust = 0.5))
 
-ggsave(file = paste0(assets_path, "central_plot.svg"), plot = central_plots, width = 7)
+ggsave(file = paste0(assets_path, "central_plot.svg"), plot = central_plots, width = 7, height = 3.68)
 
 # Overall reporting plot 
 
@@ -72,7 +72,7 @@ reporting_parent_sites <- ggplot(data = overall_reporting, aes(x = reference, y 
   scale_x_discrete(limits=unique(overall_reporting$reference))
 
 
-ggsave(file = paste0(assets_path, "reporting_parent_sites.svg"), plot = reporting_parent_sites, width = 7)
+ggsave(file = paste0(assets_path, "reporting_parent_sites.svg"), plot = reporting_parent_sites, width = 7, height = 3.68)
 
 ## Review plot 
 
@@ -91,22 +91,20 @@ weekly_review_plots <- ggplot(data = overal_review, aes(x = reference, y = numbe
   theme(axis.title.y = element_text(angle = 180,vjust = 0.5)) +
   scale_x_discrete(limits=unique(overal_review$reference))
 
-ggsave(file = paste0(assets_path, "review_plots.svg"), plot = weekly_review_plots, width = 10)
+ggsave(file = paste0(assets_path, "review_plots.svg"), plot = weekly_review_plots, width = 10, height = 3.68)
 
 # Generate tables ####
 # Silent sites
 sites_no_report_3weeks <- noReport_W3 %>%
-  select(name_parentSite, siteName, contact, phone)
+  select(name_parentSite, siteName)
 
 data.table::setnames(sites_no_report_3weeks,
                     old = names(sites_no_report_3weeks),
-                    new = c(i18n$t("name_parentSite"), i18n$t("siteName"), i18n$t("contact"),
-                            i18n$t("phone")))
+                    new = c(i18n$t("name_parentSite"), i18n$t("siteName")))
 
 sites_no_report_8weeks <- noReport_W8 %>%
-  select(name_parentSite, siteName, contact, phone)
+  select(name_parentSite, siteName)
 
 data.table::setnames(sites_no_report_8weeks,
                     old = names(sites_no_report_8weeks),
-                    new = c(i18n$t("name_parentSite"), i18n$t("siteName"), i18n$t("contact"),
-                            i18n$t("phone")))
+                    new = c(i18n$t("name_parentSite"), i18n$t("siteName")))

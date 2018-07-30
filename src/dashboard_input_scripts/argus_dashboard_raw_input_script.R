@@ -1286,74 +1286,79 @@ diseaseThreshold_W2 <- NA # table of interest
 
 diseaseThreshold_W2 <- sites_relationships[which(sites_relationships$id %in% fullreport$FK_SiteRelationShipId[which(fullreport$id %in% fullrep_IDs)]),c("FK_SiteId","FK_ParentId","name","longitude","latitude")]
 
-diseaseThreshold_W2$name_parentSite <- NA # name of the parent site
-diseaseThreshold_W2$siteName  <- NA # name of the site
-diseaseThreshold_W2$contact <- NA # name of the contact at the site
-diseaseThreshold_W2$phone <- NA # phone of the contact at the site
-
-rowLineId <- NA
-for (rowLineId in 1:nrow(diseaseThreshold_W2)) {
+if(nrow(diseaseThreshold_W2)==0) {
   
-  if (is.na(diseaseThreshold_W2$longitude[rowLineId]) | is.na(diseaseThreshold_W2$latitude[rowLineId]) ) {
-    diseaseThreshold_W2$longitude[rowLineId] <- longLat$longitude[which(longLat$FK_SiteId==diseaseThreshold_W2$FK_ParentId[rowLineId])]
-    diseaseThreshold_W2$latitude[rowLineId] <- longLat$latitude[which(longLat$FK_SiteId==diseaseThreshold_W2$FK_ParentId[rowLineId])]
   } else {
+
+  diseaseThreshold_W2$name_parentSite <- NA # name of the parent site
+  diseaseThreshold_W2$siteName  <- NA # name of the site
+  diseaseThreshold_W2$contact <- NA # name of the contact at the site
+  diseaseThreshold_W2$phone <- NA # phone of the contact at the site
+
+  rowLineId <- NA
+  for (rowLineId in 1:nrow(diseaseThreshold_W2)) {
+  
+    if (is.na(diseaseThreshold_W2$longitude[rowLineId]) | is.na(diseaseThreshold_W2$latitude[rowLineId]) ) {
+      diseaseThreshold_W2$longitude[rowLineId] <- longLat$longitude[which(longLat$FK_SiteId==diseaseThreshold_W2$FK_ParentId[rowLineId])]
+      diseaseThreshold_W2$latitude[rowLineId] <- longLat$latitude[which(longLat$FK_SiteId==diseaseThreshold_W2$FK_ParentId[rowLineId])]
+    } else {
+    }
+  
+    diseaseThreshold_W2$name_parentSite[rowLineId] <- sites_id$reference[which(sites_id$id==diseaseThreshold_W2$FK_ParentId[rowLineId])]
+    diseaseThreshold_W2$siteName[rowLineId] <- sites_id$reference[which(sites_id$id==diseaseThreshold_W2$FK_SiteId[rowLineId])]
+    diseaseThreshold_W2$contact[rowLineId] <- paste(sites_contact$name[which(sites_contact$FK_SiteId==diseaseThreshold_W2$FK_SiteId[rowLineId] & (sites_contact$isDeleted==0 | is.na(sites_contact$isDeleted)))], collapse = ", ")
+    diseaseThreshold_W2$phone[rowLineId] <- paste(sites_contact$phoneNumber[which(sites_contact$FK_SiteId==diseaseThreshold_W2$FK_SiteId[rowLineId])], collapse = ", ")
+}
+
+  disInt <- NA
+  diseaseThreshold_W2$disease <- NA
+  diseaseThreshold_W2$diseaseName <- NA
+  diseaseThreshold_W2$variable <- NA
+  diseaseThreshold_W2$threshold_value <- NA
+  temp <- NA
+  temp <- diseaseThreshold_W2
+
+  for (disInt in unique(diseaseThreshold_W12$disease)) {
+    temp$disease <- NA
+    temp$disease <- disInt
+    temp$diseaseName <- thresholds$diseaseName[which(thresholds$disease==disInt)]
+    temp$variable <- diseaseThreshold_W12_overall$variable[which(diseaseThreshold_W12_overall$disease==disInt)]
+    temp$threshold_value <- diseaseThreshold_W12_overall$threshold_value[which(diseaseThreshold_W12_overall$disease==disInt)]
+    diseaseThreshold_W2 <- rbind(diseaseThreshold_W2,temp)
   }
+
+  diseaseThreshold_W2 <- diseaseThreshold_W2[-which(is.na(diseaseThreshold_W2$disease)),]
+
+  diseaseThreshold_W2$occurence <- NA
+
+  fullrep_IDs_site <- NA
+
+  site_ID <- NA
+
+  for (site_ID in unique(diseaseThreshold_W2$FK_SiteId)) {
   
-  diseaseThreshold_W2$name_parentSite[rowLineId] <- sites_id$reference[which(sites_id$id==diseaseThreshold_W2$FK_ParentId[rowLineId])]
-  diseaseThreshold_W2$siteName[rowLineId] <- sites_id$reference[which(sites_id$id==diseaseThreshold_W2$FK_SiteId[rowLineId])]
-  diseaseThreshold_W2$contact[rowLineId] <- paste(sites_contact$name[which(sites_contact$FK_SiteId==diseaseThreshold_W2$FK_SiteId[rowLineId] & (sites_contact$isDeleted==0 | is.na(sites_contact$isDeleted)))], collapse = ", ")
-  diseaseThreshold_W2$phone[rowLineId] <- paste(sites_contact$phoneNumber[which(sites_contact$FK_SiteId==diseaseThreshold_W2$FK_SiteId[rowLineId])], collapse = ", ")
-}
-
-disInt <- NA
-diseaseThreshold_W2$disease <- NA
-diseaseThreshold_W2$diseaseName <- NA
-diseaseThreshold_W2$variable <- NA
-diseaseThreshold_W2$threshold_value <- NA
-temp <- NA
-temp <- diseaseThreshold_W2
-
-for (disInt in unique(diseaseThreshold_W12$disease)) {
-  temp$disease <- NA
-  temp$disease <- disInt
-  temp$diseaseName <- thresholds$diseaseName[which(thresholds$disease==disInt)]
-  temp$variable <- diseaseThreshold_W12_overall$variable[which(diseaseThreshold_W12_overall$disease==disInt)]
-  temp$threshold_value <- diseaseThreshold_W12_overall$threshold_value[which(diseaseThreshold_W12_overall$disease==disInt)]
-  diseaseThreshold_W2 <- rbind(diseaseThreshold_W2,temp)
-}
-
-diseaseThreshold_W2 <- diseaseThreshold_W2[-which(is.na(diseaseThreshold_W2$disease)),]
-
-diseaseThreshold_W2$occurence <- NA
-
-fullrep_IDs_site <- NA
-
-site_ID <- NA
-
-for (site_ID in unique(diseaseThreshold_W2$FK_SiteId)) {
+    for (diseaseName in unique(diseaseThreshold_W12$disease)) {
+    
+      fullrep_IDs_site <- NA
+      fullrep_IDs_site <- fullreport$id[which(fullreport$id %in% fullrep_IDs & fullreport$FK_SiteId==site_ID)]
+    
+      partrep_IDs <- NA
+      partrep_IDs <- partreport$id[which(partreport$FK_FullReportId %in% fullrep_IDs_site & partreport$status=="VALIDATED")]
+    
+      rep_IDs <- NA
+      rep_IDs <- report$id[which(report$FK_PartReportId %in% partrep_IDs & report$disease==diseaseName  & report$isArchived==0 & report$isDeleted==0)]
+    
+      varDisease <- NA
+      varDisease <- unique(diseaseThreshold_W12_overall$variable[which(diseaseThreshold_W12_overall$disease==diseaseName)])
+    
+      diseaseThreshold_W2$occurence[which(diseaseThreshold_W2$disease==diseaseName & diseaseThreshold_W2$FK_SiteId==site_ID)] <- sum(report_values$Value[which(report_values$Key==varDisease & report_values$FK_ReportId %in% rep_IDs)])
+    
+    }
   
-  for (diseaseName in unique(diseaseThreshold_W12$disease)) {
-    
-    fullrep_IDs_site <- NA
-    fullrep_IDs_site <- fullreport$id[which(fullreport$id %in% fullrep_IDs & fullreport$FK_SiteId==site_ID)]
-    
-    partrep_IDs <- NA
-    partrep_IDs <- partreport$id[which(partreport$FK_FullReportId %in% fullrep_IDs_site & partreport$status=="VALIDATED")]
-    
-    rep_IDs <- NA
-    rep_IDs <- report$id[which(report$FK_PartReportId %in% partrep_IDs & report$disease==diseaseName  & report$isArchived==0 & report$isDeleted==0)]
-    
-    varDisease <- NA
-    varDisease <- unique(diseaseThreshold_W12_overall$variable[which(diseaseThreshold_W12_overall$disease==diseaseName)])
-    
-    diseaseThreshold_W2$occurence[which(diseaseThreshold_W2$disease==diseaseName & diseaseThreshold_W2$FK_SiteId==site_ID)] <- sum(report_values$Value[which(report_values$Key==varDisease & report_values$FK_ReportId %in% rep_IDs)])
-    
   }
-  
-}
 
-diseaseThreshold_W2 <- diseaseThreshold_W2[which(diseaseThreshold_W2$occurence!=0),]
+  diseaseThreshold_W2 <- diseaseThreshold_W2[which(diseaseThreshold_W2$occurence!=0),]
+}
 
 ## alertList_D10 ####
 
