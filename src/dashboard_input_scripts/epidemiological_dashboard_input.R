@@ -81,7 +81,7 @@ for (i in 1:length(diseasesMap)) {
 mapTemp <-  ggplot() +
     geom_sf(data = country_data, fill = "white") +
     geom_point(data = disease_location[which(disease_location$diseaseName==diseasesMap[i]),], aes(x = longitude, y = latitude, size = occurence), color = plot_colors[1], alpha = 1) +
-    scale_size(breaks = unique(disease_location$occurence), name = i18n$t("maps_legend"), range = c(2,4)) +
+    scale_size(breaks = sort(unique(disease_location$occurence[which(disease_location$diseaseName==diseasesMap[i])])), name = i18n$t("maps_legend"), range = c(2,4)) +
     theme_ipsum(base_family = "sans",subtitle_family = "sans") +
     theme(axis.line = element_blank(),
           axis.ticks = element_blank(),
