@@ -63,10 +63,15 @@ if(nrow(diseaseThreshold_W2)==0) {
 
 } else {
 
+  disease_interest <- diseaseThreshold_W2 %>% group_by(disease,threshold_value) %>% summarise(occurence = sum(occurence)) 
+  disease_interest <- disease_interest$disease[which(disease_interest$occurence >= disease_interest$threshold_value)]
+  
   disease_location <- diseaseThreshold_W2 %>%
     group_by(disease, diseaseName,longitude, latitude) %>%
     summarise(occurence  = sum(occurence))
 
+  disease_location <- disease_location[-which(disease_location$disease%nin% disease_interest),]
+  
   diseasesMap <- unique(disease_location$diseaseName)
 
   country_data <- sp_files %>% dplyr::filter(GEOUNIT == country)

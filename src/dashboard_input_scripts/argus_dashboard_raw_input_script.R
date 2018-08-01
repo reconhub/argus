@@ -1227,7 +1227,7 @@ diseaseThreshold_W12$occurence <- NA # nb of cases during the 12 previous weeks 
 
 diseaseThreshold_W12 <- diseaseThreshold_W12[-which(is.na(diseaseThreshold_W12$week)),]
 
-listDiseaseNonZero_W12 <- diseaseThreshold_W12_overall$disease[which(diseaseThreshold_W12_overall$occurence>=1)]
+listDiseaseThreshold_W12 <- diseaseThreshold_W12_overall$disease[which(diseaseThreshold_W12_overall$occurence>=diseaseThreshold_W12_overall$threshold_value)]
 
 diseaseName <- NA
 
@@ -1239,7 +1239,7 @@ rep_IDs <- NA
 
 for (numSem in numSem_W12) {
   
-  for (diseaseName in listDiseaseNonZero_W12) {
+  for (diseaseName in listDiseaseThreshold_W12) {
     
     fullrep_IDs <- strsplit(reportingValues_W12$ids_fullreport_recVal[which(reportingValues_W12$level==1 & reportingValues_W12$week==numSem)],split=",")[[1]]
     fullrep_IDs <- as.numeric(fullrep_IDs)
@@ -1308,7 +1308,7 @@ if(nrow(diseaseThreshold_W2)==0) {
     diseaseThreshold_W2$siteName[rowLineId] <- sites_id$reference[which(sites_id$id==diseaseThreshold_W2$FK_SiteId[rowLineId])]
     diseaseThreshold_W2$contact[rowLineId] <- paste(sites_contact$name[which(sites_contact$FK_SiteId==diseaseThreshold_W2$FK_SiteId[rowLineId] & (sites_contact$isDeleted==0 | is.na(sites_contact$isDeleted)))], collapse = ", ")
     diseaseThreshold_W2$phone[rowLineId] <- paste(sites_contact$phoneNumber[which(sites_contact$FK_SiteId==diseaseThreshold_W2$FK_SiteId[rowLineId])], collapse = ", ")
-}
+  }
 
   disInt <- NA
   diseaseThreshold_W2$disease <- NA
