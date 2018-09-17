@@ -39,8 +39,8 @@ source("src/dashboard_input_scripts/argus_dashboard_raw_input_script.R")
 # In order to have the flexdashboards as light as possible we generate the charts and tables in the separate scripts
 # not to load plotly dependencies (or other) to Rmarkdown.
 
-source("src/dashboard_input_scripts/administrative_dashboard_input.R", echo = TRUE)
-source("src/dashboard_input_scripts/epidemiological_dashboard_input.R", echo = TRUE)
+source("src/dashboard_input_scripts/administrative_dashboard_input.R")
+source("src/dashboard_input_scripts/epidemiological_dashboard_input.R")
 
 # Render dashboards ####
 # Dashboards are rendered as flexdashboards

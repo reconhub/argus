@@ -62,7 +62,7 @@ DT::datatable(data = alert_list_D10,
 Row
 -------------------------------------
 
-### `r paste0(i18n$t("disease_table_cumulative_header"),i18n$t("weekAbbr"),"1"," a ", i18n$t("weekAbbr"),numSem_W12[12])`
+### `r paste0(i18n$t("disease_table_cumulative_header"),i18n$t("weekAbbr"),"1"," to ", i18n$t("weekAbbr"),numSem_W12[12])`
 
 > `r paste0(yearPrevious,". ",i18n$t("representativeness"),nbRecValid_YR_previous,"/",nbExpected_YR_previous," (",percRecValid_YR_previous,"%)")`
 > `r paste0(yearCurrent,". ",i18n$t("representativeness"),nbRecValid_YR,"/",nbExpected_YR," (",percRecValid_YR,"%)")`
@@ -74,6 +74,6 @@ DT::datatable(data = cumulative_table,
                rownames = FALSE,
                 options = list(
                   columnDefs = list(list(responsivePriority = 1, targets = 0)),
-                  pageLength=length(diseases_name$disease[which(diseases_name$disease!="ALERT")]),
-                  dom = 'tp'))
+             pageLength=length(diseases_name$disease[which(diseases_name$disease!="ALERT")]),
+                dom = 'tp'))
 ```

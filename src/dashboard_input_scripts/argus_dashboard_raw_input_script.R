@@ -392,7 +392,7 @@ if (length(temp)==0) {
   
   sites_specificPeriod_YR$weekStart <- ifelse(sites_specificPeriod_YR$FK_DimDateFromId > dateStart_YR +6, weekFunction(sites_specificPeriod_YR$FK_DimDateFromId), 1)
   
-  sites_specificPeriod_YR$weekEnd <- ifelse((sites_specificPeriod_YR$FK_DimDateToId -1 < dateEnd +7) & !is.na(sites_specificPeriod_YR$FK_DimDateToId), weekFunction(sites_specificPeriod_YR$FK_DimDateToId-8), weekEnd)
+  sites_specificPeriod_YR$weekEnd <- ifelse((sites_specificPeriod_YR$FK_DimDateToId -1 < dateEnd +7) & !is.na(sites_specificPeriod_YR$FK_DimDateToId), weekFunction(sites_specificPeriod_YR$FK_DimDateToId-7), weekEnd)
   
   sites_specificPeriod_YR$duration <- NA # nb of weeks for which site active
   sites_specificPeriod_YR$duration <- sites_specificPeriod_YR$weekEnd - sites_specificPeriod_YR$weekStart +1
@@ -409,7 +409,7 @@ if (length(temp)==0) {
   
   sites_specificPeriod_YR_previous$weekStart <- ifelse(sites_specificPeriod_YR_previous$FK_DimDateFromId > dateStart_YR_previous +6, weekFunction(sites_specificPeriod_YR_previous$FK_DimDateFromId), 1)
   
-  sites_specificPeriod_YR_previous$weekEnd <- ifelse((sites_specificPeriod_YR_previous$FK_DimDateToId -1 < dateEnd +7) & !is.na(sites_specificPeriod_YR_previous$FK_DimDateToId), weekFunction(sites_specificPeriod_YR_previous$FK_DimDateToId-8), weekEnd)
+  sites_specificPeriod_YR_previous$weekEnd <- ifelse((sites_specificPeriod_YR_previous$FK_DimDateToId -1 < dateEnd +7) & !is.na(sites_specificPeriod_YR_previous$FK_DimDateToId), weekFunction(sites_specificPeriod_YR_previous$FK_DimDateToId-7), weekEnd)
   
   sites_specificPeriod_YR_previous$duration <- NA # nb of weeks for which site active
   sites_specificPeriod_YR_previous$duration <- sites_specificPeriod_YR_previous$weekEnd - sites_specificPeriod_YR_previous$weekStart +1
@@ -427,7 +427,7 @@ if (length(temp)==0) {
   
   sites_specificPeriod_W12$weekStart <- ifelse(sites_specificPeriod_W12$FK_DimDateFromId > dateStart_W12 +6, weekFunction(sites_specificPeriod_W12$FK_DimDateFromId), weekStart_W12)
   
-  sites_specificPeriod_W12$weekEnd <- ifelse((sites_specificPeriod_W12$FK_DimDateToId -1 < dateEnd +7) & !is.na(sites_specificPeriod_W12$FK_DimDateToId), weekFunction(sites_specificPeriod_W12$FK_DimDateToId-8), weekEnd)
+  sites_specificPeriod_W12$weekEnd <- ifelse((sites_specificPeriod_W12$FK_DimDateToId -1 < dateEnd +7) & !is.na(sites_specificPeriod_W12$FK_DimDateToId), weekFunction(sites_specificPeriod_W12$FK_DimDateToId-7), weekEnd)
   
   sites_specificPeriod_W12$duration <- NA # nb of weeks for which site active
   sites_specificPeriod_W12$duration <- ifelse(sites_specificPeriod_W12$weekEnd >= sites_specificPeriod_W12$weekStart, sites_specificPeriod_W12$weekEnd - sites_specificPeriod_W12$weekStart +1, nbWeeksYear - sites_specificPeriod_W12$weekStart +1 + sites_specificPeriod_W12$weekEnd)
@@ -473,8 +473,8 @@ for (Id_Site in reportingValues_YR$Id_Site[which(reportingValues_YR$level==levFi
   }else{
     
     Id_SpecificSite <- NA
+    counter <- 1
     for (Id_SpecificSite in list_Id_SpecificSite) { # in case there is reporting sites for a specific period
-      counter <- 1
       numSemTemp <- NA
       rowLineId <- NA
       rowLineId <- which(sites_specificPeriod_YR$id==Id_SpecificSite)
@@ -529,10 +529,9 @@ for (Id_Site in reportingValues_YR$Id_Site[which(reportingValues_YR$level==levFi
   
   # Ids of fullreports received and validated since week 1(taken into account in the analyses)
   
-  reportingValues_YR$ids_fullreport_recVal[which(reportingValues_YR$Id_Site==Id_Site)] <- paste0(recValReports_fullId_whole_YR,paste(recValReports_fullId_specific_YR,collapse=","),collapse = ",")
+  reportingValues_YR$ids_fullreport_recVal[which(reportingValues_YR$Id_Site==Id_Site)] <- paste0(c(recValReports_fullId_whole_YR,paste(recValReports_fullId_specific_YR,collapse=",")),collapse = ",")
   
 }
-
 
 levInterest <- NA
 
@@ -591,8 +590,8 @@ for (Id_Site in reportingValues_YR_previous$Id_Site[which(reportingValues_YR_pre
   }else{
     
     Id_SpecificSite <- NA
+    counter <- 1
     for (Id_SpecificSite in list_Id_SpecificSite) { # in case there is reporting sites for a specific period
-      counter <- 1
       numSemTemp <- NA
       rowLineId <- NA
       rowLineId <- which(sites_specificPeriod_YR_previous$id==Id_SpecificSite)
@@ -647,7 +646,7 @@ for (Id_Site in reportingValues_YR_previous$Id_Site[which(reportingValues_YR_pre
   
   # Ids of fullreports received and validated since week 1(taken into account in the analyses)
   
-  reportingValues_YR_previous$ids_fullreport_recVal[which(reportingValues_YR_previous$Id_Site==Id_Site)] <- paste0(recValReports_fullId_whole_YR_previous,paste(recValReports_fullId_specific_YR_previous,collapse=","),collapse = ",")
+  reportingValues_YR_previous$ids_fullreport_recVal[which(reportingValues_YR_previous$Id_Site==Id_Site)] <- paste0(c(recValReports_fullId_whole_YR_previous,paste(recValReports_fullId_specific_YR_previous,collapse=",")),collapse = ",")
   
 }
 
@@ -686,7 +685,10 @@ for (numSem in numSem_W12) {
   reportingValues_W12 <- rbind(reportingValues_W12,temp)
 }
 
-reportingValues_W12 <- reportingValues_W12[-which(is.na(reportingValues_W12$week)),]
+if(any(is.na(reportingValues_W12$week))) {
+  reportingValues_W12 <- reportingValues_W12[-which(is.na(reportingValues_W12$week)),]
+} else {
+}
 
 reportingValues_W12$nbExpected <- NA # Nb of expected reports
 reportingValues_W12$nbReceived <- NA # Nb of received reports from leaf sites
@@ -792,7 +794,7 @@ for (Id_Site in parentSites$Id_Site[which(parentSites$level==levFirstInter)]) {
     
     # Ids of fullreports received and validated since for the 12 previous weeks (taken into account in the analyses)
     
-    reportingValues_W12$ids_fullreport_recVal[which(reportingValues_W12$Id_Site==Id_Site & reportingValues_W12$week==numSem)] <- paste0(recValReports_fullId_whole_W12,recValReports_fullId_specific_W12,collapse = ",")
+    reportingValues_W12$ids_fullreport_recVal[which(reportingValues_W12$Id_Site==Id_Site & reportingValues_W12$week==numSem)] <- paste0(c(recValReports_fullId_whole_W12,recValReports_fullId_specific_W12),collapse = ",")
     
     
     # Nb of received reports on time from leaf sites
@@ -1225,7 +1227,10 @@ for (numSem in numSem_W12) {
 
 diseaseThreshold_W12$occurence <- NA # nb of cases during the 12 previous weeks for the whole country
 
+if(any(is.na(diseaseThreshold_W12$week))) {
 diseaseThreshold_W12 <- diseaseThreshold_W12[-which(is.na(diseaseThreshold_W12$week)),]
+} else {
+}
 
 listDiseaseThreshold_W12 <- diseaseThreshold_W12_overall$disease[which(diseaseThreshold_W12_overall$occurence>=diseaseThreshold_W12_overall$threshold_value)]
 
@@ -1243,8 +1248,10 @@ for (numSem in numSem_W12) {
     
     fullrep_IDs <- strsplit(reportingValues_W12$ids_fullreport_recVal[which(reportingValues_W12$level==1 & reportingValues_W12$week==numSem)],split=",")[[1]]
     fullrep_IDs <- as.numeric(fullrep_IDs)
+      if(any(is.na(fullrep_IDs))) {
     fullrep_IDs <- fullrep_IDs[-which(is.na(fullrep_IDs))]
-    
+      } else {
+      }
     partrep_IDs <- partreport$id[which(partreport$FK_FullReportId %in% fullrep_IDs & partreport$status=="VALIDATED")]
     
     rep_IDs <- report$id[which(report$FK_PartReportId %in% partrep_IDs & report$disease==diseaseName  & report$isArchived==0 & report$isDeleted==0)]
@@ -1257,7 +1264,10 @@ for (numSem in numSem_W12) {
   }
 }
 
-diseaseThreshold_W12 <- diseaseThreshold_W12[-which(is.na(diseaseThreshold_W12$occurence)),]
+if(any(is.na(diseaseThreshold_W12$occurence))) {
+  diseaseThreshold_W12 <- diseaseThreshold_W12[-which(is.na(diseaseThreshold_W12$occurence)),]
+} else {
+}
 
 diseasesInterest_W12 <- unique(diseaseThreshold_W12$disease[which(diseaseThreshold_W12$occurence >= diseaseThreshold_W12$threshold_value)])
 
@@ -1287,7 +1297,6 @@ diseaseThreshold_W2 <- NA # table of interest
 diseaseThreshold_W2 <- sites_relationships[which(sites_relationships$id %in% fullreport$FK_SiteRelationShipId[which(fullreport$id %in% fullrep_IDs)]),c("FK_SiteId","FK_ParentId","name","longitude","latitude")]
 
 if(nrow(diseaseThreshold_W2)==0) {
-  
   } else {
 
   diseaseThreshold_W2$name_parentSite <- NA # name of the parent site
@@ -1327,7 +1336,10 @@ if(nrow(diseaseThreshold_W2)==0) {
     diseaseThreshold_W2 <- rbind(diseaseThreshold_W2,temp)
   }
 
-  diseaseThreshold_W2 <- diseaseThreshold_W2[-which(is.na(diseaseThreshold_W2$disease)),]
+  if(any(is.na(diseaseThreshold_W2$disease))) {
+    diseaseThreshold_W2 <- diseaseThreshold_W2[-which(is.na(diseaseThreshold_W2$disease)),]
+  } else {
+  }
 
   diseaseThreshold_W2$occurence <- NA
 
