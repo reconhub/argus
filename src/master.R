@@ -1,6 +1,6 @@
 ### Master file to run all the calculations to compute Argus admnistrative and epidemiological dashboards
 
-workingDir <- ""
+workingDir <- "C:/xampp/htdocs/ScriptsR/argus/"
 # Set working directory and load correct libraries
 
 # setwd(workingDir)
