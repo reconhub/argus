@@ -1,6 +1,6 @@
 ﻿# R scripts for admnistrative and epidemiological dashboards in Argus
 
----
+
 ## Argus IT-tool for public health surveillance
 The World Health Organization (WHO) has developed Argus, an open source IT tool to support public health surveillance for early detection and response. It uses Short Message Service (SMS) technology for the transmission of information between the local healthcare facilities and all levels of the public health surveillance system via a mobile application. A web platform complements the application for data management and analysis.
 
@@ -47,10 +47,23 @@ It is possible to generate the reports in different languages. The international
 3. Check the working directory path at the top of `PROJECT_DIRECTORY\dashboards\master.R`, update it if needed
 
 ### Create a windows scheduled task (or CRON job) to produce the dashboards
-For windows, run the `dashboards\master.r` once, you can then use the following command in R to create the scheduled task:
+For windows:
+- run the `dashboards\master.r` once
+- you can then use the following command in R to create the scheduled task:
 `taskscheduleR::taskscheduler_create(taskname="ArgusR", rscript=paste0(getwd(),"/dashboards/master.R"), schedule="MINUTE", startdate = format(today(), "%d/%m/%Y"), starttime=format(Sys.time() + 120, "%H:%M"),
 modifier=config$freqCron)`
 
+- If an error message such as: `ERROR: Incorrect Start Date` appears:
+    - Run the following command in the R console:
+`taskscheduleR::taskscheduler_create(taskname="ArgusR", rscript=paste0(getwd(),"/dashboards/master.R"),
+schedule="ONCE", startdate = format(today(), "%d/%m/%Y"), starttime=format(Sys.time() + 120, "%H:%M"))`
+    - Then open the application `Task scheduler` in Windows:
+        - Go in the left panel to `Task scheduler library`
+        - Select the task `ArgusR` in the middle panel.
+        - Click on properties in the right panel.
+        - Go to the `Triggers` tab and select in `Advanced settings`: "Repeat task every `15 minutes` for a duration of `Indefinitely`"
+        - Press OK
+        - Press “Run” in the right panel.
 ---
 ## Workflow
 
@@ -71,4 +84,3 @@ Whole workflow is controlled through the `PROJECT_DIRECTORY\dashboards\master.R`
 
 - [José Guerra](http://github.com/SNSteamLyon)
 - [Olga Mierzwa-Sulima](https://github.com/olgamie)
-

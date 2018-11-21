@@ -5,9 +5,10 @@
 path_folder <- "C:/Local_drive/travaux/3_Projects/1_Team_projects/Argus/5_Development/Technical/Argus_Dashboard/R scripts/packages/" 
 
 # List of R packages to be loaded to run the R scripts for the 2 monitoring dashboards ### To BE UPDATED ID NEEDED
-listPackages <- c("shiny.i18n","RMySQL","lubridate","ggplot2","dplyr","tidyr","data.table","sf","rmarkdown", "svglite", "taskscheduleR") 
+listPackages <- c("shiny.i18n","RMySQL","lubridate","ggplot2","dplyr","tidyr","data.table","sf","rmarkdown", "svglite", "taskscheduleR", "flexdashboard", "DT") 
 
 # List of all dependencies of above packages
+library(tools)
 dependencies <- package_dependencies(listPackages,recursive = T)
 
 # List of packages installed with R (https://stats.idre.ucla.edu/r/faq/how-can-i-manage-r-packages/ )

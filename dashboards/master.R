@@ -19,6 +19,8 @@ library(sf,quietly = T)
 library(grid,quietly = T)
 library(rmarkdown,quietly = T)
 library(yaml,quietly = T)
+library(flexdashboard, quietly=T)
+library(DT, quietly = T)
 
 # Set the constants ###
 
