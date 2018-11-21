@@ -44,6 +44,7 @@ It is possible to generate the reports in different languages. The international
         - Country name (used to produce the maps): e.g. "Togo". Use names displayed in the file `PROJECT_DIRECTORY\dashboards\countryNames.csv`.
         - First day of the week: either 1 if Monday, or 7 if Sunday.
         - Frequency of the dashboards update: e.g. 15. Don't put less than 15 minutes.
+3. Check the working directory path at the top of `PROJECT_DIRECTORY\dashboards\master.R`, update it if needed
 
 ### Create a windows scheduled task (or CRON job) to produce the dashboards
 For windows, run the `dashboards\master.r` once, you can then use the following command in R to create the scheduled task:
