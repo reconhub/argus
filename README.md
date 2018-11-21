@@ -49,7 +49,7 @@ It is possible to generate the reports in different languages. The international
 ### Create a windows scheduled task (or CRON job) to produce the dashboards
 For windows, run the `dashboards\master.r` once, you can then use the following command in R to create the scheduled task:
 `taskscheduleR::taskscheduler_create(taskname="ArgusR", rscript=paste0(getwd(),"/dashboards/master.R"), schedule="MINUTE", startdate = format(today(), "%d/%m/%Y"), starttime=format(Sys.time() + 120, "%H:%M"),
-modifier=freqCron)`
+modifier=config$freqCron)`
 
 ---
 ## Workflow
