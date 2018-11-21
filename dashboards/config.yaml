@@ -1,0 +1,41 @@
+# YAML, don't forget to let a space between the colon ":" and the value.
+# Constants to create the two dashboards
+
+language:  "fr"	# Language of the interface: e.g. "fr" for French; "en" for English. See abreviations to be used in "dashboards/translations/translations.csv"
+
+country:  "Togo"	# Name of the country (for the map): see names to be used in the file "dashboards/countryNames.csv".
+
+weekFirstDay:  1	# First day of the week: put either 1 if the week starts on Monday or 7 if it starts on Sunday.
+
+freqCron:  15	# Frequency of dashboard updates in minutes (don't put less than 15 minutes).
+
+
+
+
+# Miscellaneous, don't change except if you know exactly what you are doing.
+
+## Paths
+assets_path: "dashboards/assets/"
+translations_path: "dashboards/translations/"
+
+## Dashboard settings
+plot_colors:
+ - "#5A0A69"
+ - "#62B200"
+
+## Administrative report settings
+administrative_report_plots_names:
+ - "central_plot.svg"
+ - "reporting_parent_sites.svg"
+ - "review_plots.svg"
+
+epidemiological_report_plots_names:
+ - "subplots_disease_occurance_w12.svg"
+ - "maps.svg"
+
+shape_files: "ne_50m_admin_0_countries" #JG: needs to be the unzipped repository
+
+max_intermediate_levels: 50
+
+
+

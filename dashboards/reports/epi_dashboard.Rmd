@@ -1,0 +1,79 @@
+---
+output: 
+  flexdashboard::flex_dashboard:
+    orientation: rows
+    vertical_layout: scroll
+    smooth_scroll: true
+    css: style.css
+    theme: cosmo
+    self_contained: false
+    mathjax: NULL
+params:
+  custom_title: "Epidemiological summary"
+title: "`r params$custom_title`"
+---
+
+<style>                     
+.navbar {
+  background-color:#5A0A69;
+  border-color:black;
+}
+#dashboard-container { 
+  all: initial !important; 
+}
+</style>
+
+Row {data-height=700}
+-------------------------------------
+
+### `r i18n$t("disease_charts_header")`
+
+<img src="../assets/trends_occurrence.svg" alt="Trends of diseases having crossed thresholds in 12 previous weeks">
+
+### `r i18n$t("disease_maps_header")`
+
+<img src="../assets/map_occurrence.svg" alt="Maps of occurence of diseases crossing thresholds in the 2 previous weeks">
+
+Row {data-height=400}
+-------------------------------------
+
+### `r i18n$t("disease_table_occurence_header")`
+
+```{r}
+DT::datatable(data = disease_occurrence_above_threshold,
+              extensions = "Responsive",
+              rownames = FALSE,
+              options = list(
+                columnDefs = list(list(responsivePriority = 1, targets = 0)),
+                dom = 'tp'))
+```
+
+### `r i18n$t("disease_table_alerts_header")`
+```{r}
+DT::datatable(data = alert_list_D10,
+              extensions = "Responsive",
+              rownames = FALSE,
+              options = list(
+                columnDefs = list(list(responsivePriority = 1, targets = 0)),
+                pageLength=5,
+                dom = 'tp'))
+```
+
+Row
+-------------------------------------
+
+### `r paste0(i18n$t("disease_table_cumulative_header"),i18n$t("weekAbbr"),"1"," to ", i18n$t("weekAbbr"),numSem_W12[12])`
+
+> `r paste0(yearPrevious,". ",i18n$t("representativeness"),nbRecValid_YR_previous,"/",nbExpected_YR_previous," (",percRecValid_YR_previous,"%)")`
+> `r paste0(yearCurrent,". ",i18n$t("representativeness"),nbRecValid_YR,"/",nbExpected_YR," (",percRecValid_YR,"%)")`
+
+
+```{r}
+DT::datatable(data = cumulative_table,
+               extensions = "Responsive",
+               rownames = FALSE,
+                options = list(
+                  columnDefs = list(list(responsivePriority = 1, targets = 0)),
+             pageLength=length(diseases_name$disease[which(diseases_name$disease!="ALERT")]),
+                dom = 'tp'))
+```

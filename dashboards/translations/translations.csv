@@ -1,0 +1,43 @@
+raw,en,fr
+*** Epidemiological report headers ***,,
+epi_report_title,Epidemiological dashboard,Rapport epidemiologique du 
+disease_charts_header,Diseases having crossed thresholds in the 12 previous weeks,Maladies avec seuil d'alerte Argus depasse au cours des 12 dernieres semaines
+disease_maps_header,Thresholds crossed in the 2 previous weeks by district,Districts avec seuil d'alerte Argus depasse au cours des 2 dernieres semaines (cumul des cas)
+disease_table_occurence_header,Reports with values above threshold during 2 previous weeks,Formations sanitaires avec seuil d'alerte Argus depasse au cours des 2 dernieres semaines (cumul des cas)
+disease_table_alerts_header,Alerts received in the 10 previous days,Alertes recues au cours des 10 jours precedents
+disease_table_cumulative_header,Cumulative number of diseases from ,Nombre cumule de cas de 
+*** Epidemiological report charts and tables ***,,
+occurrence,Occurrence,Nb de cas
+threshold,Threshold,Seuil alerte Argus
+maps_legend,Occurrence,Nb de cas
+name_Site,Site Name,Nom du site
+message,Alert,Message
+reception_Date,Reception date,Date de reception
+contactName,Contact,Contact
+contactPhoneNumber,Phone,Telephone
+disease,Disease,Maladie
+cas,Cas,Cas
+desease,Desease,Maladie
+nb_of_cases,Number of cases,Nombre de cas
+no_alert,No alert in previous 10 days,Pas d'alerte recue au cours des 10 derniers jours
+representativeness,Nb of reports received and validated: ,Nb de rapports recus et valides: 
+*** Administrative report ***,,
+admin_report_title,Administrative report,Rapport administratif du 
+compReport,Completeness of weekly reporting,Completude envoi des rapports  
+timeReport,Timeliness of weekly reporting,Promptitude envoi des rapports
+compReview,Completeness of weekly reviewing,Completude validation des rapports  
+timeReview,Timeliness of weekly reviewing,Promptitude validation des rapports
+country_reporting_header,Completeness and timeliness of weekly reporting for the whole country,Completude et promptitude d'envoi des rapports hebdomadaires pour l'ensemble du pays 
+overall_reporting_header,Overall completeness and timeliness of weekly reporting from week,Completude et promptitude globale d'envoi des rapports hebdomadaires de la semaine 
+overall_review_header,Overall completeness and timeliness of data review at each level from week,Completude et promptitude globale de validation des rapports hebdomadaires a chaque niveau de la semaine
+to_week,to week,a la semaine
+silent_sites_8_weeks_header,Silent sites: reporting sites with no reports received for 8 weeks and longer,Formations sanitaires sans rapports depuis 8 semaines et plus
+silent_sites_3_weeks_header,Silent sites: reporting sites with no reports received for 3 weeks and longer,Formations sanitaires sans rapports depuis 3 semaines et plus
+*** Common *** ,,
+epi_week_nb,Epidemiological week number,Semaine epidemiologique
+siteName,Site Name,Formation sanitaire
+name_parentSite,Area,District
+contact,Contact,Contact
+phone,Phone,Telephone
+weekAbbr,W,S
+update,updated every,mis a jour toutes les
