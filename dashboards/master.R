@@ -2,7 +2,7 @@
 
 ### !!!!!!!!!!! Set working director !!!!!!!!!!!!!!!###
 
-workingDir <- "C:/xampp/htdocs/ScriptsR/argus/dashboards/master.R"
+workingDir <- "C:/xampp/htdocs/ScriptsR/argus"
 setwd(workingDir)
 
 # Load needed Packages ####
