@@ -38,12 +38,13 @@ percRecValid_YR_previous <- round((nbRecValid_YR_previous/nbExpected_YR_previous
 
 # graph on disease occurrence
 
+diseaseThreshold_W12$week <- factor(as.character(diseaseThreshold_W12$week), levels = numSem_W12, labels=paste0(i18n$t("weekAbbr"),c(numSem_W12)))
+
 # TODO: to allow several variables to be displayed in case of multiple variables per disease
 plot_occurrence <- ggplot(data = diseaseThreshold_W12,aes(x = week, y = occurence, group = variable, color = variable)) +
   facet_wrap(~diseaseName, ncol = 3, scales = "free") +
   geom_line(size = 2) + geom_point(size = 4) +
   # theme_ipsum(axis_title_just = "middle",grid = "XY",base_family = "sans",subtitle_family = "sans") +
-  scale_x_continuous(labels=paste0(i18n$t("weekAbbr"),c(numSem_W12[seq.int(1,12,by=2)])),breaks = numSem_W12[seq.int(1,12,by=2)]) +
   labs(x = i18n$t("epi_week_nb"), y = i18n$t("nb_of_cases")) +
   scale_color_manual(values = config$plot_colors[1])+
   scale_y_continuous(limits=c(0,NA), expand=expand_scale(add = c(0.8,2))) +

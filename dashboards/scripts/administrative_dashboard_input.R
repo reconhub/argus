@@ -44,10 +44,11 @@ last_12_weeks_central <- reportingValues_W12 %>%
 
 # reporting trend
 
+last_12_weeks_central$week <- factor(as.character(last_12_weeks_central$week), levels = numSem_W12, labels=paste0(i18n$t("weekAbbr"),c(numSem_W12)))
+
 central_plots <- ggplot(data = last_12_weeks_central, aes(x = week, y = number, color = label, group = label)) +
   geom_line(size = 2) + geom_point(size = 4) +
   # theme_ipsum(axis_title_just = "middle",grid = "XY") +
-  scale_x_continuous(labels=paste0(i18n$t("weekAbbr"),c(numSem_W12)),breaks = numSem_W12) +
   labs(x = i18n$t("epi_week_nb"), y = "%") +
   scale_color_manual(values = config$plot_colors) +
   ylim(0, 100) +
