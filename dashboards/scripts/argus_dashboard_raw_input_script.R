@@ -1317,8 +1317,10 @@ if(nrow(diseaseThreshold_W2)==0) {
 
   rowLineId <- NA
   for (rowLineId in 1:nrow(diseaseThreshold_W2)) {
-  
-    if (is.na(diseaseThreshold_W2$longitude[rowLineId]) | is.na(diseaseThreshold_W2$latitude[rowLineId]) ) {
+
+    if ((is.na(diseaseThreshold_W2$longitude[rowLineId]) | is.na(diseaseThreshold_W2$latitude[rowLineId])) & 
+        any(longLat$FK_SiteId==diseaseThreshold_W2$FK_ParentId[rowLineId])
+        ) {
       diseaseThreshold_W2$longitude[rowLineId] <- longLat$longitude[which(longLat$FK_SiteId==diseaseThreshold_W2$FK_ParentId[rowLineId])]
       diseaseThreshold_W2$latitude[rowLineId] <- longLat$latitude[which(longLat$FK_SiteId==diseaseThreshold_W2$FK_ParentId[rowLineId])]
     } else {
