@@ -260,8 +260,8 @@ rm(baseSql)
 
 # sites_relationships
 
-sites_relationships$FK_DimDateFromId <- ymd(sites_relationships$FK_DimDateFromId) # put as date
-sites_relationships$FK_DimDateToId <- ymd(sites_relationships$FK_DimDateToId) # put as date
+sites_relationships$FK_WeekDimDateFromId <- ymd(sites_relationships$FK_WeekDimDateFromId) # put as date
+sites_relationships$FK_WeekDimDateToId <- ymd(sites_relationships$FK_WeekDimDateToId) # put as date
 
 # fullreport
 
@@ -322,58 +322,94 @@ longLat <- unique(sites_relationships[which(!is.na(sites_relationships$longitude
 
 #### Dataframes with sites active for specific periods ####
 
+## Rules for sites activated/deactivated along time
+### When a site is activated any day of week n, the first week to be reported is the week n-1
+### When a site is deactivated any day of week n, the last week to be reported is the week n-1.
+## Variables of interest for activation/deactivation
+### FK_DimDateFromId and FK_DimDateToId : activation/deactivation date of sites.
+### FK_WeekDimDateFromId: date first day first week to be reported
+### FK_WeekDimDateToId: date first day last week to be reported
+
 
 # Dataframe with the sites active for the whole period of interest
 
-## FK_DimDateFromID: the site is expected to start reporting the week after for the reports of the week including FK_DimDateFromID
-## FK_DimDateToID: the site is expected to report for the last time the week that includes (FK_DimDateToID - 1 day) for the reports of the week before the one including (FK_DimDateToID - 1 day)
+temp <- NA # to compute the list of sites active for the whole period of interest since week 1 this year
+temp <- 
+  which(
+    sites_relationships$FK_WeekDimDateFromId <= dateStart_YR &
+    (is.na(sites_relationships$FK_WeekDimDateToId) | sites_relationships$FK_WeekDimDateToId >= dateEnd)
+  )
 
-temp <- NA # to compute the list of sites active for the whole period of interest since week 1
-temp <- which(sites_relationships$FK_DimDateFromId <= dateStart_YR + 6 & (is.na(sites_relationships$FK_DimDateToId) | sites_relationships$FK_DimDateToId -1 >= dateEnd +7))
-
-sites_wholePeriod_YR <- sites_relationships[temp, c("FK_SiteId","id","level","FK_ParentId","FK_DimDateFromId","FK_DimDateToId")]
+sites_wholePeriod_YR <- sites_relationships[temp, c("FK_SiteId","id","level","FK_ParentId","FK_WeekDimDateFromId","FK_WeekDimDateToId")]
 
 temp <- NA # to compute the list of sites active for the whole period of interest since week 1 in the previous year
-temp <- which(sites_relationships$FK_DimDateFromId <= dateStart_YR_previous + 6 & (is.na(sites_relationships$FK_DimDateToId) | sites_relationships$FK_DimDateToId -1 >= dateEnd_YR_previous +7))
+temp <- 
+  which(
+    sites_relationships$FK_WeekDimDateFromId <= dateStart_YR_previous & 
+    (is.na(sites_relationships$FK_WeekDimDateToId) | sites_relationships$FK_WeekDimDateToId >= dateEnd_YR_previous)
+  )
 
-sites_wholePeriod_YR_previous <- sites_relationships[temp, c("FK_SiteId","id","level","FK_ParentId","FK_DimDateFromId","FK_DimDateToId")]
+sites_wholePeriod_YR_previous <- sites_relationships[temp, c("FK_SiteId","id","level","FK_ParentId","FK_WeekDimDateFromId","FK_WeekDimDateToId")]
 
 temp <- NA # to compute the list of sites active for the 12 previous weeks
-temp <- which(sites_relationships$FK_DimDateFromId <= dateStart_W12 +6 & (is.na(sites_relationships$FK_DimDateToId) | sites_relationships$FK_DimDateToId -1 >= dateEnd +7))
 
-sites_wholePeriod_W12 <- sites_relationships[temp, c("FK_SiteId","id","level","FK_ParentId","FK_DimDateFromId","FK_DimDateToId")]
+temp <- 
+  which(
+    sites_relationships$FK_WeekDimDateFromId <= dateStart_W12 & 
+      (is.na(sites_relationships$FK_WeekDimDateToId) | sites_relationships$FK_WeekDimDateToId >= dateEnd)
+  )
+
+sites_wholePeriod_W12 <- sites_relationships[temp, c("FK_SiteId","id","level","FK_ParentId","FK_WeekDimDateFromId","FK_WeekDimDateToId")]
 
 temp <- NA # to compute the list of sites active for the 8 previous weeks
-temp <- which(sites_relationships$FK_DimDateFromId <= dateStart_W8 + 6 & (is.na(sites_relationships$FK_DimDateToId) | sites_relationships$FK_DimDateToId -1 >= dateEnd +7))
 
-sites_wholePeriod_W8 <- sites_relationships[temp, c("FK_SiteId","id","level","FK_ParentId","FK_DimDateFromId","FK_DimDateToId")]
+temp <- 
+  which(
+    sites_relationships$FK_WeekDimDateFromId <= dateStart_W8 & 
+      (is.na(sites_relationships$FK_WeekDimDateToId) | sites_relationships$FK_WeekDimDateToId >= dateEnd)
+  )
+
+sites_wholePeriod_W8 <- sites_relationships[temp, c("FK_SiteId","id","level","FK_ParentId","FK_WeekDimDateFromId","FK_WeekDimDateToId")]
 
 temp <- NA # to compute the list of sites active for the 3 previous weeks
-temp <- which(sites_relationships$FK_DimDateFromId <= dateStart_W3 +6 & (is.na(sites_relationships$FK_DimDateToId) | sites_relationships$FK_DimDateToId -1 >= dateEnd +7))
 
-sites_wholePeriod_W3 <- sites_relationships[temp, c("FK_SiteId","id","level","FK_ParentId","FK_DimDateFromId","FK_DimDateToId")]
+temp <- 
+  which(
+    sites_relationships$FK_WeekDimDateFromId <= dateStart_W3 & 
+      (is.na(sites_relationships$FK_WeekDimDateToId) | sites_relationships$FK_WeekDimDateToId >= dateEnd)
+  )
 
+sites_wholePeriod_W3 <- sites_relationships[temp, c("FK_SiteId","id","level","FK_ParentId","FK_WeekDimDateFromId","FK_WeekDimDateToId")]
 
 # Dataframe with the sites active only for specific weeks in the period of interest
 
 ## Since week 1
 temp <- NA # to compute the sites active only for specific weeks since week 1
-temp <- which((sites_relationships$FK_DimDateFromId > dateStart_YR +6 & sites_relationships$FK_DimDateFromId <= dateEnd +7) | (sites_relationships$FK_DimDateToId -1 < dateEnd +7 & sites_relationships$FK_DimDateToId -1 >= dateStart_YR +7))
+
+temp <- 
+  which(
+    (sites_relationships$FK_WeekDimDateFromId > dateStart_YR & sites_relationships$FK_WeekDimDateFromId <= dateEnd) |
+      (sites_relationships$FK_WeekDimDateToId < dateEnd & sites_relationships$FK_WeekDimDateToId >= dateStart_YR)
+  )
 
 if (length(temp)==0) {
   sites_specificPeriod_YR <- NULL
 } else {
-  sites_specificPeriod_YR <- sites_relationships[temp, c("FK_SiteId","id","level","FK_ParentId","FK_DimDateFromId","FK_DimDateToId")]
+  sites_specificPeriod_YR <- sites_relationships[temp, c("FK_SiteId","id","level","FK_ParentId","FK_WeekDimDateFromId","FK_WeekDimDateToId")]
   
-  sites_specificPeriod_YR$weekStart <- ifelse(sites_specificPeriod_YR$FK_DimDateFromId > dateStart_YR +6, weekFunction(sites_specificPeriod_YR$FK_DimDateFromId), 1)
+  sites_specificPeriod_YR$weekStart <- ifelse(
+    sites_specificPeriod_YR$FK_WeekDimDateFromId > dateStart_YR,
+    weekFunction(sites_specificPeriod_YR$FK_WeekDimDateFromId),
+    1)
   
   sites_specificPeriod_YR$weekEnd <- NA
   
   for (i in 1:length(sites_specificPeriod_YR$weekEnd)) {
     
-    if ((sites_specificPeriod_YR$FK_DimDateToId[i] -1 < dateEnd +7) & !is.na(sites_specificPeriod_YR$FK_DimDateToId[i])) {
+    if ((sites_specificPeriod_YR$FK_WeekDimDateToId[i] < dateEnd) & !is.na(sites_specificPeriod_YR$FK_WeekDimDateToId[i])) {
       
-      sites_specificPeriod_YR$weekEnd[i] <- weekFunction(sites_specificPeriod_YR$FK_DimDateToId[i]-7)
+      sites_specificPeriod_YR$weekEnd[i] <- weekFunction(sites_specificPeriod_YR$FK_WeekDimDateToId[i])
+      
     } else {
       
       sites_specificPeriod_YR$weekEnd[i] <- weekEnd
@@ -386,64 +422,83 @@ if (length(temp)==0) {
 
 ## Since week 1 of the previous year
 temp <- NA # to compute the sites active only for specific weeks since week 1
-temp <- which((sites_relationships$FK_DimDateFromId > dateStart_YR_previous +6 & sites_relationships$FK_DimDateFromId <= dateEnd_YR_previous +7) | (sites_relationships$FK_DimDateToId -1 < dateEnd_YR_previous +7 & sites_relationships$FK_DimDateToId -1 >= dateStart_YR_previous +7))
+
+temp <- 
+  which(
+    (sites_relationships$FK_WeekDimDateFromId > dateStart_YR_previous & sites_relationships$FK_WeekDimDateFromId <= dateEnd_YR_previous) |
+      (sites_relationships$FK_WeekDimDateToId < dateEnd_YR_previous & sites_relationships$FK_WeekDimDateToId >= dateStart_YR_previous)
+  )
+
 
 if (length(temp)==0) {
   sites_specificPeriod_YR_previous <- NULL
 } else {
-  sites_specificPeriod_YR_previous <- sites_relationships[temp, c("FK_SiteId","id","level","FK_ParentId","FK_DimDateFromId","FK_DimDateToId")]
+  sites_specificPeriod_YR_previous <- sites_relationships[temp, c("FK_SiteId","id","level","FK_ParentId","FK_WeekDimDateFromId","FK_WeekDimDateToId")]
   
-  sites_specificPeriod_YR_previous$weekStart <- ifelse(sites_specificPeriod_YR_previous$FK_DimDateFromId > dateStart_YR_previous +6, weekFunction(sites_specificPeriod_YR_previous$FK_DimDateFromId), 1)
+  sites_specificPeriod_YR_previous$weekStart <- ifelse(
+    sites_specificPeriod_YR_previous$FK_WeekDimDateFromId > dateStart_YR_previous,
+    weekFunction(sites_specificPeriod_YR_previous$FK_WeekDimDateFromId),
+    1)
   
   sites_specificPeriod_YR_previous$weekEnd <- NA
   
   for (i in 1:length(sites_specificPeriod_YR_previous$weekEnd)) {
     
-    if ((sites_specificPeriod_YR_previous$FK_DimDateToId[i] -1 < dateEnd +7) & !is.na(sites_specificPeriod_YR_previous$FK_DimDateToId[i])) {
-      sites_specificPeriod_YR_previous$weekEnd[i] <- weekFunction(sites_specificPeriod_YR_previous$FK_DimDateToId[i]-7)
+    if ((sites_specificPeriod_YR_previous$FK_WeekDimDateToId[i] < dateEnd_YR_previous) & !is.na(sites_specificPeriod_YR_previous$FK_WeekDimDateToId[i])) {
+      
+      sites_specificPeriod_YR_previous$weekEnd[i] <- weekFunction(sites_specificPeriod_YR_previous$FK_WeekDimDateToId[i])
       
     } else {
       
-      sites_specificPeriod_YR_previous$weekEnd[i] <- weekEnd
-      
+      sites_specificPeriod_YR_previous$weekEnd[i] <- weekEnd_YR_previous
     }
   }
-
+  
   sites_specificPeriod_YR_previous$duration <- NA # nb of weeks for which site active
-  sites_specificPeriod_YR_previous$duration <- sites_specificPeriod_YR_previous$weekEnd - sites_specificPeriod_YR_previous$weekStart +1
+  sites_specificPeriod_YR_previous$duration <- sites_specificPeriod_YR_previous$weekEnd - sites_specificPeriod_YR$weekStart +1
 }
-
 
 ## 12 previous weeks
 temp <- NA # to compute the list of sites active for the 12 previous weeks
-temp <- which((sites_relationships$FK_DimDateFromId > dateStart_W12 +6 & sites_relationships$FK_DimDateFromId <= dateEnd +7) | (sites_relationships$FK_DimDateToId -1 < dateEnd +7 & sites_relationships$FK_DimDateToId -1 >= dateStart_W12 +7))
+
+temp <- 
+  which(
+    (sites_relationships$FK_WeekDimDateFromId > dateStart_W12 & sites_relationships$FK_WeekDimDateFromId <= dateEnd) |
+      (sites_relationships$FK_WeekDimDateToId < dateEnd & sites_relationships$FK_WeekDimDateToId >= dateStart_W12)
+  )
 
 if (length(temp)==0) {
   sites_specificPeriod_W12 <- NULL
 } else {
-  sites_specificPeriod_W12 <- sites_relationships[temp, c("FK_SiteId","id","level","FK_ParentId","FK_DimDateFromId","FK_DimDateToId")]
+  sites_specificPeriod_W12 <- sites_relationships[temp, c("FK_SiteId","id","level","FK_ParentId","FK_WeekDimDateFromId","FK_WeekDimDateToId")]
   
-  sites_specificPeriod_W12$weekStart <- ifelse(sites_specificPeriod_W12$FK_DimDateFromId > dateStart_W12 +6, weekFunction(sites_specificPeriod_W12$FK_DimDateFromId), weekStart_W12)
+  sites_specificPeriod_W12$weekStart <- ifelse(
+    sites_specificPeriod_W12$FK_WeekDimDateFromId > dateStart_W12,
+    weekFunction(sites_specificPeriod_W12$FK_WeekDimDateFromId),
+    weekStart_W12)
   
   sites_specificPeriod_W12$weekEnd <- NA
   
   for (i in 1:length(sites_specificPeriod_W12$weekEnd)) {
     
-    if ((sites_specificPeriod_W12$FK_DimDateToId[i] -1 < dateEnd +7) & !is.na(sites_specificPeriod_W12$FK_DimDateToId[i])) {
+    if ((sites_specificPeriod_W12$FK_WeekDimDateToId[i] < dateEnd) & !is.na(sites_specificPeriod_W12$FK_WeekDimDateToId[i])) {
       
-      sites_specificPeriod_W12$weekEnd[i] <- weekFunction(sites_specificPeriod_W12$FK_DimDateToId[i]-7)
+      sites_specificPeriod_W12$weekEnd[i] <- weekFunction(sites_specificPeriod_W12$FK_WeekDimDateToId[i])
       
     } else {
       
       sites_specificPeriod_W12$weekEnd[i] <- weekEnd
-      
     }
   }
   
   sites_specificPeriod_W12$duration <- NA # nb of weeks for which site active
-  sites_specificPeriod_W12$duration <- ifelse(sites_specificPeriod_W12$weekEnd >= sites_specificPeriod_W12$weekStart, sites_specificPeriod_W12$weekEnd - sites_specificPeriod_W12$weekStart +1, nbWeeksYear - sites_specificPeriod_W12$weekStart +1 + sites_specificPeriod_W12$weekEnd)
-}
-
+  sites_specificPeriod_W12$duration <- 
+    ifelse(
+      sites_specificPeriod_W12$weekEnd >= sites_specificPeriod_W12$weekStart,
+      sites_specificPeriod_W12$weekEnd - sites_specificPeriod_W12$weekStart +1,
+      nbWeeksYear - sites_specificPeriod_W12$weekStart +1 + sites_specificPeriod_W12$weekEnd)
+}  
+  
 ## reportingValues_YR: table with variables of interest since the beginning of the year (week 1) for each site from the first intermediate level ####
 
 
