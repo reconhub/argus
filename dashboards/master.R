@@ -2,7 +2,7 @@
 
 ### !!!!!!!!!!! Set working director !!!!!!!!!!!!!!!###
 
-workingDir <- "C:/Local_drive/travaux/3_Projects/1_Team_projects/Argus/GitHub/argus"
+workingDir <- "C:/xampp/htdocs/ScriptsR/argus"
 setwd(workingDir)
 
 # Load needed Packages ####
