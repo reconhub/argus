@@ -1,8 +1,8 @@
 # YAML, don't forget to let a space between the colon ":" and the value.
 # paramaters to connect locally to the MySQL database
 
-DB_NAME:	argus		# Name of the database, don't put brackets.
+DB_NAME:	demoargusdatabase	# Name of the database, don't put brackets.
 DB_HOST:		localhost		# Host to be used (e.g. localhost), don't put brackets
 DB_PORT:		5432		# Port number to be used (e.g. 5432), don't put brackets
 DB_USER:		root		# User name (e.g. root), don't put brackets
-DB_PASSWORD:   	""		# Password to access the database, put brackets around, if no password put: "".
+DB_PASSWORD:   	"WHO39"		# Password to access the database, put brackets around, if no password put: "".

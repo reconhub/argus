@@ -1,0 +1,4 @@
+# One year validity for css and js to avoid downloading javascript libraries and styles for each dashboard visualization in Angular
+<filesMatch "\.(css|js|ttf)$">
+Header set Cache-Control "max-age=31536000, public"
+</filesMatch>

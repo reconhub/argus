@@ -2,7 +2,7 @@
 
 ### !!!!!!!!!!! Set working director !!!!!!!!!!!!!!!###
 
-workingDir <- "C:/xampp/htdocs/ScriptsR/argus"
+workingDir <- "C:/Local_drive/travaux/3_Projects/1_Team_projects/Argus/GitHub/argus"
 setwd(workingDir)
 
 # Load needed Packages ####
@@ -63,3 +63,4 @@ rmarkdown::render("dashboards/reports/epi_dashboard.Rmd",
                                                      reportTime,i18n$t("update"),
                                                      paste0(config$freqCron,"mn"))), 
                                 quiet=T)
+
