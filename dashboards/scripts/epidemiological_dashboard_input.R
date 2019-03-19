@@ -68,6 +68,34 @@ ggsave(file = paste0(config$assets_path, "trends_occurrence.svg"), plot = plot_o
 
 if(nrow(diseaseThreshold_W2)==0) {
   
+  country_data <- sp_files %>% dplyr::filter(GEOUNIT == config$country)
+  
+  svg(paste0(config$assets_path, "map_occurrence.svg"), width = 10, height = 10)
+  
+  map_empty <-  ggplot() +
+    geom_sf(data = country_data, fill = "white")  +
+    theme_bw() +
+    theme(title = element_text(face="bold", size = 16),
+          axis.line = element_blank(),
+          axis.ticks = element_blank(),
+          axis.text = element_blank(),
+          axis.title.x = element_blank(),
+          axis.title.y = element_blank(),
+          legend.title = element_text(size = main_font_size, family = "sans", face="plain"), 
+          legend.text = element_text(size = main_font_size, family = "sans"),
+          legend.key = element_rect(fill = "white", colour = "white"),
+          panel.spacing.x = unit(1, "lines"),
+          panel.grid.major = element_line(colour = "white"),
+          panel.border = element_blank(),
+          legend.position = "right",
+          legend.box = "vertical")
+  
+  
+  print(map_empty)
+
+  dev.off()
+  
+  
 } else {
   
   disease_interest <- diseaseThreshold_W2 %>% group_by(disease,threshold_value) %>% summarise(occurence = sum(occurence)) 
