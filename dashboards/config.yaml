@@ -1,9 +1,9 @@
 # YAML, don't forget to let a space between the colon ":" and the value.
 # Constants to create the two dashboards
 
-language:  "fr"	# Language of the interface: e.g. "fr" for French; "en" for English. See abreviations to be used in "dashboards/translations/translations.csv"
+language:  "en"	# Language of the interface: e.g. "fr" for French; "en" for English. See abreviations to be used in "dashboards/translations/translations.csv"
 
-country:  "Togo"	# Name of the country (for the map): see names to be used in the file "dashboards/countryNames.csv".
+country:  "Switzerland"	# Name of the country (for the map): see names to be used in the file "dashboards/countryNames.csv".
 
 weekFirstDay:  1	# First day of the week: put either 1 if the week starts on Monday or 7 if it starts on Sunday.
 
