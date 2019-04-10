@@ -1,4 +1,4 @@
-﻿# R scripts for admnistrative and epidemiological dashboards in Argus
+﻿# R scripts for administrative and epidemiological dashboards in Argus
 
 
 ## Argus IT-tool for public health surveillance
