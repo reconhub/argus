@@ -70,10 +70,10 @@ overall_reporting <- reportingValues_W12_overall %>%
   
 reporting_parent_sites <- ggplot(data = overall_reporting, aes(x = reference, y = number, group = label)) +
   geom_bar(stat="identity",aes(fill=label), position="dodge") +
-  # theme_ipsum(axis_title_just = "middle",grid = "XY") +
   labs(x ="", y = "%") +
   scale_x_discrete(limits=unique(overall_reporting$reference)) +
   scale_fill_manual(values = config$plot_colors) +
+  geom_vline(xintercept = 1.5, size=1.4) +
   ylim(0, 100) +
   theme_bw() +
   plot_theme() +
@@ -89,12 +89,15 @@ overal_review <- reportingValues_W12_overall %>%
   gather(key=label, value=number, -reference) %>%
   mutate(label=recode_review(label))
 
+seq_group_vline <- which(!duplicated(parentSites$level) & parentSites$level!=1)-0.5
+
 weekly_review_plots <- ggplot(data = overal_review, aes(x = reference, y = number, group = label)) +
   geom_bar(stat="identity",aes(fill=label), position="dodge") +
   # theme_ipsum(axis_title_just = "middle",grid = "XY") +
   labs(x ="", y = "%") +
   scale_x_discrete(limits=unique(overal_review$reference)) +
   scale_fill_manual(values = config$plot_colors) +
+  geom_vline(xintercept = seq_group_vline, size=1.4) +
   ylim(0, 100) +
   theme_bw() +
   plot_theme() +
